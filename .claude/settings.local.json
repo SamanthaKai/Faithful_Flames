@@ -16,7 +16,8 @@
       "Bash(node -e \"require\\('sharp'\\); console.log\\('sharp ok'\\)\")",
       "Bash(python -c \"from PIL import Image; print\\('PIL ok'\\)\")",
       "Bash(pip install *)",
-      "Bash(node -e \"const sharp = require\\('./node_modules/sharp'\\); console.log\\('sharp found'\\)\")"
+      "Bash(node -e \"const sharp = require\\('./node_modules/sharp'\\); console.log\\('sharp found'\\)\")",
+      "Bash(git config *)"
     ]
   }
 }
