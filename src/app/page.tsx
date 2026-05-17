@@ -1,22 +1,30 @@
 export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 async function getHomeData() {
-  const [verse, article, devotion, events] = await Promise.all([
+  const [verse, article, devotion, events, memberCount] = await Promise.all([
     prisma.verse.findFirst({ where: { isDaily: true } }).then(
       (v) => v ?? prisma.verse.findFirst({ orderBy: { createdAt: 'desc' } })
     ),
     prisma.article.findFirst({ where: { isPublished: true }, orderBy: { publishedAt: 'desc' } }),
     prisma.devotion.findFirst({ where: { isPublished: true }, orderBy: { publishedAt: 'desc' } }),
     prisma.event.findMany({ where: { date: { gte: new Date() } }, orderBy: { date: 'asc' }, take: 4 }),
+    prisma.user.count(),
   ])
-  return { verse, article, devotion, events }
+  return { verse, article, devotion, events, memberCount }
 }
 
 export default async function HomePage() {
-  const { verse, article, devotion, events } = await getHomeData()
+  const [session, { verse, article, devotion, events, memberCount }] = await Promise.all([
+    getServerSession(authOptions),
+    getHomeData(),
+  ])
+
+  const firstName = session?.user?.name?.split(' ')[0] ?? null
 
   return (
     <div className="animate-fade-in">
@@ -31,7 +39,7 @@ export default async function HomePage() {
             <Image src="/favicon.png" alt="Faithful Flames" width={72} height={72} className="object-contain drop-shadow-lg" priority />
           </div>
           <h1 className="font-heading text-4xl md:text-6xl font-bold leading-tight mb-4">
-            Faithful Flames
+            {firstName ? `Welcome back, ${firstName}!` : 'Welcome to Faithful Flames'}
           </h1>
           <p className="text-xl md:text-2xl font-light text-orange-100 mb-3">
             Ignite your faith. Find your people.
@@ -41,11 +49,18 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/forum" className="inline-flex items-center justify-center gap-2 px-7 py-3 bg-white text-primary font-bold rounded-xl hover:bg-orange-50 transition-colors duration-200 shadow-lg">
-              Join the Forum
+              {session ? 'Go to Forum' : 'Join the Forum'}
             </Link>
-            <Link href="/register" className="inline-flex items-center justify-center gap-2 px-7 py-3 border-2 border-white/50 text-white font-semibold rounded-xl hover:bg-white/10 transition-colors duration-200">
-              Create Account
-            </Link>
+            {!session && (
+              <Link href="/register" className="inline-flex items-center justify-center gap-2 px-7 py-3 border-2 border-white/50 text-white font-semibold rounded-xl hover:bg-white/10 transition-colors duration-200">
+                Create Account
+              </Link>
+            )}
+            {session && (
+              <Link href="/profile" className="inline-flex items-center justify-center gap-2 px-7 py-3 border-2 border-white/50 text-white font-semibold rounded-xl hover:bg-white/10 transition-colors duration-200">
+                My Profile
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -146,6 +161,23 @@ export default async function HomePage() {
           <Link href="/forum" className="btn-primary text-base px-8 py-3">
             Join the Forum
           </Link>
+
+          {/* Live community count */}
+          <div className="mt-8 flex justify-center">
+            <Link
+              href="/forum"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white dark:bg-[#231E1E] border border-gray-200 dark:border-[#3A3030] shadow-sm hover:border-primary/40 hover:shadow-md transition-all text-sm font-medium text-charcoal dark:text-cream"
+            >
+              <span className="relative flex h-2.5 w-2.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
+              </span>
+              <span>
+                <span className="font-bold text-primary">{memberCount.toLocaleString()}</span>
+                {' '}{memberCount === 1 ? 'member' : 'members'} in the community
+              </span>
+            </Link>
+          </div>
         </section>
       </div>
     </div>

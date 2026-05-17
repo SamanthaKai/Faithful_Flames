@@ -19,7 +19,8 @@
       "Bash(node -e \"const sharp = require\\('./node_modules/sharp'\\); console.log\\('sharp found'\\)\")",
       "Bash(git config *)",
       "Bash(git commit *)",
-      "Bash(Get-ChildItem -Path \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\components\" -Recurse)"
+      "Bash(Get-ChildItem -Path \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\components\" -Recurse)",
+      "Bash(npm install *)"
     ]
   }
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
+import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
@@ -24,6 +24,7 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false)
   const [form, setForm] = useState({ name: '', favoriteVerse: '', bio: '' })
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
 
   useEffect(() => {
     if (status === 'unauthenticated') router.push('/login')
@@ -57,6 +58,20 @@ export default function ProfilePage() {
       setEditing(false)
     } else {
       toast.error('Failed to update profile.')
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (!confirm('Are you sure you want to delete your account? This cannot be undone.')) return
+    setDeleting(true)
+    const res = await fetch('/api/profile', { method: 'DELETE' })
+    if (res.ok) {
+      await signOut({ redirect: false })
+      router.push('/')
+      toast.success('Account deleted.')
+    } else {
+      toast.error('Failed to delete account.')
+      setDeleting(false)
     }
   }
 
@@ -132,6 +147,18 @@ export default function ProfilePage() {
             )}
           </div>
         )}
+      </div>
+
+      <div className="mt-8 pt-6 border-t border-gray-200 dark:border-[#3A3030]">
+        <p className="text-xs font-semibold text-warm-gray uppercase tracking-wide mb-3">Danger Zone</p>
+        <button
+          type="button"
+          onClick={handleDeleteAccount}
+          disabled={deleting}
+          className="px-4 py-2 text-sm font-semibold text-red-600 border border-red-300 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50"
+        >
+          {deleting ? 'Deleting…' : 'Delete my account'}
+        </button>
       </div>
     </div>
   )

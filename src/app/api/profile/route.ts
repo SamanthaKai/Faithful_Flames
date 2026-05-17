@@ -15,6 +15,14 @@ export async function GET() {
   return NextResponse.json(user)
 }
 
+export async function DELETE() {
+  const session = await getServerSession(authOptions)
+  if (!session?.user?.id) return NextResponse.json({ error: 'Not logged in' }, { status: 401 })
+
+  await prisma.user.delete({ where: { id: session.user.id } })
+  return NextResponse.json({ ok: true })
+}
+
 export async function PATCH(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
