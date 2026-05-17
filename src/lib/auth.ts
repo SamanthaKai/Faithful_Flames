@@ -53,7 +53,11 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.role = (user as { role?: string }).role ?? 'USER'
+        const isAdmin = user.email === process.env.ADMIN_EMAIL
+        token.role = isAdmin ? 'ADMIN' : ((user as { role?: string }).role ?? 'USER')
+        if (isAdmin && (user as { role?: string }).role !== 'ADMIN') {
+          await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } })
+        }
       }
       return token
     },
