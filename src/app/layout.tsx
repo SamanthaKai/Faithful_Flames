@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast'
 import { Providers } from '@/components/Providers'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
+import { VerificationBanner } from '@/components/VerificationBanner'
 import './globals.css'
 
 const inter = Inter({
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Providers>
           <div className="flex flex-col min-h-screen">
             <Navbar />
+            <VerificationBanner />
             <main className="flex-1">{children}</main>
             <Footer />
           </div>

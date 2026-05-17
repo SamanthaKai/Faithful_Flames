@@ -78,7 +78,7 @@ export default function RegisterPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-charcoal dark:text-cream mb-1">Password</label>
-              <input name="password" type="password" value={form.password} onChange={handleChange} required className="input" placeholder="Min. 8 characters" />
+              <input name="password" type="password" autoComplete="new-password" value={form.password} onChange={handleChange} required className="input" placeholder="Min. 8 characters" />
             </div>
             <button type="submit" disabled={loading} className="btn-primary w-full py-3">
               {loading ? 'Creating account…' : 'Create account'}

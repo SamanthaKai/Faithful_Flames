@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   const hashed = await bcrypt.hash(password, 12)
   const isAdmin = email === process.env.ADMIN_EMAIL
 
-  await prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       name,
       email,
@@ -30,14 +30,24 @@ export async function POST(req: Request) {
     },
   })
 
+  // Clear any old tokens then create a fresh one
+  await prisma.verificationToken.deleteMany({ where: { identifier: email } })
   const token = randomUUID()
-  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
-
   await prisma.verificationToken.create({
-    data: { identifier: email, token, expires },
+    data: { identifier: email, token, expires: new Date(Date.now() + 24 * 60 * 60 * 1000) },
   })
 
-  await sendVerificationEmail(email, token)
+  try {
+    await sendVerificationEmail(email, token)
+  } catch {
+    // Email failed — clean up and tell the user
+    await prisma.verificationToken.deleteMany({ where: { identifier: email } })
+    await prisma.user.delete({ where: { id: user.id } })
+    return NextResponse.json(
+      { error: 'Could not send verification email. Make sure RESEND_API_KEY is set in Vercel.' },
+      { status: 500 }
+    )
+  }
 
   return NextResponse.json({ ok: true }, { status: 201 })
 }

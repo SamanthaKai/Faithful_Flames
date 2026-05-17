@@ -11,6 +11,9 @@ export function Footer() {
             <p className="mt-3 text-sm text-warm-gray leading-relaxed max-w-xs">
               A community for young Christians to ignite their faith, grow together, and find their people.
             </p>
+            <p className="mt-1 text-xs text-warm-gray/60 italic">
+              Built by faith. Powered by His Spirit.
+            </p>
           </div>
 
           <div>

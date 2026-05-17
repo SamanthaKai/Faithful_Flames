@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 
 const TOPICS = [
@@ -22,8 +23,9 @@ interface Post {
   _count: { replies: number }
 }
 
-export default function ForumPage() {
+function ForumContent() {
   const { data: session } = useSession()
+  const searchParams = useSearchParams()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTopic, setActiveTopic] = useState<string | null>(null)
@@ -33,6 +35,9 @@ export default function ForumPage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
 
   useEffect(() => {
+    if (searchParams.get('verified') === 'true') {
+      toast.success('Email verified! Welcome to Faithful Flames.')
+    }
     if (!localStorage.getItem('ff_community_welcomed')) {
       setShowWelcomeModal(true)
     }
@@ -244,5 +249,13 @@ export default function ForumPage() {
       )}
     </div>
     </>
+  )
+}
+
+export default function ForumPage() {
+  return (
+    <Suspense>
+      <ForumContent />
+    </Suspense>
   )
 }
