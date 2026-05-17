@@ -6,20 +6,19 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 async function getHomeData() {
-  const [verse, article, devotion, events, memberCount] = await Promise.all([
+  const [verse, article, devotion, events] = await Promise.all([
     prisma.verse.findFirst({ where: { isDaily: true } }).then(
       (v) => v ?? prisma.verse.findFirst({ orderBy: { createdAt: 'desc' } })
     ),
     prisma.article.findFirst({ where: { isPublished: true }, orderBy: { publishedAt: 'desc' } }),
     prisma.devotion.findFirst({ where: { isPublished: true }, orderBy: { publishedAt: 'desc' } }),
     prisma.event.findMany({ where: { date: { gte: new Date() } }, orderBy: { date: 'asc' }, take: 4 }),
-    prisma.user.count(),
   ])
-  return { verse, article, devotion, events, memberCount }
+  return { verse, article, devotion, events }
 }
 
 export default async function HomePage() {
-  const [session, { verse, article, devotion, events, memberCount }] = await Promise.all([
+  const [session, { verse, article, devotion, events }] = await Promise.all([
     getServerSession(authOptions),
     getHomeData(),
   ])
@@ -153,31 +152,14 @@ export default async function HomePage() {
         )}
 
         {/* CTA */}
-        <section className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-8 md:p-12 text-center">
+        <section className="bg-gradient-to-br from-primary/8 via-primary/5 to-secondary/8 rounded-3xl px-8 py-14 md:px-16 md:py-16 text-center shadow-sm border border-primary/10">
           <h2 className="section-title mb-3">Ready to Connect?</h2>
-          <p className="text-warm-gray mb-6 max-w-lg mx-auto">
-            Join thousands of young believers sharing their journey, asking questions, and growing together.
+          <p className="text-warm-gray mb-8 max-w-md mx-auto leading-relaxed">
+            Join young believers sharing their journey, asking questions, and growing together in faith.
           </p>
-          <Link href="/forum" className="btn-primary text-base px-8 py-3">
+          <Link href="/forum" className="btn-primary text-base px-10 py-3 shadow-md hover:shadow-lg transition-shadow">
             Join the Forum
           </Link>
-
-          {/* Live community count */}
-          <div className="mt-8 flex justify-center">
-            <Link
-              href="/forum"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white dark:bg-[#231E1E] border border-gray-200 dark:border-[#3A3030] shadow-sm hover:border-primary/40 hover:shadow-md transition-all text-sm font-medium text-charcoal dark:text-cream"
-            >
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
-              </span>
-              <span>
-                <span className="font-bold text-primary">{memberCount.toLocaleString()}</span>
-                {' '}{memberCount === 1 ? 'member' : 'members'} in the community
-              </span>
-            </Link>
-          </div>
         </section>
       </div>
     </div>

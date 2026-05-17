@@ -3,7 +3,6 @@
 import { Suspense, useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 
 const TOPICS = [
@@ -25,7 +24,6 @@ interface Post {
 
 function ForumContent() {
   const { data: session } = useSession()
-  const searchParams = useSearchParams()
   const [posts, setPosts] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTopic, setActiveTopic] = useState<string | null>(null)
@@ -35,9 +33,6 @@ function ForumContent() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
 
   useEffect(() => {
-    if (searchParams.get('verified') === 'true') {
-      toast.success('Email verified! Welcome to Faithful Flames.')
-    }
     if (!localStorage.getItem('ff_community_welcomed')) {
       setShowWelcomeModal(true)
     }
