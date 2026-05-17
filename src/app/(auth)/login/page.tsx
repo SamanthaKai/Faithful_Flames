@@ -8,11 +8,14 @@ import toast from 'react-hot-toast'
 import { Logo } from '@/components/Logo'
 
 const AUTH_ERRORS: Record<string, string> = {
-  OAuthCallback: 'Google sign-in failed. Try again or check your Google account.',
-  OAuthSignin: 'Could not start Google sign-in. Make sure Google OAuth is configured.',
+  OAuthCallback: 'Google sign-in failed. Check that the redirect URI is added in Google Cloud Console.',
+  OAuthSignin: 'Could not start Google sign-in. Make sure Google OAuth env vars are set.',
   OAuthAccountNotLinked: 'This email is already registered with a password. Sign in with email instead.',
+  OAuthCreateAccount: 'Could not create your account. Check database connection.',
   Callback: 'Something went wrong during sign-in. Please try again.',
-  Configuration: 'Auth is not configured correctly. Contact the site admin.',
+  Configuration: 'Google OAuth is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Vercel.',
+  AccessDenied: 'Access denied.',
+  Verification: 'The sign-in link has expired.',
   Default: 'Sign-in failed. Please try again.',
 }
 
@@ -65,6 +68,7 @@ function LoginForm() {
           )}
 
           <button
+            type="button"
             onClick={handleGoogle}
             disabled={googleLoading}
             className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border-2 border-gray-200 dark:border-[#3A3030] rounded-lg text-sm font-semibold text-charcoal dark:text-cream hover:border-primary transition-colors mb-6 disabled:opacity-60 disabled:cursor-not-allowed"
