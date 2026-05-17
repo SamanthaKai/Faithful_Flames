@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: #9B2C1D;
+    --secondary: #C85C17;
+    --cream: #FDF6EC;
+    --charcoal: #2C2A29;
+    --warm-gray: #6B6258;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream text-charcoal font-body antialiased;
+  }
+
+  .dark body {
+    @apply bg-dark-bg text-cream;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg
+           bg-primary text-white font-semibold text-sm
+           hover:bg-secondary transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg
+           border-2 border-primary text-primary font-semibold text-sm
+           hover:bg-primary hover:text-white transition-colors duration-200
+           focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+  }
+
+  .card {
+    @apply bg-white rounded-xl border border-gray-100 shadow-sm
+           hover:shadow-md hover:border-primary/30 hover:-translate-y-0.5
+           transition-all duration-200;
+  }
+
+  .dark .card {
+    @apply bg-[#231E1E] border-[#3A3030];
+  }
+
+  .input {
+    @apply w-full px-4 py-2.5 rounded-lg border border-gray-200
+           bg-white text-charcoal text-sm
+           focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary
+           placeholder:text-warm-gray transition-colors duration-200;
+  }
+
+  .dark .input {
+    @apply bg-[#231E1E] border-[#3A3030] text-cream;
+  }
+
+  .section-title {
+    @apply font-heading text-2xl md:text-3xl font-bold text-charcoal;
+  }
+
+  .dark .section-title {
+    @apply text-cream;
+  }
+
+  .tag {
+    @apply inline-block px-2.5 py-0.5 rounded-full text-xs font-medium
+           bg-primary/10 text-primary;
+  }
+}
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0e8df 25%, #e8dcd2 50%, #f0e8df 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
