@@ -14,7 +14,7 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
-  if (session?.user?.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
   const article = await prisma.article.create({
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       title: body.title,
       content: body.content,
       category: body.category,
-      isPublished: body.isPublished ?? false,
+      isPublished: true,
     },
   })
   return NextResponse.json(article, { status: 201 })

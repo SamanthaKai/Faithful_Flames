@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       teaching: body.teaching,
       prayerPoint: body.prayerPoint,
       reflectionQuestion: body.reflectionQuestion,
-      isPublished: body.isPublished ?? false,
+      isPublished: true,
     },
   })
   return NextResponse.json(devotion, { status: 201 })
