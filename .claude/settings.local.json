@@ -5,7 +5,9 @@
       "Bash(Select-Object FullName)",
       "Bash(git --version)",
       "Bash(gh --version)",
-      "PowerShell(winget install --id GitHub.cli --silent --accept-package-agreements --accept-source-agreements)"
+      "PowerShell(winget install --id GitHub.cli --silent --accept-package-agreements --accept-source-agreements)",
+      "Bash(Remove-Item \"e:\\\\Projects\\\\Faithful_Flames\\\\next.config.ts\")",
+      "PowerShell(Remove-Item \"e:\\\\Projects\\\\Faithful_Flames\\\\next.config.ts\" -Confirm:$false)"
     ]
   }
 }
