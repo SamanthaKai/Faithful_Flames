@@ -30,6 +30,18 @@ export default function ForumPage() {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm] = useState({ title: '', content: '', topic: '' })
   const [submitting, setSubmitting] = useState(false)
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+
+  useEffect(() => {
+    if (!localStorage.getItem('ff_community_welcomed')) {
+      setShowWelcomeModal(true)
+    }
+  }, [])
+
+  const dismissModal = () => {
+    localStorage.setItem('ff_community_welcomed', '1')
+    setShowWelcomeModal(false)
+  }
 
   const loadPosts = (topic: string | null = null) => {
     setLoading(true)
@@ -71,6 +83,44 @@ export default function ForumPage() {
   const topicMeta = (value: string) => TOPICS.find((t) => t.value === value)
 
   return (
+    <>
+    {showWelcomeModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+        <div className="card max-w-lg w-full p-8 animate-slide-up max-h-[90vh] overflow-y-auto">
+          <h2 className="font-heading text-2xl font-bold text-charcoal dark:text-cream mb-4 text-center">
+            Welcome to Faithful Flames Community
+          </h2>
+          <p className="text-warm-gray text-sm leading-relaxed mb-6 text-center">
+            This is a safe space for young believers to connect, share, and grow together
+            in faith. We&apos;re here to encourage one another — not debate, not judge.
+            Come as you are.
+          </p>
+          <ol className="space-y-3 mb-6">
+            {[
+              'Speak with love. Disagreement is okay; disrespect is not.',
+              'Keep it faith-centered. Stay on topic — this space is about Jesus.',
+              'No spam or self-promotion. Share with intention, not agenda.',
+              "Protect one another's stories. What's shared here, stays here.",
+              'Testimonies are sacred. Receive them with grace, not criticism.',
+              'If something feels wrong, report it. We moderate with care.',
+            ].map((rule, i) => (
+              <li key={i} className="flex gap-3 text-sm text-charcoal dark:text-cream">
+                <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
+                  {i + 1}
+                </span>
+                <span>{rule}</span>
+              </li>
+            ))}
+          </ol>
+          <button type="button" onClick={dismissModal} className="btn-primary w-full mb-4">
+            I understand, let me in
+          </button>
+          <p className="text-xs text-warm-gray text-center">
+            By entering, you agree to honor this community and the people in it.
+          </p>
+        </div>
+      </div>
+    )}
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
@@ -193,5 +243,6 @@ export default function ForumPage() {
         </div>
       )}
     </div>
+    </>
   )
 }
