@@ -558,7 +558,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── WHY JOIN ─────────────────────────────────────────── */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#FF7A29]/8">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <ScrollReveal className="text-center mb-16">
           <span className="text-xs text-[#F6B25E] font-semibold uppercase tracking-widest">Why Faithful Flames</span>
           <h2 className="font-heading text-4xl md:text-5xl font-bold mt-3 text-[#FFF4E8]">
