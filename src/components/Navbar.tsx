@@ -38,7 +38,7 @@ export function Navbar() {
     session?.user?.email?.[0]?.toUpperCase() ??
     '?'
 
-  const transparent = isHome && !scrolled
+  const transparent = isHome && !scrolled && !session
 
   return (
     <header
