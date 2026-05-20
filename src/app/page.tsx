@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+import type { ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { getServerSession } from 'next-auth'
@@ -6,7 +7,6 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { EmberParticles } from '@/components/EmberParticles'
 import { ScrollReveal } from '@/components/ScrollReveal'
-import { PrayButton } from '@/components/PrayButton'
 import { FORUM_TOPIC_MAP } from '@/lib/forum-topics'
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
@@ -428,7 +428,7 @@ export default async function HomePage() {
             </div>
 
             {/* Right — floating preview cards */}
-            <div className="hidden lg:flex flex-col gap-4 animate-slide-up">
+            <div className="flex flex-col gap-4 animate-slide-up mt-12 lg:mt-0">
               <div className="glass-card-static ember-glow p-6 animate-float">
                 <p className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">📖 Verse of the Day</p>
                 <p className="font-heading text-base text-[#FFF4E8] italic leading-relaxed line-clamp-3">
@@ -554,23 +554,67 @@ export default async function HomePage() {
       </section>
 
       {/* ── WHY JOIN ─────────────────────────────────────────── */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        <ScrollReveal className="text-center mb-16">
+      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <ScrollReveal className="mb-16">
           <span className="text-xs text-[#F6B25E] font-semibold uppercase tracking-widest">Why Faithful Flames</span>
-          <h2 className="font-heading text-4xl md:text-5xl font-bold mt-3 text-[#FFF4E8]">
+          <h2 className="font-heading text-4xl md:text-5xl font-bold mt-3 text-[#FFF4E8] text-center">
             Built for your faith journey
           </h2>
         </ScrollReveal>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
           {([
-            { title: 'Never pray alone',   desc: "Share your needs and carry each other's burdens. Every prayer here is lifted together.",               gold: true  },
-            { title: 'Daily devotions',    desc: 'Scripture, reflections, and devotions curated to help you grow deeper every day.',                    gold: false },
-            { title: 'Young believers',    desc: 'A community of young Christians who understand your season and walk alongside you.',                   gold: false },
-            { title: 'Safe discussions',   desc: 'A moderated, judgment-free space to ask questions, share doubts, and find truth together.',            gold: true  },
-          ] as const).map(({ title, desc, gold }) => (
+            {
+              title: 'Never pray alone',
+              desc: "Share your needs and carry each other's burdens. Every prayer here is lifted together.",
+              gold: true,
+              icon: (
+                <svg className="w-9 h-9 mx-auto mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              ),
+            },
+            {
+              title: 'Daily devotions',
+              desc: 'Scripture, reflections, and devotions curated to help you grow deeper every day.',
+              gold: false,
+              icon: (
+                <svg className="w-9 h-9 mx-auto mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                  <line x1="9" y1="8" x2="15" y2="8" />
+                  <line x1="9" y1="12" x2="13" y2="12" />
+                </svg>
+              ),
+            },
+            {
+              title: 'Young believers',
+              desc: 'A community of young Christians who understand your season and walk alongside you.',
+              gold: false,
+              icon: (
+                <svg className="w-9 h-9 mx-auto mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+                </svg>
+              ),
+            },
+            {
+              title: 'Safe discussions',
+              desc: 'A moderated, judgment-free space to ask questions, share doubts, and find truth together.',
+              gold: true,
+              icon: (
+                <svg className="w-9 h-9 mx-auto mb-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  <polyline points="9 12 11 14 15 10" />
+                </svg>
+              ),
+            },
+          ] as { title: string; desc: string; gold: boolean; icon: ReactNode }[]).map(({ title, desc, gold, icon }) => (
             <ScrollReveal key={title}>
               <div className={`${gold ? 'glass-card-gold gold-glow' : 'glass-card ember-glow'} p-6 text-center h-full flex flex-col`}>
+                <div className={gold ? 'text-[#F6B25E]' : 'text-[#FF7A29]'}>{icon}</div>
                 <h3 className="font-heading text-[#FFF4E8] text-lg font-bold mb-3">{title}</h3>
                 <p className="text-[#BFAEA3] text-sm leading-relaxed flex-1">{desc}</p>
               </div>
