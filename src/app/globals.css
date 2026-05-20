@@ -2,25 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  :root {
-    --primary: #9B2C1D;
-    --secondary: #C85C17;
-    --cream: #FDF6EC;
-    --charcoal: #2C2A29;
-    --warm-gray: #6B6258;
-  }
+/* ── Smooth theme transitions ──────────────────────────────────────────────── */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 0.25s;
+  transition-timing-function: ease;
+}
 
+/* Override to keep motion-only transitions fast */
+.no-transition, button, a, [class*="animate-"] {
+  transition-property: none;
+}
+
+button, a {
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  transition-duration: 0.2s;
+  transition-timing-function: ease;
+}
+
+@layer base {
   html {
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-cream text-charcoal font-body antialiased;
+    @apply bg-cream text-lm-text font-body antialiased;
   }
 
   .dark body {
-    @apply bg-dark-bg text-cream;
+    background-color: #0D0A0A;
+    color: #FFF4E8;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -29,10 +40,11 @@
 }
 
 @layer components {
+  /* ── Buttons ───────────────────────────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg
            bg-primary text-white font-semibold text-sm
-           hover:bg-secondary transition-colors duration-200
+           hover:bg-secondary
            focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
@@ -40,45 +52,81 @@
   .btn-outline {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg
            border-2 border-primary text-primary font-semibold text-sm
-           hover:bg-primary hover:text-white transition-colors duration-200
+           hover:bg-primary hover:text-white
            focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
 
+  /* ── Light-mode card ───────────────────────────────────────────────────── */
   .card {
-    @apply bg-white rounded-xl border border-gray-100 shadow-sm
-           hover:shadow-md hover:border-primary/30 hover:-translate-y-0.5
-           transition-all duration-200;
+    @apply bg-lm-card border border-lm-border rounded-2xl shadow-sm
+           hover:shadow-md hover:-translate-y-0.5;
   }
 
   .dark .card {
-    @apply bg-[#231E1E] border-[#3A3030];
+    background: rgba(22, 17, 17, 0.85);
+    border: 1px solid rgba(255, 122, 41, 0.12);
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.35);
   }
 
+  .dark .card:hover {
+    border-color: rgba(255, 122, 41, 0.28);
+    box-shadow: 0 0 30px rgba(255,122,41,0.10), 0 8px 32px rgba(0,0,0,0.45);
+  }
+
+  /* ── Inputs ────────────────────────────────────────────────────────────── */
   .input {
-    @apply w-full px-4 py-2.5 rounded-lg border border-gray-200
-           bg-white text-charcoal text-sm
-           focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary
-           placeholder:text-warm-gray transition-colors duration-200;
+    @apply w-full px-4 py-2.5 rounded-lg border border-lm-border
+           bg-white text-lm-text text-sm
+           focus:outline-none focus:ring-2 focus:ring-lm-accent/40 focus:border-lm-accent
+           placeholder:text-lm-muted;
   }
 
   .dark .input {
-    @apply bg-[#231E1E] border-[#3A3030] text-cream;
+    background: rgba(22,17,17,0.9);
+    border-color: rgba(255,122,41,0.18);
+    color: #FFF4E8;
   }
 
+  .dark .input:focus {
+    border-color: rgba(255,122,41,0.5);
+  }
+
+  .dark .input::placeholder {
+    color: #BFAEA3;
+  }
+
+  /* ── Section title ─────────────────────────────────────────────────────── */
   .section-title {
-    @apply font-heading text-2xl md:text-3xl font-bold text-charcoal;
+    @apply font-heading text-2xl md:text-3xl font-bold text-lm-text;
   }
 
   .dark .section-title {
-    @apply text-cream;
+    color: #FFF4E8;
   }
 
+  /* ── Tag / pill ────────────────────────────────────────────────────────── */
   .tag {
-    @apply inline-block px-2.5 py-0.5 rounded-full text-xs font-medium
-           bg-primary/10 text-primary;
+    @apply inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold
+           bg-lm-accent/12 text-lm-accent;
   }
 
-  /* Campfire glassmorphism cards */
+  .dark .tag {
+    background: rgba(255,122,41,0.12);
+    color: #FF7A29;
+  }
+
+  /* ── Page hero (inner pages) ───────────────────────────────────────────── */
+  .page-hero {
+    @apply bg-lm-card border-b border-lm-border py-16 px-4;
+  }
+
+  .dark .page-hero {
+    background: #161111;
+    border-color: rgba(255,122,41,0.10);
+  }
+
+  /* ── Campfire glassmorphism cards (dark-first) ─────────────────────────── */
   .glass-card {
     background: rgba(22, 17, 17, 0.75);
     -webkit-backdrop-filter: blur(12px);
@@ -91,7 +139,7 @@
   .glass-card:hover {
     transform: translateY(-6px);
     border-color: rgba(255, 122, 41, 0.28);
-    box-shadow: 0 0 40px rgba(255, 122, 41, 0.12), 0 12px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 40px rgba(255, 122, 41, 0.12), 0 12px 40px rgba(0,0,0,0.5);
   }
 
   .glass-card-gold {
@@ -106,7 +154,7 @@
   .glass-card-gold:hover {
     transform: translateY(-6px);
     border-color: rgba(246, 178, 94, 0.32);
-    box-shadow: 0 0 40px rgba(246, 178, 94, 0.10), 0 12px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 0 40px rgba(246, 178, 94, 0.10), 0 12px 40px rgba(0,0,0,0.5);
   }
 
   .glass-card-static {
@@ -117,59 +165,50 @@
     border-radius: 24px;
   }
 
-  /* Ember glow effects */
-  .ember-glow {
-    box-shadow: 0 0 30px rgba(255, 122, 41, 0.10), 0 4px 24px rgba(0, 0, 0, 0.4);
-  }
+  /* ── Glow helpers ──────────────────────────────────────────────────────── */
+  .ember-glow  { box-shadow: 0 0 30px rgba(255,122,41,0.10), 0 4px 24px rgba(0,0,0,0.4); }
+  .gold-glow   { box-shadow: 0 0 30px rgba(246,178,94,0.08), 0 4px 24px rgba(0,0,0,0.4); }
+  .ember-border-left { border-left: 2px solid rgba(255,122,41,0.45); }
+  .gold-border-left  { border-left: 2px solid rgba(246,178,94,0.45); }
 
-  .gold-glow {
-    box-shadow: 0 0 30px rgba(246, 178, 94, 0.08), 0 4px 24px rgba(0, 0, 0, 0.4);
-  }
-
-  /* Ember left border glow */
-  .ember-border-left {
-    border-left: 2px solid rgba(255, 122, 41, 0.45);
-  }
-
-  .gold-border-left {
-    border-left: 2px solid rgba(246, 178, 94, 0.45);
-  }
+  /* Light-mode card border accents */
+  .lm-border-left        { border-left: 3px solid #C96A2B; }
+  .lm-border-left-muted  { border-left: 3px solid #E8D8C8; }
 }
 
-/* Scroll reveal */
+/* ── Scroll reveal ──────────────────────────────────────────────────────────── */
 .reveal {
   opacity: 0;
   transform: translateY(28px);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
-
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
-/* Skeleton shimmer */
+/* ── Skeleton shimmer ───────────────────────────────────────────────────────── */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
+  0%   { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #f0e8df 25%, #e8dcd2 50%, #f0e8df 75%);
+  background: linear-gradient(90deg, #EDE5DB 25%, #E4D9CF 50%, #EDE5DB 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
 
-/* Campfire scripture text glow */
+.dark .skeleton {
+  background: linear-gradient(90deg, #1E1818 25%, #261E1E 50%, #1E1818 75%);
+  background-size: 200% 100%;
+}
+
+/* ── Scripture glow ─────────────────────────────────────────────────────────── */
 .scripture-glow {
-  text-shadow: 0 0 40px rgba(255, 122, 41, 0.25), 0 0 80px rgba(246, 178, 94, 0.10);
+  text-shadow: 0 0 40px rgba(255,122,41,0.25), 0 0 80px rgba(246,178,94,0.10);
 }
 
-/* Radial glow overlays (replaces inline styles) */
-.ember-ray-glow {
-  background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(255, 122, 41, 0.06) 0%, transparent 70%);
-}
-
-.ember-cta-glow {
-  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255, 122, 41, 0.08) 0%, transparent 70%);
-}
+/* ── Radial glow overlays ───────────────────────────────────────────────────── */
+.ember-ray-glow  { background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(255,122,41,0.06) 0%, transparent 70%); }
+.ember-cta-glow  { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,122,41,0.08) 0%, transparent 70%); }
