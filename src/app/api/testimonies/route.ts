@@ -8,7 +8,7 @@ export async function GET() {
   const testimonies = await prisma.testimony.findMany({
     where: { isApproved: true },
     orderBy: { createdAt: 'desc' },
-    include: { user: { select: { name: true } } },
+    include: { user: { select: { name: true, id: true } } },
   })
   return NextResponse.json(testimonies)
 }

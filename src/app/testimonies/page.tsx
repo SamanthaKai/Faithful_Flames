@@ -7,10 +7,11 @@ import toast from 'react-hot-toast'
 
 interface Testimony {
   id: string
+  userId: string
   content: string
   isAnonymous: boolean
   createdAt: string
-  user: { name: string | null }
+  user: { name: string | null; id: string }
 }
 
 function timeAgo(date: string) {
@@ -36,6 +37,11 @@ export default function TestimoniesPage() {
   const [form, setForm] = useState({ content: '', isAnonymous: false })
   const [submitting, setSubmitting] = useState(false)
 
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editContent, setEditContent] = useState('')
+  const [savingEdit, setSavingEdit] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
   useEffect(() => {
     fetch('/api/testimonies')
       .then((r) => r.json())
@@ -59,6 +65,42 @@ export default function TestimoniesPage() {
     } else {
       const { error } = await res.json()
       toast.error(error ?? 'Submission failed.')
+    }
+  }
+
+  const handleStartEdit = (t: Testimony) => {
+    setEditingId(t.id)
+    setEditContent(t.content)
+  }
+
+  const handleSaveEdit = async (id: string) => {
+    setSavingEdit(true)
+    const res = await fetch(`/api/testimonies/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: editContent }),
+    })
+    setSavingEdit(false)
+    if (res.ok) {
+      setTestimonies((prev) => prev.map((t) => t.id === id ? { ...t, content: editContent } : t))
+      setEditingId(null)
+      toast.success('Testimony updated.')
+    } else {
+      const { error } = await res.json()
+      toast.error(error ?? 'Failed to update.')
+    }
+  }
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this testimony? This cannot be undone.')) return
+    setDeletingId(id)
+    const res = await fetch(`/api/testimonies/${id}`, { method: 'DELETE' })
+    setDeletingId(null)
+    if (res.ok) {
+      setTestimonies((prev) => prev.filter((t) => t.id !== id))
+      toast.success('Testimony deleted.')
+    } else {
+      toast.error('Failed to delete.')
     }
   }
 
@@ -173,6 +215,7 @@ export default function TestimoniesPage() {
             {testimonies.map((t, index) => {
               const isFeatured = index === 0
               const displayName = t.isAnonymous ? 'Anonymous' : (t.user.name ?? 'Community Member')
+              const isOwner = !!session && session.user.id === t.userId
 
               return (
                 <article
@@ -202,16 +245,67 @@ export default function TestimoniesPage() {
                     </div>
                   </div>
 
-                  {/* Quote */}
+                  {/* Content */}
                   <div className={`mt-5 ${isFeatured ? 'pl-16' : 'pl-14'}`}>
-                    {isFeatured ? (
-                      <div className="text-5xl font-heading leading-none text-lm-accent/15 dark:text-ember/15 select-none -mb-2">&ldquo;</div>
+                    {editingId === t.id ? (
+                      <div className="space-y-3">
+                        <textarea
+                          value={editContent}
+                          onChange={(e) => setEditContent(e.target.value)}
+                          rows={6}
+                          className="input resize-none w-full"
+                          placeholder="Your testimony…"
+                          aria-label="Edit testimony"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleSaveEdit(t.id)}
+                            disabled={savingEdit}
+                            className="btn-primary text-sm px-4 py-2"
+                          >
+                            {savingEdit ? 'Saving…' : 'Save'}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEditingId(null)}
+                            className="btn-outline text-sm px-4 py-2"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
                     ) : (
-                      <div className="text-3xl font-heading leading-none text-lm-accent/15 dark:text-ember/15 select-none -mb-1">&ldquo;</div>
+                      <>
+                        {isFeatured ? (
+                          <div className="text-5xl font-heading leading-none text-lm-accent/15 dark:text-ember/15 select-none -mb-2">&ldquo;</div>
+                        ) : (
+                          <div className="text-3xl font-heading leading-none text-lm-accent/15 dark:text-ember/15 select-none -mb-1">&ldquo;</div>
+                        )}
+                        <p className={`text-lm-text dark:text-[#FFF4E8] leading-relaxed whitespace-pre-wrap ${isFeatured ? 'text-lg md:text-xl font-heading italic' : 'text-base'}`}>
+                          {t.content}
+                        </p>
+                        {isOwner && (
+                          <div className="flex gap-4 mt-4 pt-3 border-t border-gray-100 dark:border-[#3A3030]">
+                            <button
+                              type="button"
+                              onClick={() => handleStartEdit(t)}
+                              className="text-xs text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-ember transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(t.id)}
+                              disabled={deletingId === t.id}
+                              className="text-xs text-lm-muted dark:text-[#BFAEA3] hover:text-red-500 transition-colors disabled:opacity-50"
+                            >
+                              {deletingId === t.id ? 'Deleting…' : 'Delete'}
+                            </button>
+                          </div>
+                        )}
+                      </>
                     )}
-                    <p className={`text-lm-text dark:text-[#FFF4E8] leading-relaxed ${isFeatured ? 'text-lg md:text-xl font-heading italic' : 'text-base'}`}>
-                      {t.content}
-                    </p>
                   </div>
                 </article>
               )

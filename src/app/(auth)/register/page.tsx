@@ -33,7 +33,7 @@ export default function RegisterPage() {
       setLoading(false)
       return
     }
-    router.push(`/check-email?email=${encodeURIComponent(form.email)}`)
+    router.push('/login?registered=true')
   }
 
   return (

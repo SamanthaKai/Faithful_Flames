@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { EmberParticles } from '@/components/EmberParticles'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { PrayButton } from '@/components/PrayButton'
+import { FORUM_TOPIC_MAP } from '@/lib/forum-topics'
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
@@ -78,12 +79,7 @@ function getGreeting(): { text: string; emoji: string } {
   return { text: 'Good evening', emoji: '🌙' }
 }
 
-const TOPIC_META: Record<string, { label: string; icon: string; isPrayer: boolean }> = {
-  PRAYER_REQUESTS: { label: 'Prayer Request', icon: '🙏', isPrayer: true },
-  BIBLE_QUESTIONS: { label: 'Bible Question', icon: '📖', isPrayer: false },
-  ACCOUNTABILITY:  { label: 'Accountability',  icon: '🤝', isPrayer: false },
-  TESTIMONIES:     { label: 'Testimony',        icon: '🔥', isPrayer: false },
-}
+const TOPIC_META = FORUM_TOPIC_MAP
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -225,7 +221,7 @@ export default async function HomePage() {
               {feed.length > 0 ? feed.map((entry) => {
                 if (entry.kind === 'post') {
                   const post  = entry.item
-                  const meta  = TOPIC_META[post.topic] ?? { label: post.topic, icon: '💬', isPrayer: false }
+                  const meta  = TOPIC_META[post.topic] ?? { label: post.topic, labelSingular: post.topic, icon: '💬', isPrayer: false, light: '', dark: '' }
                   return (
                     <Link key={`post-${post.id}`} href={`/forum/${post.id}`} className="block">
                       <div className={meta.isPrayer
@@ -568,14 +564,13 @@ export default async function HomePage() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {([
-            { icon: '🙏', title: 'Never pray alone',   desc: "Share your needs and carry each other's burdens. Every prayer here is lifted together.",               gold: true  },
-            { icon: '📖', title: 'Daily devotions',    desc: 'Scripture, reflections, and devotions curated to help you grow deeper every day.',                    gold: false },
-            { icon: '👥', title: 'Young believers',    desc: 'A community of young Christians who understand your season and walk alongside you.',                   gold: false },
-            { icon: '🛡️', title: 'Safe discussions',   desc: 'A moderated, judgment-free space to ask questions, share doubts, and find truth together.',            gold: true  },
-          ] as const).map(({ icon, title, desc, gold }) => (
+            { title: 'Never pray alone',   desc: "Share your needs and carry each other's burdens. Every prayer here is lifted together.",               gold: true  },
+            { title: 'Daily devotions',    desc: 'Scripture, reflections, and devotions curated to help you grow deeper every day.',                    gold: false },
+            { title: 'Young believers',    desc: 'A community of young Christians who understand your season and walk alongside you.',                   gold: false },
+            { title: 'Safe discussions',   desc: 'A moderated, judgment-free space to ask questions, share doubts, and find truth together.',            gold: true  },
+          ] as const).map(({ title, desc, gold }) => (
             <ScrollReveal key={title}>
               <div className={`${gold ? 'glass-card-gold gold-glow' : 'glass-card ember-glow'} p-6 text-center h-full flex flex-col`}>
-                <span className="text-4xl block mb-4">{icon}</span>
                 <h3 className="font-heading text-[#FFF4E8] text-lg font-bold mb-3">{title}</h3>
                 <p className="text-[#BFAEA3] text-sm leading-relaxed flex-1">{desc}</p>
               </div>

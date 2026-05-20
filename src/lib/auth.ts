@@ -18,6 +18,7 @@ export const authOptions: NextAuthOptions = {
           GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            allowDangerousEmailAccountLinking: true,
           }),
         ]
       : []),
@@ -55,11 +56,10 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id
         const dbUser = await prisma.user.findUnique({
           where: { id: user.id },
-          select: { role: true, emailVerified: true },
+          select: { role: true },
         })
         const isAdmin = user.email === process.env.ADMIN_EMAIL
         token.role = isAdmin ? 'ADMIN' : (dbUser?.role ?? 'USER')
-        token.emailVerified = !!dbUser?.emailVerified
         if (isAdmin && dbUser?.role !== 'ADMIN') {
           await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } })
         }
@@ -70,7 +70,6 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id as string
         session.user.role = token.role as string
-        session.user.emailVerified = token.emailVerified as boolean
       }
       return session
     },

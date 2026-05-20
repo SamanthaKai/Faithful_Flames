@@ -24,14 +24,42 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { isFlagged } = await req.json()
+  const body = await req.json()
   const post = await prisma.forumPost.findUnique({ where: { id: params.id } })
   if (!post) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  if (isFlagged !== undefined && session.user.id !== post.userId) {
+  // Owner editing title/content
+  if ((body.title !== undefined || body.content !== undefined) && session.user.id === post.userId) {
+    const updated = await prisma.forumPost.update({
+      where: { id: params.id },
+      data: {
+        ...(body.title !== undefined ? { title: body.title } : {}),
+        ...(body.content !== undefined ? { content: body.content } : {}),
+      },
+    })
+    return NextResponse.json(updated)
+  }
+
+  // Anyone flagging a post they don't own
+  if (body.isFlagged === true && session.user.id !== post.userId) {
     await prisma.forumPost.update({ where: { id: params.id }, data: { isFlagged: true } })
     return NextResponse.json({ ok: true })
   }
 
   return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+}
+
+export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
+  const session = await getServerSession(authOptions)
+  if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const post = await prisma.forumPost.findUnique({ where: { id: params.id } })
+  if (!post) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  if (session.user.id !== post.userId && session.user.role !== 'ADMIN') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  await prisma.forumPost.delete({ where: { id: params.id } })
+  return NextResponse.json({ ok: true })
 }

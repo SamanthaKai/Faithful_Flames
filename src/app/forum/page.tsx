@@ -5,13 +5,9 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
+import { FORUM_TOPICS } from '@/lib/forum-topics'
 
-const TOPICS = [
-  { value: 'PRAYER_REQUESTS', label: 'Prayer Requests', icon: '🙏', light: 'bg-amber-50 text-amber-700 border-amber-200',   dark: 'bg-[#F6B25E]/10 text-[#F6B25E] border-[#F6B25E]/25' },
-  { value: 'BIBLE_QUESTIONS', label: 'Bible Questions',  icon: '📖', light: 'bg-blue-50 text-blue-700 border-blue-200',      dark: 'bg-blue-400/10 text-blue-300 border-blue-400/25' },
-  { value: 'ACCOUNTABILITY',  label: 'Accountability',   icon: '🤝', light: 'bg-purple-50 text-purple-700 border-purple-200', dark: 'bg-purple-400/10 text-purple-300 border-purple-400/25' },
-  { value: 'TESTIMONIES',     label: 'Testimonies',      icon: '🔥', light: 'bg-orange-50 text-orange-700 border-orange-200', dark: 'bg-[#FF7A29]/10 text-[#FF7A29] border-[#FF7A29]/25' },
-]
+const TOPICS = FORUM_TOPICS
 
 interface Post {
   id: string

@@ -134,7 +134,7 @@ export default function VersesPage() {
                     &ldquo;
                   </div>
 
-                  <blockquote className="font-heading text-2xl md:text-3xl text-lm-text dark:text-[#FFF4E8] italic leading-relaxed mb-6 dark:scripture-glow">
+                  <blockquote className="font-heading text-2xl md:text-3xl text-lm-text dark:text-[#FFF4E8] italic leading-relaxed mb-6 dark:scripture-glow whitespace-pre-wrap">
                     {dailyVerse.text}
                   </blockquote>
 
@@ -143,7 +143,7 @@ export default function VersesPage() {
                   </p>
 
                   {dailyVerse.reflection && (
-                    <p className="mt-8 text-lm-muted dark:text-[#BFAEA3] text-sm leading-relaxed max-w-xl mx-auto border-t border-lm-border dark:border-ember/10 pt-6">
+                    <p className="mt-8 text-lm-muted dark:text-[#BFAEA3] text-sm leading-relaxed max-w-xl mx-auto border-t border-lm-border dark:border-ember/10 pt-6 whitespace-pre-wrap">
                       {dailyVerse.reflection}
                     </p>
                   )}
@@ -160,7 +160,7 @@ export default function VersesPage() {
             {/* Rest of verses — calm, spacious cards */}
             {restVerses.map((verse) => (
               <article key={verse.id} className="card p-8 md:p-10 group">
-                <blockquote className="font-heading text-xl md:text-2xl text-lm-text dark:text-[#FFF4E8] italic leading-relaxed mb-5">
+                <blockquote className="font-heading text-xl md:text-2xl text-lm-text dark:text-[#FFF4E8] italic leading-relaxed mb-5 whitespace-pre-wrap">
                   &ldquo;{verse.text}&rdquo;
                 </blockquote>
 
@@ -170,7 +170,7 @@ export default function VersesPage() {
 
                 {verse.reflection && (
                   <div className="lm-border-left dark:ember-border-left pl-4 mb-5">
-                    <p className="text-lm-muted dark:text-[#BFAEA3] text-sm leading-relaxed">
+                    <p className="text-lm-muted dark:text-[#BFAEA3] text-sm leading-relaxed whitespace-pre-wrap">
                       {verse.reflection}
                     </p>
                   </div>

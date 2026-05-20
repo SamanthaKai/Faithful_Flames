@@ -8,11 +8,9 @@ import toast from 'react-hot-toast'
 import { Logo } from '@/components/Logo'
 
 const AUTH_ERRORS: Record<string, string> = {
-  OAuthAccountNotLinked: 'This email is already registered with a password. Sign in with email instead.',
+  OAuthAccountNotLinked: 'Sign-in failed. Try a different method or contact support.',
   Callback: 'Something went wrong during sign-in. Please try again.',
   AccessDenied: 'Access denied.',
-  Verification: 'The sign-in link has expired.',
-  EmailNotVerified: 'Please verify your email before signing in. Check your inbox.',
   Default: 'Sign-in failed. Please try again.',
 }
 
@@ -20,7 +18,7 @@ function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const errorParam = searchParams.get('error')
-  const verified = searchParams.get('verified') === 'true'
+  const registered = searchParams.get('registered') === 'true'
   const errorMessage = errorParam ? (AUTH_ERRORS[errorParam] ?? AUTH_ERRORS.Default) : null
 
   const [email, setEmail] = useState('')
@@ -60,9 +58,9 @@ function LoginForm() {
         </div>
 
         <div className="card p-6 md:p-8">
-          {verified && (
+          {registered && (
             <div className="mb-5 px-4 py-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-sm text-green-700 dark:text-green-400">
-              Email verified! You can now sign in.
+              Account created! Sign in below.
             </div>
           )}
 
