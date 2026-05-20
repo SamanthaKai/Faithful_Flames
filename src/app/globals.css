@@ -77,6 +77,75 @@
     @apply inline-block px-2.5 py-0.5 rounded-full text-xs font-medium
            bg-primary/10 text-primary;
   }
+
+  /* Campfire glassmorphism cards */
+  .glass-card {
+    background: rgba(22, 17, 17, 0.75);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 122, 41, 0.12);
+    border-radius: 24px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .glass-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 122, 41, 0.28);
+    box-shadow: 0 0 40px rgba(255, 122, 41, 0.12), 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .glass-card-gold {
+    background: rgba(22, 17, 17, 0.80);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(246, 178, 94, 0.15);
+    border-radius: 24px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+
+  .glass-card-gold:hover {
+    transform: translateY(-6px);
+    border-color: rgba(246, 178, 94, 0.32);
+    box-shadow: 0 0 40px rgba(246, 178, 94, 0.10), 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .glass-card-static {
+    background: rgba(22, 17, 17, 0.75);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 122, 41, 0.12);
+    border-radius: 24px;
+  }
+
+  /* Ember glow effects */
+  .ember-glow {
+    box-shadow: 0 0 30px rgba(255, 122, 41, 0.10), 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .gold-glow {
+    box-shadow: 0 0 30px rgba(246, 178, 94, 0.08), 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Ember left border glow */
+  .ember-border-left {
+    border-left: 2px solid rgba(255, 122, 41, 0.45);
+  }
+
+  .gold-border-left {
+    border-left: 2px solid rgba(246, 178, 94, 0.45);
+  }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 /* Skeleton shimmer */
@@ -89,4 +158,18 @@
   background: linear-gradient(90deg, #f0e8df 25%, #e8dcd2 50%, #f0e8df 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Campfire scripture text glow */
+.scripture-glow {
+  text-shadow: 0 0 40px rgba(255, 122, 41, 0.25), 0 0 80px rgba(246, 178, 94, 0.10);
+}
+
+/* Radial glow overlays (replaces inline styles) */
+.ember-ray-glow {
+  background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(255, 122, 41, 0.06) 0%, transparent 70%);
+}
+
+.ember-cta-glow {
+  background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255, 122, 41, 0.08) 0%, transparent 70%);
 }
