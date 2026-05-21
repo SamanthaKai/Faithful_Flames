@@ -391,13 +391,13 @@ export default async function HomePage() {
   const verse = await getPublicVerse()
 
   return (
-    <div className="bg-[#0D0A0A] text-[#FFF4E8]">
+    <div className="bg-cream text-lm-text dark:bg-[#0D0A0A] dark:text-[#FFF4E8]">
 
       {/* ── HERO ───────────────────────────────────────────── */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         <Image src="/faithful.png" alt="" fill className="object-cover object-center" priority />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/65 to-black/40" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0D0A0A] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-cream dark:from-[#0D0A0A] via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#FF7A29]/12 to-transparent" />
         <EmberParticles />
 
@@ -430,22 +430,22 @@ export default async function HomePage() {
             {/* Right — floating preview cards */}
             <div className="flex flex-col gap-4 animate-slide-up mt-12 lg:mt-0">
               <div className="glass-card-static ember-glow p-6 animate-float">
-                <p className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">📖 Verse of the Day</p>
-                <p className="font-heading text-base text-[#FFF4E8] italic leading-relaxed line-clamp-3">
+                <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">📖 Verse of the Day</p>
+                <p className="font-heading text-base text-lm-text dark:text-[#FFF4E8] italic leading-relaxed line-clamp-3">
                   &ldquo;{verse?.text ?? 'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you.'}&rdquo;
                 </p>
-                <p className="text-xs text-[#BFAEA3] mt-3 font-medium">— {verse?.reference ?? 'Joshua 1:9'}</p>
+                <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-3 font-medium">— {verse?.reference ?? 'Joshua 1:9'}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="glass-card-static gold-glow p-5 animate-float-delayed">
-                  <p className="text-xs text-[#F6B25E] font-semibold uppercase tracking-widest mb-2">🙏 Prayers</p>
-                  <p className="text-3xl font-bold text-[#FFF4E8]">∞</p>
-                  <p className="text-xs text-[#BFAEA3] mt-1">Active requests</p>
+                  <p className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest mb-2">🙏 Prayers</p>
+                  <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">∞</p>
+                  <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Active requests</p>
                 </div>
                 <div className="glass-card-static p-5 animate-float-slow">
-                  <p className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest mb-2">🔥 Community</p>
-                  <p className="text-3xl font-bold text-[#FFF4E8]">Live</p>
-                  <p className="text-xs text-[#BFAEA3] mt-1">Growing together</p>
+                  <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-2">🔥 Community</p>
+                  <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">Live</p>
+                  <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Growing together</p>
                 </div>
               </div>
             </div>
@@ -464,11 +464,11 @@ export default async function HomePage() {
       {/* ── COMMUNITY PREVIEW ──────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <ScrollReveal className="text-center mb-16">
-          <span className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest">What awaits you</span>
-          <h2 className="font-heading text-4xl md:text-5xl font-bold mt-3 text-[#FFF4E8]">
+          <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest">What awaits you</span>
+          <h2 className="font-heading text-4xl md:text-5xl font-bold mt-3 text-lm-text dark:text-[#FFF4E8]">
             A community alive with faith
           </h2>
-          <p className="text-[#BFAEA3] mt-4 max-w-xl mx-auto leading-relaxed">
+          <p className="text-lm-muted dark:text-[#BFAEA3] mt-4 max-w-xl mx-auto leading-relaxed">
             Real conversations. Real prayers. Real people walking with God.
           </p>
         </ScrollReveal>
@@ -477,15 +477,15 @@ export default async function HomePage() {
           {/* Demo Testimony */}
           <ScrollReveal delay="0s">
             <div className="glass-card ember-glow ember-border-left p-6 h-full flex flex-col">
-              <span className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4">
+              <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4">
                 🔥 Testimony
               </span>
-              <p className="font-heading text-[#FFF4E8] text-base leading-relaxed italic flex-1">
+              <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1">
                 &ldquo;I was in my darkest season when God showed up in the most unexpected way. This community helped me remember I wasn&apos;t alone.&rdquo;
               </p>
-              <div className="mt-5 pt-4 border-t border-[#FF7A29]/10 flex items-center justify-between">
-                <p className="text-xs text-[#BFAEA3]">By Grace</p>
-                <p className="text-xs text-[#BFAEA3]">2 hours ago</p>
+              <div className="mt-5 pt-4 border-t border-lm-border dark:border-[#FF7A29]/10 flex items-center justify-between">
+                <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">By Grace</p>
+                <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">2 hours ago</p>
               </div>
             </div>
           </ScrollReveal>
@@ -493,15 +493,15 @@ export default async function HomePage() {
           {/* Demo Prayer */}
           <ScrollReveal delay="0.12s">
             <div className="glass-card-gold gold-glow gold-border-left p-6 h-full flex flex-col">
-              <span className="text-xs text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-4">
+              <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-4">
                 🙏 Prayer Request
               </span>
-              <p className="font-heading text-[#FFF4E8] text-base leading-relaxed italic flex-1">
+              <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1">
                 &ldquo;Please pray for my family going through a difficult time. I believe God is still in control.&rdquo;
               </p>
               <div className="mt-5 flex items-center justify-between">
-                <p className="text-xs text-[#BFAEA3]">12 people praying</p>
-                <span className="text-xs text-[#F6B25E] font-semibold">🙏 Join in</span>
+                <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">12 people praying</p>
+                <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold">🙏 Join in</span>
               </div>
             </div>
           </ScrollReveal>
@@ -509,14 +509,14 @@ export default async function HomePage() {
           {/* Demo Discussion */}
           <ScrollReveal delay="0.24s">
             <div className="glass-card ember-glow p-6 h-full flex flex-col">
-              <span className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4">
+              <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4">
                 💬 Discussion
               </span>
-              <h3 className="font-heading text-[#FFF4E8] text-lg font-bold mb-3 leading-snug flex-1">
+              <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg font-bold mb-3 leading-snug flex-1">
                 What does trusting God daily look like for you?
               </h3>
-              <p className="text-[#BFAEA3] text-sm mb-4">34 replies · Trending now</p>
-              <Link href="/register" className="text-sm text-[#FF7A29] font-semibold hover:text-[#F6B25E] transition-colors">
+              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-4">34 replies · Trending now</p>
+              <Link href="/register" className="text-sm text-lm-accent dark:text-[#FF7A29] font-semibold hover:text-secondary dark:hover:text-[#F6B25E] transition-colors">
                 Join the conversation →
               </Link>
             </div>
@@ -527,25 +527,25 @@ export default async function HomePage() {
           {/* Daily verse preview */}
           <ScrollReveal delay="0s">
             <div className="glass-card ember-glow p-8 text-center flex flex-col items-center justify-center h-full">
-              <p className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest mb-5">📖 Daily Scripture</p>
-              <p className="font-heading text-[#FFF4E8] text-xl italic leading-relaxed scripture-glow">
+              <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-5">📖 Daily Scripture</p>
+              <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl italic leading-relaxed scripture-glow">
                 &ldquo;{verse?.text ?? 'I can do all things through Christ who strengthens me.'}&rdquo;
               </p>
-              <p className="text-[#F6B25E] font-semibold text-sm mt-5">{verse?.reference ?? 'Philippians 4:13'}</p>
+              <p className="text-[#D97706] dark:text-[#F6B25E] font-semibold text-sm mt-5">{verse?.reference ?? 'Philippians 4:13'}</p>
             </div>
           </ScrollReveal>
 
           {/* Featured member preview */}
           <ScrollReveal delay="0.12s">
             <div className="glass-card-gold gold-glow p-8 h-full flex flex-col">
-              <span className="text-xs text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-6">
+              <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-6">
                 🌟 Community Voice
               </span>
-              <p className="font-heading text-[#FFF4E8] text-xl italic leading-relaxed flex-1">
+              <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl italic leading-relaxed flex-1">
                 &ldquo;Learning to trust God one day at a time. This fellowship has become my anchor.&rdquo;
               </p>
-              <p className="text-[#BFAEA3] text-sm mt-5">— Samantha</p>
-              <Link href="/register" className="mt-4 inline-flex items-center gap-1 text-sm text-[#F6B25E] font-semibold hover:text-[#FFF4E8] transition-colors">
+              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mt-5">— Samantha</p>
+              <Link href="/register" className="mt-4 inline-flex items-center gap-1 text-sm text-[#D97706] dark:text-[#F6B25E] font-semibold hover:text-lm-text dark:hover:text-[#FFF4E8] transition-colors">
                 Meet the community →
               </Link>
             </div>
@@ -556,8 +556,8 @@ export default async function HomePage() {
       {/* ── WHY JOIN ─────────────────────────────────────────── */}
       <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <ScrollReveal className="mb-16">
-          <span className="text-xs text-[#F6B25E] font-semibold uppercase tracking-widest">Why Faithful Flames</span>
-          <h2 className="font-heading text-4xl md:text-5xl font-bold mt-3 text-[#FFF4E8] text-center">
+          <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest">Why Faithful Flames</span>
+          <h2 className="font-heading text-4xl md:text-5xl font-bold mt-3 text-lm-text dark:text-[#FFF4E8] text-center">
             Built for your faith journey
           </h2>
         </ScrollReveal>
@@ -614,9 +614,9 @@ export default async function HomePage() {
           ] as { title: string; desc: string; gold: boolean; icon: ReactNode }[]).map(({ title, desc, gold, icon }) => (
             <ScrollReveal key={title}>
               <div className={`${gold ? 'glass-card-gold gold-glow' : 'glass-card ember-glow'} p-6 text-center h-full flex flex-col`}>
-                <div className={gold ? 'text-[#F6B25E]' : 'text-[#FF7A29]'}>{icon}</div>
-                <h3 className="font-heading text-[#FFF4E8] text-lg font-bold mb-3">{title}</h3>
-                <p className="text-[#BFAEA3] text-sm leading-relaxed flex-1">{desc}</p>
+                <div className={gold ? 'text-[#D97706] dark:text-[#F6B25E]' : 'text-lm-accent dark:text-[#FF7A29]'}>{icon}</div>
+                <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg font-bold mb-3">{title}</h3>
+                <p className="text-lm-muted dark:text-[#BFAEA3] text-sm leading-relaxed flex-1">{desc}</p>
               </div>
             </ScrollReveal>
           ))}
@@ -626,18 +626,18 @@ export default async function HomePage() {
       {/* ── FEATURED SCRIPTURE ───────────────────────────────── */}
       <section className="relative py-32 px-4 overflow-hidden">
         <Image src="/faithful.png" alt="" fill className="object-cover object-center opacity-15" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0D0A0A] via-[#0D0A0A]/60 to-[#0D0A0A]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-cream via-cream/80 to-cream dark:from-[#0D0A0A] dark:via-[#0D0A0A]/60 dark:to-[#0D0A0A]" />
         <div className="absolute inset-0 pointer-events-none ember-ray-glow" />
 
         <ScrollReveal className="relative z-10 text-center max-w-3xl mx-auto">
-          <p className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest mb-8">✦ Scripture ✦</p>
-          <blockquote className="font-heading text-3xl md:text-5xl font-bold text-[#FFF4E8] leading-tight scripture-glow italic mb-8">
+          <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-8">✦ Scripture ✦</p>
+          <blockquote className="font-heading text-3xl md:text-5xl font-bold text-lm-text dark:text-[#FFF4E8] leading-tight scripture-glow italic mb-8">
             &ldquo;{verse?.text ?? 'For where two or three gather in my name, there am I with them.'}&rdquo;
           </blockquote>
-          <p className="text-[#F6B25E] text-xl font-semibold tracking-wide">
+          <p className="text-[#D97706] dark:text-[#F6B25E] text-xl font-semibold tracking-wide">
             {verse?.reference ?? 'Matthew 18:20'}
           </p>
-          <Link href="/verses" className="mt-8 inline-flex items-center gap-2 px-6 py-2.5 border border-[#FF7A29]/25 text-[#FF7A29] font-semibold rounded-2xl hover:bg-[#FF7A29]/10 transition-all duration-300 text-sm">
+          <Link href="/verses" className="mt-8 inline-flex items-center gap-2 px-6 py-2.5 border border-lm-border dark:border-[#FF7A29]/25 text-lm-accent dark:text-[#FF7A29] font-semibold rounded-2xl hover:bg-lm-accent/10 dark:hover:bg-[#FF7A29]/10 transition-all duration-300 text-sm">
             Explore all verses
           </Link>
         </ScrollReveal>
@@ -647,23 +647,23 @@ export default async function HomePage() {
       <section className="py-32 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none ember-cta-glow" />
         <ScrollReveal className="relative z-10 text-center max-w-2xl mx-auto">
-          <span className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest">You belong here</span>
-          <h2 className="font-heading text-4xl md:text-6xl font-bold mt-4 mb-6 text-[#FFF4E8] leading-tight">
+          <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest">You belong here</span>
+          <h2 className="font-heading text-4xl md:text-6xl font-bold mt-4 mb-6 text-lm-text dark:text-[#FFF4E8] leading-tight">
             Ready to walk this<br />
-            <span className="text-[#FF7A29]">journey together?</span>
+            <span className="text-lm-accent dark:text-[#FF7A29]">journey together?</span>
           </h2>
-          <p className="text-[#BFAEA3] text-lg leading-relaxed mb-10 max-w-lg mx-auto">
+          <p className="text-lm-muted dark:text-[#BFAEA3] text-lg leading-relaxed mb-10 max-w-lg mx-auto">
             Join a growing community of young believers. Your story matters here.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/register" className="inline-flex items-center gap-2 px-10 py-4 bg-[#FF7A29] text-white font-bold rounded-2xl hover:bg-[#F6B25E] hover:text-[#0D0A0A] transition-all duration-300 shadow-xl shadow-[#FF7A29]/20 text-base">
+            <Link href="/register" className="inline-flex items-center gap-2 px-10 py-4 bg-lm-accent dark:bg-[#FF7A29] text-white font-bold rounded-2xl hover:bg-secondary dark:hover:bg-[#F6B25E] dark:hover:text-[#0D0A0A] transition-all duration-300 shadow-xl shadow-lm-accent/20 dark:shadow-[#FF7A29]/20 text-base">
               🔥 Join Faithful Flames
             </Link>
-            <Link href="/login" className="inline-flex items-center gap-2 px-10 py-4 border border-[#FFF4E8]/15 text-[#FFF4E8] font-semibold rounded-2xl hover:bg-[#FFF4E8]/8 transition-all duration-300 text-base">
+            <Link href="/login" className="inline-flex items-center gap-2 px-10 py-4 border border-lm-border dark:border-[#FFF4E8]/15 text-lm-text dark:text-[#FFF4E8] font-semibold rounded-2xl hover:bg-[#F59E0B]/8 dark:hover:bg-[#FFF4E8]/8 transition-all duration-300 text-base">
               Sign in
             </Link>
           </div>
-          <p className="text-[#BFAEA3]/50 text-sm mt-8 italic">
+          <p className="text-lm-muted/50 dark:text-[#BFAEA3]/50 text-sm mt-8 italic">
             &ldquo;For where two or three gather in my name, there am I with them.&rdquo; — Matthew 18:20
           </p>
         </ScrollReveal>

@@ -44,7 +44,7 @@ button, a {
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg
            bg-primary text-white font-semibold text-sm
-           hover:bg-secondary
+           hover:bg-secondary hover:shadow-[0_10px_25px_rgba(245,158,11,0.25)]
            focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
@@ -118,7 +118,7 @@ button, a {
 
   /* ── Page hero (inner pages) ───────────────────────────────────────────── */
   .page-hero {
-    @apply bg-lm-card border-b border-lm-border py-16 px-4;
+    @apply bg-lm-section border-b border-lm-border py-16 px-4;
   }
 
   .dark .page-hero {
@@ -126,54 +126,95 @@ button, a {
     border-color: rgba(255,122,41,0.10);
   }
 
-  /* ── Campfire glassmorphism cards (dark-first) ─────────────────────────── */
+  /* ── Glassmorphism cards — light default, dark override ────────────────── */
   .glass-card {
-    background: rgba(22, 17, 17, 0.75);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 122, 41, 0.12);
+    background: #FFFFFF;
+    border: 1px solid #F1E7D0;
     border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   }
 
   .glass-card:hover {
     transform: translateY(-6px);
+    border-color: rgba(245,158,11,0.30);
+    box-shadow: 0 0 30px rgba(245,158,11,0.08), 0 12px 40px rgba(0,0,0,0.07);
+  }
+
+  .dark .glass-card {
+    background: rgba(22, 17, 17, 0.75);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 122, 41, 0.12);
+    box-shadow: none;
+  }
+
+  .dark .glass-card:hover {
     border-color: rgba(255, 122, 41, 0.28);
     box-shadow: 0 0 40px rgba(255, 122, 41, 0.12), 0 12px 40px rgba(0,0,0,0.5);
   }
 
   .glass-card-gold {
-    background: rgba(22, 17, 17, 0.80);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(246, 178, 94, 0.15);
+    background: #FAF6EE;
+    border: 1px solid rgba(245,158,11,0.18);
     border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   }
 
   .glass-card-gold:hover {
     transform: translateY(-6px);
+    border-color: rgba(215,119,6,0.35);
+    box-shadow: 0 0 30px rgba(245,158,11,0.10), 0 12px 40px rgba(0,0,0,0.07);
+  }
+
+  .dark .glass-card-gold {
+    background: rgba(22, 17, 17, 0.80);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(246, 178, 94, 0.15);
+    box-shadow: none;
+  }
+
+  .dark .glass-card-gold:hover {
     border-color: rgba(246, 178, 94, 0.32);
     box-shadow: 0 0 40px rgba(246, 178, 94, 0.10), 0 12px 40px rgba(0,0,0,0.5);
   }
 
   .glass-card-static {
+    background: #FFFFFF;
+    border: 1px solid #F1E7D0;
+    border-radius: 24px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  }
+
+  .dark .glass-card-static {
     background: rgba(22, 17, 17, 0.75);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 122, 41, 0.12);
-    border-radius: 24px;
+    box-shadow: none;
   }
 
   /* ── Glow helpers ──────────────────────────────────────────────────────── */
-  .ember-glow  { box-shadow: 0 0 30px rgba(255,122,41,0.10), 0 4px 24px rgba(0,0,0,0.4); }
-  .gold-glow   { box-shadow: 0 0 30px rgba(246,178,94,0.08), 0 4px 24px rgba(0,0,0,0.4); }
-  .ember-border-left { border-left: 2px solid rgba(255,122,41,0.45); }
-  .gold-border-left  { border-left: 2px solid rgba(246,178,94,0.45); }
+  .ember-glow  { box-shadow: 0 0 20px rgba(245,158,11,0.07), 0 4px 16px rgba(0,0,0,0.05); }
+  .gold-glow   { box-shadow: 0 0 20px rgba(215,119,6,0.06),  0 4px 16px rgba(0,0,0,0.05); }
+  .dark .ember-glow  { box-shadow: 0 0 30px rgba(255,122,41,0.10), 0 4px 24px rgba(0,0,0,0.4); }
+  .dark .gold-glow   { box-shadow: 0 0 30px rgba(246,178,94,0.08), 0 4px 24px rgba(0,0,0,0.4); }
+
+  .ember-border-left { border-left: 2px solid rgba(245,158,11,0.45); }
+  .gold-border-left  { border-left: 2px solid rgba(215,119,6,0.35); }
+  .dark .ember-border-left { border-left: 2px solid rgba(255,122,41,0.45); }
+  .dark .gold-border-left  { border-left: 2px solid rgba(246,178,94,0.45); }
 
   /* Light-mode card border accents */
-  .lm-border-left        { border-left: 3px solid #C96A2B; }
-  .lm-border-left-muted  { border-left: 3px solid #E8D8C8; }
+  .lm-border-left        { border-left: 3px solid #F59E0B; }
+  .lm-border-left-muted  { border-left: 3px solid #F1E7D0; }
+
+  /* Soft golden radial glow for hero/feature sections */
+  .lm-hero-glow {
+    background: radial-gradient(circle at center, rgba(245,158,11,0.12), transparent 45%);
+  }
 }
 
 /* ── Scroll reveal ──────────────────────────────────────────────────────────── */
@@ -194,7 +235,7 @@ button, a {
 }
 
 .skeleton {
-  background: linear-gradient(90deg, #EDE5DB 25%, #E4D9CF 50%, #EDE5DB 75%);
+  background: linear-gradient(90deg, #F5EFE3 25%, #EDE5D8 50%, #F5EFE3 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
@@ -206,9 +247,15 @@ button, a {
 
 /* ── Scripture glow ─────────────────────────────────────────────────────────── */
 .scripture-glow {
+  text-shadow: 0 0 40px rgba(245,158,11,0.18), 0 0 80px rgba(215,119,6,0.08);
+}
+
+.dark .scripture-glow {
   text-shadow: 0 0 40px rgba(255,122,41,0.25), 0 0 80px rgba(246,178,94,0.10);
 }
 
 /* ── Radial glow overlays ───────────────────────────────────────────────────── */
-.ember-ray-glow  { background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(255,122,41,0.06) 0%, transparent 70%); }
-.ember-cta-glow  { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,122,41,0.08) 0%, transparent 70%); }
+.ember-ray-glow  { background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(245,158,11,0.07) 0%, transparent 70%); }
+.ember-cta-glow  { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(245,158,11,0.09) 0%, transparent 70%); }
+.dark .ember-ray-glow  { background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(255,122,41,0.06) 0%, transparent 70%); }
+.dark .ember-cta-glow  { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,122,41,0.08) 0%, transparent 70%); }

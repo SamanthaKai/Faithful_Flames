@@ -10,18 +10,20 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Brand
-        primary:   '#9B2C1D',
-        secondary: '#C85C17',
-        // Light mode (devotional / paper)
-        cream:     '#F7F2EC',
-        'lm-card': '#FFF9F3',
-        'lm-text': '#3A2E2A',
-        'lm-muted':'#7C6B62',
-        'lm-border':'#E8D8C8',
-        'lm-accent':'#C96A2B',
-        charcoal:  '#2C2A29',
-        'warm-gray':'#6B6258',
+        // Brand / CTA
+        primary:   '#F59E0B',
+        secondary: '#D97706',
+        // Light mode — warm, elegant, spiritual
+        cream:        '#FFFDF8',
+        'lm-card':    '#FFFFFF',
+        'lm-section': '#FAF6EE',
+        'lm-highlight':'#F5EFE3',
+        'lm-text':    '#1F2937',
+        'lm-muted':   '#6B7280',
+        'lm-border':  '#F1E7D0',
+        'lm-accent':  '#F59E0B',
+        charcoal:     '#2C2A29',
+        'warm-gray':  '#374151',
         // Dark mode (campfire)
         'dark-bg': '#0D0A0A',
         ember:     '#FF7A29',
