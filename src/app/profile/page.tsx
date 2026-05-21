@@ -22,7 +22,7 @@ export default function ProfilePage() {
   const router = useRouter()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState({ name: '', favoriteVerse: '', bio: '' })
+  const [form, setForm] = useState({ name: '', favoriteVerse: '', bio: '', image: '' })
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -35,7 +35,7 @@ export default function ProfilePage() {
         .then((r) => r.json())
         .then((data) => {
           setProfile(data)
-          setForm({ name: data.name ?? '', favoriteVerse: data.favoriteVerse ?? '', bio: data.bio ?? '' })
+          setForm({ name: data.name ?? '', favoriteVerse: data.favoriteVerse ?? '', bio: data.bio ?? '', image: data.image ?? '' })
         })
     }
   }, [status])
@@ -52,7 +52,7 @@ export default function ProfilePage() {
     if (res.ok) {
       const data = await res.json()
       setProfile(data)
-      await update({ name: data.name })
+      await update({ name: data.name, image: data.image })
       toast.success('Profile updated!')
       setEditing(false)
     } else {
@@ -100,6 +100,16 @@ export default function ProfilePage() {
             <div>
               <label className="block text-sm font-medium text-charcoal dark:text-cream mb-1">Name</label>
               <input value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} className="input" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-charcoal dark:text-cream mb-1">Profile picture URL</label>
+              <input value={form.image} onChange={(e) => setForm((p) => ({ ...p, image: e.target.value }))} className="input" placeholder="https://…" type="url" />
+              {form.image && (
+                <div className="mt-2 flex items-center gap-3">
+                  <Image src={form.image} alt="Preview" width={40} height={40} className="rounded-full object-cover" onError={() => setForm((p) => ({ ...p, image: '' }))} />
+                  <span className="text-xs text-warm-gray">Preview</span>
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-charcoal dark:text-cream mb-1">Favourite Verse</label>

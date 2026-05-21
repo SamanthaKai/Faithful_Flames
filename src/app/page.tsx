@@ -1,4 +1,5 @@
 export const dynamic = 'force-dynamic'
+import React from 'react'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -8,6 +9,10 @@ import { prisma } from '@/lib/prisma'
 import { EmberParticles } from '@/components/EmberParticles'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { FORUM_TOPIC_MAP } from '@/lib/forum-topics'
+import {
+  Flame, Heart, MessageCircle, BookOpen, Book,
+  PenLine, Users, Shield, Handshake, Sun, Moon, Quote,
+} from 'lucide-react'
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
@@ -72,11 +77,11 @@ function timeAgo(date: Date) {
   return `${days}d ago`
 }
 
-function getGreeting(): { text: string; emoji: string } {
+function getGreeting(): { text: string } {
   const hour = new Date().getHours()
-  if (hour < 12) return { text: 'Good morning', emoji: '☀️' }
-  if (hour < 17) return { text: 'Good afternoon', emoji: '🌤️' }
-  return { text: 'Good evening', emoji: '🌙' }
+  if (hour < 12) return { text: 'Good morning' }
+  if (hour < 17) return { text: 'Good afternoon' }
+  return { text: 'Good evening' }
 }
 
 const TOPIC_META = FORUM_TOPIC_MAP
@@ -92,7 +97,8 @@ export default async function HomePage() {
   if (session?.user) {
     const data = await getDashboardData(session.user.id)
     const firstName = session.user.name?.split(' ')[0] ?? 'Friend'
-    const { text: greeting, emoji } = getGreeting()
+    const { text: greeting } = getGreeting()
+    const hour = new Date().getHours()
 
     type FeedPost      = typeof data.feedPosts[number]
     type FeedTestimony = typeof data.testimonies[number]
@@ -112,13 +118,18 @@ export default async function HomePage() {
         <div className="bg-lm-section dark:bg-[#161111] border-b border-lm-border dark:border-[#FF7A29]/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-center justify-between gap-8">
             <div>
-              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm font-medium mb-1">{greeting} {emoji}</p>
+              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm font-medium mb-1 flex items-center gap-1.5">
+                {hour < 17
+                  ? <Sun className="w-3.5 h-3.5" />
+                  : <Moon className="w-3.5 h-3.5" />}
+                {greeting}
+              </p>
               <h1 className="font-heading text-3xl md:text-4xl font-bold text-lm-text dark:text-[#FFF4E8]">{firstName}</h1>
               <p className="text-lm-muted dark:text-[#BFAEA3] mt-1.5 text-sm">How has your walk with God been today?</p>
             </div>
             {data.verse && (
               <div className="hidden md:flex items-start gap-3 bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/15 rounded-2xl px-5 py-4 max-w-sm shadow-sm dark:shadow-none flex-shrink-0">
-                <span className="text-lg mt-0.5 flex-shrink-0">📖</span>
+                <BookOpen className="w-4 h-4 mt-0.5 flex-shrink-0 text-lm-accent dark:text-[#F6B25E]" />
                 <div className="min-w-0">
                   <p className="text-lm-text dark:text-[#FFF4E8] text-sm italic leading-relaxed line-clamp-2">
                     &ldquo;{data.verse.text}&rdquo;
@@ -131,25 +142,23 @@ export default async function HomePage() {
         </div>
 
         {/* ── QUICK ACTIONS ────────────────────────────────── */}
-        <div className="border-b border-lm-border dark:border-[#FF7A29]/8">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-lm-border dark:divide-[#FF7A29]/8">
-              {([
-                { href: '/testimonies', icon: '🔥', label: 'Share Testimony'  },
-                { href: '/forum',       icon: '🙏', label: 'Ask for Prayer'   },
-                { href: '/forum',       icon: '💬', label: 'Start Discussion' },
-                { href: '/reflections', icon: '📖', label: 'Write Reflection' },
-              ] as const).map(({ href, icon, label }) => (
-                <Link
-                  key={label}
-                  href={href}
-                  className="flex flex-col items-center gap-2 py-5 px-4 text-center group hover:bg-lm-section dark:hover:bg-[#FF7A29]/5 transition-colors"
-                >
-                  <span className="text-2xl">{icon}</span>
-                  <span className="text-xs font-semibold text-lm-muted dark:text-[#BFAEA3] group-hover:text-lm-accent dark:group-hover:text-[#FF7A29] transition-colors">{label}</span>
-                </Link>
-              ))}
-            </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {([
+              { href: '/testimonies', Icon: Flame,         label: 'Share Testimony'  },
+              { href: '/forum',       Icon: Heart,         label: 'Ask for Prayer'   },
+              { href: '/forum',       Icon: MessageCircle, label: 'Start Discussion' },
+              { href: '/reflections', Icon: PenLine,       label: 'Write Reflection' },
+            ]).map(({ href, Icon, label }) => (
+              <Link
+                key={label}
+                href={href}
+                className="glass-card-static flex flex-col items-center gap-2.5 py-5 px-3 text-center group hover:shadow-md hover:-translate-y-0.5 transition-all"
+              >
+                <Icon className="w-5 h-5 text-lm-accent dark:text-[#FF7A29] group-hover:scale-110 transition-transform" />
+                <span className="text-xs font-semibold text-lm-muted dark:text-[#BFAEA3] group-hover:text-lm-accent dark:group-hover:text-[#FF7A29] transition-colors">{label}</span>
+              </Link>
+            ))}
           </div>
         </div>
 
@@ -159,22 +168,22 @@ export default async function HomePage() {
 
             {/* COMMUNITY FEED */}
             <main className="space-y-3 min-w-0">
-              <p className="text-xs text-lm-muted dark:text-[#BFAEA3] uppercase tracking-widest font-semibold pb-2 border-b border-lm-border dark:border-[#FF7A29]/8 mb-1">
-                Community Feed
-              </p>
-
               {feed.length > 0 ? feed.map((entry) => {
                 if (entry.kind === 'post') {
                   const post  = entry.item
-                  const meta  = TOPIC_META[post.topic] ?? { label: post.topic, labelSingular: post.topic, icon: '💬', isPrayer: false, light: '', dark: '' }
+                  const meta  = TOPIC_META[post.topic] ?? { label: post.topic, labelSingular: post.topic, icon: '', isPrayer: false, light: '', dark: '' }
+                  const TopicIcon = post.topic === 'PRAYER_REQUESTS' ? Heart
+                    : post.topic === 'BIBLE_QUESTIONS'  ? BookOpen
+                    : post.topic === 'ACCOUNTABILITY'   ? Shield
+                    : Flame
                   return (
                     <Link key={`post-${post.id}`} href={`/forum/${post.id}`} className="block">
                       <div className={meta.isPrayer
                         ? 'glass-card-gold gold-border-left gold-glow p-5'
                         : 'glass-card ember-border-left ember-glow p-5'}>
                         <div className="flex items-start justify-between gap-3 mb-2.5">
-                          <span className={`text-xs font-semibold uppercase tracking-widest ${meta.isPrayer ? 'text-[#D97706] dark:text-[#F6B25E]' : 'text-lm-accent dark:text-[#FF7A29]'}`}>
-                            {meta.icon} {meta.label}
+                          <span className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest ${meta.isPrayer ? 'text-[#D97706] dark:text-[#F6B25E]' : 'text-lm-accent dark:text-[#FF7A29]'}`}>
+                            <TopicIcon className="w-3.5 h-3.5" />{meta.label}
                           </span>
                           <span className="text-xs text-lm-muted dark:text-[#BFAEA3] flex-shrink-0">{timeAgo(post.createdAt)}</span>
                         </div>
@@ -182,7 +191,7 @@ export default async function HomePage() {
                         <p className="text-lm-muted dark:text-[#BFAEA3] text-sm line-clamp-2">{post.content}</p>
                         <div className="flex items-center gap-4 mt-3 text-xs text-lm-muted dark:text-[#BFAEA3]">
                           <span>By {post.user.name ?? 'Anonymous'}</span>
-                          <span>💬 {post.replies.length} {post.replies.length === 1 ? 'reply' : 'replies'}</span>
+                          <span className="inline-flex items-center gap-1"><MessageCircle className="w-3 h-3" />{post.replies.length} {post.replies.length === 1 ? 'reply' : 'replies'}</span>
                         </div>
                       </div>
                     </Link>
@@ -194,7 +203,9 @@ export default async function HomePage() {
                   <Link key={`testimony-${testimony.id}`} href="/testimonies" className="block">
                     <div className="glass-card ember-border-left ember-glow p-5">
                       <div className="flex items-start justify-between gap-3 mb-2.5">
-                        <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest">🔥 Testimony</span>
+                        <span className="inline-flex items-center gap-1.5 text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest">
+                          <Flame className="w-3.5 h-3.5" />Testimony
+                        </span>
                         <span className="text-xs text-lm-muted dark:text-[#BFAEA3] flex-shrink-0">{timeAgo(testimony.createdAt)}</span>
                       </div>
                       <p className="font-heading text-lm-text dark:text-[#FFF4E8] italic leading-relaxed line-clamp-3">
@@ -208,7 +219,7 @@ export default async function HomePage() {
                 )
               }) : (
                 <div className="glass-card ember-glow p-12 text-center">
-                  <p className="text-4xl mb-4">🔥</p>
+                  <Flame className="w-10 h-10 mx-auto mb-4 text-lm-accent dark:text-[#FF7A29]" />
                   <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl font-bold mb-2">
                     Be the first voice in this fellowship
                   </h3>
@@ -248,7 +259,7 @@ export default async function HomePage() {
                   )}
                   <p className="font-heading font-bold text-lm-text dark:text-[#FFF4E8] text-base leading-tight">{session.user.name}</p>
                   {data.profile?.favoriteVerse && (
-                    <p className="text-lm-accent dark:text-[#F6B25E] text-xs mt-1.5 italic line-clamp-2">✝ {data.profile.favoriteVerse}</p>
+                    <p className="text-lm-accent dark:text-[#F6B25E] text-xs mt-1.5 italic line-clamp-2">{data.profile.favoriteVerse}</p>
                   )}
                 </div>
                 {data.profile && (
@@ -272,13 +283,13 @@ export default async function HomePage() {
               <div className="glass-card-static p-4">
                 <p className="text-xs text-lm-muted dark:text-[#BFAEA3] font-semibold uppercase tracking-widest mb-3">Community Pulse</p>
                 <div className="space-y-0">
-                  {[
-                    { label: 'Discussions',     value: data.feedPosts.length,   icon: '💬' },
-                    { label: 'Prayer requests', value: data.prayerPosts.length, icon: '🙏' },
-                    { label: 'Testimonies',     value: data.testimonies.length, icon: '🔥' },
-                  ].map(({ label, value, icon }) => (
+                  {([
+                    { label: 'Discussions',     value: data.feedPosts.length,   Icon: MessageCircle },
+                    { label: 'Prayer requests', value: data.prayerPosts.length, Icon: Heart },
+                    { label: 'Testimonies',     value: data.testimonies.length, Icon: Flame },
+                  ] as { label: string; value: number; Icon: React.ElementType }[]).map(({ label, value, Icon }) => (
                     <div key={label} className="flex items-center justify-between py-2 border-b border-lm-border dark:border-[#FF7A29]/6 last:border-0">
-                      <span className="text-lm-muted dark:text-[#BFAEA3] text-sm">{icon} {label}</span>
+                      <span className="text-lm-muted dark:text-[#BFAEA3] text-sm flex items-center gap-1.5"><Icon className="w-3.5 h-3.5" />{label}</span>
                       <span className="text-lm-text dark:text-[#FFF4E8] font-bold text-sm">{value}</span>
                     </div>
                   ))}
@@ -289,18 +300,18 @@ export default async function HomePage() {
               <div className="glass-card-static p-4">
                 <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">Navigate</p>
                 {([
-                  ['🔥', 'Community',      '/forum'],
-                  ['📖', 'Verses',         '/verses'],
-                  ['🕊', 'Devotions',      '/devotions'],
-                  ['✝',  'Testimonies',    '/testimonies'],
-                  ['📝', 'My Reflections', '/reflections'],
-                ] as const).map(([icon, label, href]) => (
+                  { Icon: Users,       label: 'Community',      href: '/forum' },
+                  { Icon: BookOpen,    label: 'Verses',         href: '/verses' },
+                  { Icon: Sun,         label: 'Devotions',      href: '/devotions' },
+                  { Icon: Flame,       label: 'Testimonies',    href: '/testimonies' },
+                  { Icon: PenLine,     label: 'My Reflections', href: '/reflections' },
+                ] as { Icon: React.ElementType; label: string; href: string }[]).map(({ Icon, label, href }) => (
                   <Link
                     key={href}
                     href={href}
                     className="flex items-center gap-3 py-2 text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-[#FF7A29] transition-colors"
                   >
-                    <span className="w-4 text-center">{icon}</span>
+                    <Icon className="w-4 h-4 flex-shrink-0" />
                     <span>{label}</span>
                   </Link>
                 ))}
@@ -336,7 +347,7 @@ export default async function HomePage() {
             {/* Left — headline */}
             <div className="animate-fade-in">
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FF7A29]/15 border border-[#FF7A29]/25 text-[#F6B25E] text-sm font-medium mb-8">
-                🔥 A digital campfire for young believers
+                <Flame className="w-4 h-4" /> A digital campfire for young believers
               </div>
               <h1 className="font-heading text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.08] mb-6 text-[#FFF4E8]">
                 Faith grows<br />
@@ -359,7 +370,7 @@ export default async function HomePage() {
             {/* Right — floating preview cards */}
             <div className="flex flex-col gap-4 animate-slide-up mt-12 lg:mt-0">
               <div className="glass-card-static ember-glow p-6 animate-float">
-                <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">📖 Verse of the Day</p>
+                <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-3 flex items-center gap-1.5"><BookOpen className="w-3.5 h-3.5" />Verse of the Day</p>
                 <p className="font-heading text-base text-lm-text dark:text-[#FFF4E8] italic leading-relaxed line-clamp-3">
                   &ldquo;{verse?.text ?? 'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you.'}&rdquo;
                 </p>
@@ -367,12 +378,12 @@ export default async function HomePage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="glass-card-static gold-glow p-5 animate-float-delayed">
-                  <p className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest mb-2">🙏 Prayers</p>
+                  <p className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest mb-2 flex items-center gap-1.5"><Heart className="w-3.5 h-3.5" />Prayers</p>
                   <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">∞</p>
                   <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Active requests</p>
                 </div>
                 <div className="glass-card-static p-5 animate-float-slow">
-                  <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-2">🔥 Community</p>
+                  <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-2 flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />Community</p>
                   <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">Live</p>
                   <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Growing together</p>
                 </div>
@@ -406,8 +417,8 @@ export default async function HomePage() {
           {/* Demo Testimony */}
           <ScrollReveal delay="0s">
             <div className="glass-card ember-glow ember-border-left p-6 h-full flex flex-col">
-              <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4">
-                🔥 Testimony
+              <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4 inline-flex items-center gap-1.5">
+                <Flame className="w-3.5 h-3.5" />Testimony
               </span>
               <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1">
                 &ldquo;I was in my darkest season when God showed up in the most unexpected way. This community helped me remember I wasn&apos;t alone.&rdquo;
@@ -422,15 +433,15 @@ export default async function HomePage() {
           {/* Demo Prayer */}
           <ScrollReveal delay="0.12s">
             <div className="glass-card-gold gold-glow gold-border-left p-6 h-full flex flex-col">
-              <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-4">
-                🙏 Prayer Request
+              <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-4 inline-flex items-center gap-1.5">
+                <Heart className="w-3.5 h-3.5" />Prayer Request
               </span>
               <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1">
                 &ldquo;Please pray for my family going through a difficult time. I believe God is still in control.&rdquo;
               </p>
               <div className="mt-5 flex items-center justify-between">
                 <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">12 people praying</p>
-                <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold">🙏 Join in</span>
+                <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold inline-flex items-center gap-1"><Heart className="w-3 h-3" />Join in</span>
               </div>
             </div>
           </ScrollReveal>
@@ -438,8 +449,8 @@ export default async function HomePage() {
           {/* Demo Discussion */}
           <ScrollReveal delay="0.24s">
             <div className="glass-card ember-glow p-6 h-full flex flex-col">
-              <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4">
-                💬 Discussion
+              <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4 inline-flex items-center gap-1.5">
+                <MessageCircle className="w-3.5 h-3.5" />Discussion
               </span>
               <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg font-bold mb-3 leading-snug flex-1">
                 What does trusting God daily look like for you?
@@ -456,7 +467,7 @@ export default async function HomePage() {
           {/* Daily verse preview */}
           <ScrollReveal delay="0s">
             <div className="glass-card ember-glow p-8 text-center flex flex-col items-center justify-center h-full">
-              <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-5">📖 Daily Scripture</p>
+              <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-5 flex items-center justify-center gap-1.5"><BookOpen className="w-3.5 h-3.5" />Daily Scripture</p>
               <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl italic leading-relaxed scripture-glow">
                 &ldquo;{verse?.text ?? 'I can do all things through Christ who strengthens me.'}&rdquo;
               </p>
@@ -467,8 +478,8 @@ export default async function HomePage() {
           {/* Featured member preview */}
           <ScrollReveal delay="0.12s">
             <div className="glass-card-gold gold-glow p-8 h-full flex flex-col">
-              <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-6">
-                🌟 Community Voice
+              <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-6 inline-flex items-center gap-1.5">
+                <Quote className="w-3.5 h-3.5" />Community Voice
               </span>
               <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl italic leading-relaxed flex-1">
                 &ldquo;Learning to trust God one day at a time. This fellowship has become my anchor.&rdquo;
@@ -586,7 +597,7 @@ export default async function HomePage() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link href="/register" className="inline-flex items-center gap-2 px-10 py-4 bg-lm-accent dark:bg-[#FF7A29] text-white font-bold rounded-2xl hover:bg-secondary dark:hover:bg-[#F6B25E] dark:hover:text-[#0D0A0A] transition-all duration-300 shadow-xl shadow-lm-accent/20 dark:shadow-[#FF7A29]/20 text-base">
-              🔥 Join Faithful Flames
+              <Flame className="w-4 h-4" />Join Faithful Flames
             </Link>
             <Link href="/login" className="inline-flex items-center gap-2 px-10 py-4 border border-lm-border dark:border-[#FFF4E8]/15 text-lm-text dark:text-[#FFF4E8] font-semibold rounded-2xl hover:bg-[#F59E0B]/8 dark:hover:bg-[#FFF4E8]/8 transition-all duration-300 text-base">
               Sign in
