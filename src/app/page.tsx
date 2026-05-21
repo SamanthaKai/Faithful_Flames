@@ -106,115 +106,60 @@ export default async function HomePage() {
       .slice(0, 10)
 
     return (
-      <div className="bg-[#0D0A0A] text-[#FFF4E8] min-h-screen">
+      <div className="bg-cream text-lm-text dark:bg-[#0D0A0A] dark:text-[#FFF4E8] min-h-screen">
 
-        {/* ── GREETING BAR ─────────────────────────────────── */}
-        <div className="border-b border-[#FF7A29]/10 bg-[#161111]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex items-end justify-between gap-4">
+        {/* ── HERO ─────────────────────────────────────────── */}
+        <div className="bg-lm-section dark:bg-[#161111] border-b border-lm-border dark:border-[#FF7A29]/10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-center justify-between gap-8">
             <div>
-              <p className="text-[#BFAEA3] text-sm mb-1">{greeting} {emoji}</p>
-              <h1 className="font-heading text-3xl md:text-4xl font-bold text-[#FFF4E8]">{firstName}</h1>
-              <p className="text-[#BFAEA3] mt-2 text-sm">How has your walk with God been today?</p>
+              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm font-medium mb-1">{greeting} {emoji}</p>
+              <h1 className="font-heading text-3xl md:text-4xl font-bold text-lm-text dark:text-[#FFF4E8]">{firstName}</h1>
+              <p className="text-lm-muted dark:text-[#BFAEA3] mt-1.5 text-sm">How has your walk with God been today?</p>
             </div>
             {data.verse && (
-              <div className="hidden md:block text-right max-w-xs">
-                <p className="text-xs text-[#F6B25E] font-semibold uppercase tracking-widest mb-1">Today&apos;s word</p>
-                <p className="text-[#BFAEA3] text-xs italic line-clamp-2">&ldquo;{data.verse.text}&rdquo;</p>
-                <p className="text-[#F6B25E] text-xs mt-1">{data.verse.reference}</p>
+              <div className="hidden md:flex items-start gap-3 bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/15 rounded-2xl px-5 py-4 max-w-sm shadow-sm dark:shadow-none flex-shrink-0">
+                <span className="text-lg mt-0.5 flex-shrink-0">📖</span>
+                <div className="min-w-0">
+                  <p className="text-lm-text dark:text-[#FFF4E8] text-sm italic leading-relaxed line-clamp-2">
+                    &ldquo;{data.verse.text}&rdquo;
+                  </p>
+                  <p className="text-lm-accent dark:text-[#F6B25E] text-xs font-semibold mt-1.5">{data.verse.reference}</p>
+                </div>
               </div>
             )}
           </div>
         </div>
 
         {/* ── QUICK ACTIONS ────────────────────────────────── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {([
-              { href: '/testimonies', icon: '🔥', label: 'Share Testimony',  border: 'border-[#FF7A29]/25 hover:border-[#FF7A29]/50 from-[#FF7A29]/15 to-[#A63B1E]/5' },
-              { href: '/forum',       icon: '🙏', label: 'Ask for Prayer',   border: 'border-[#F6B25E]/20 hover:border-[#F6B25E]/40 from-[#F6B25E]/10 to-[#A63B1E]/5' },
-              { href: '/forum',       icon: '💬', label: 'Start Discussion', border: 'border-[#FF7A29]/20 hover:border-[#FF7A29]/40 from-[#FF7A29]/10 to-[#161111]'   },
-              { href: '/reflections', icon: '📖', label: 'Write Reflection', border: 'border-[#F6B25E]/15 hover:border-[#F6B25E]/35 from-[#F6B25E]/8 to-[#161111]'    },
-            ] as const).map(({ href, icon, label, border }) => (
-              <Link
-                key={label}
-                href={href}
-                className={`glass-card-static bg-gradient-to-br ${border} border p-5 text-center group transition-all duration-300 hover:-translate-y-1`}
-              >
-                <span className="text-3xl block mb-2">{icon}</span>
-                <span className="text-sm font-semibold text-[#FFF4E8] group-hover:text-[#FF7A29] transition-colors">{label}</span>
-              </Link>
-            ))}
+        <div className="border-b border-lm-border dark:border-[#FF7A29]/8">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-lm-border dark:divide-[#FF7A29]/8">
+              {([
+                { href: '/testimonies', icon: '🔥', label: 'Share Testimony'  },
+                { href: '/forum',       icon: '🙏', label: 'Ask for Prayer'   },
+                { href: '/forum',       icon: '💬', label: 'Start Discussion' },
+                { href: '/reflections', icon: '📖', label: 'Write Reflection' },
+              ] as const).map(({ href, icon, label }) => (
+                <Link
+                  key={label}
+                  href={href}
+                  className="flex flex-col items-center gap-2 py-5 px-4 text-center group hover:bg-lm-section dark:hover:bg-[#FF7A29]/5 transition-colors"
+                >
+                  <span className="text-2xl">{icon}</span>
+                  <span className="text-xs font-semibold text-lm-muted dark:text-[#BFAEA3] group-hover:text-lm-accent dark:group-hover:text-[#FF7A29] transition-colors">{label}</span>
+                </Link>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* ── 3-COLUMN DASHBOARD ───────────────────────────── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-          <div className="grid lg:grid-cols-[260px_1fr_300px] gap-6">
+        {/* ── MAIN BODY ─────────────────────────────────────── */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="grid lg:grid-cols-[1fr_288px] gap-8">
 
-            {/* LEFT SIDEBAR — Identity */}
-            <aside className="hidden lg:block space-y-4">
-
-              {/* Profile card */}
-              <div className="glass-card-static ember-glow p-5">
-                <div className="flex flex-col items-center text-center">
-                  {session.user.image ? (
-                    <Image src={session.user.image} alt="" width={56} height={56} className="rounded-full ring-2 ring-ember/30 mb-3" />
-                  ) : (
-                    <div className="w-14 h-14 rounded-full bg-ember text-white flex items-center justify-center text-xl font-bold mb-3">
-                      {session.user.name?.[0]?.toUpperCase() ?? '?'}
-                    </div>
-                  )}
-                  <p className="font-heading font-bold text-[#FFF4E8] text-lg leading-tight">{session.user.name}</p>
-                  {data.profile?.bio && (
-                    <p className="text-[#BFAEA3] text-xs mt-2 leading-relaxed line-clamp-2">{data.profile.bio}</p>
-                  )}
-                  {data.profile?.favoriteVerse && (
-                    <p className="text-[#F6B25E] text-xs mt-2 italic line-clamp-2">✝ {data.profile.favoriteVerse}</p>
-                  )}
-                </div>
-                {data.profile && (
-                  <div className="flex justify-around mt-4 pt-4 border-t border-[#FF7A29]/10">
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-[#FFF4E8]">{data.profile._count.forumPosts}</p>
-                      <p className="text-[#BFAEA3] text-xs">Posts</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-lg font-bold text-[#FFF4E8]">{data.profile._count.reflections}</p>
-                      <p className="text-[#BFAEA3] text-xs">Reflections</p>
-                    </div>
-                  </div>
-                )}
-                <Link href="/profile" className="block mt-4 text-center text-xs text-[#FF7A29] hover:text-[#F6B25E] transition-colors font-semibold">
-                  View full profile →
-                </Link>
-              </div>
-
-              {/* Navigation */}
-              <div className="glass-card-static p-4">
-                <p className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">Navigate</p>
-                {([
-                  ['🔥', 'Community',     '/forum'],
-                  ['📖', 'Verses',        '/verses'],
-                  ['🕊', 'Devotions',     '/devotions'],
-                  ['✝',  'Testimonies',   '/testimonies'],
-                  ['📝', 'My Reflections','/reflections'],
-                ] as const).map(([icon, label, href]) => (
-                  <Link
-                    key={href}
-                    href={href}
-                    className="flex items-center gap-3 py-2 text-sm text-[#BFAEA3] hover:text-[#FF7A29] transition-colors"
-                  >
-                    <span className="w-4 text-center">{icon}</span>
-                    <span>{label}</span>
-                  </Link>
-                ))}
-              </div>
-
-            </aside>
-
-            {/* CENTER — Activity Feed */}
-            <main className="space-y-4 min-w-0">
-              <p className="text-xs text-[#BFAEA3] uppercase tracking-widest font-semibold pb-1 border-b border-[#FF7A29]/8 mb-4">
+            {/* COMMUNITY FEED */}
+            <main className="space-y-3 min-w-0">
+              <p className="text-xs text-lm-muted dark:text-[#BFAEA3] uppercase tracking-widest font-semibold pb-2 border-b border-lm-border dark:border-[#FF7A29]/8 mb-1">
                 Community Feed
               </p>
 
@@ -227,15 +172,15 @@ export default async function HomePage() {
                       <div className={meta.isPrayer
                         ? 'glass-card-gold gold-border-left gold-glow p-5'
                         : 'glass-card ember-border-left ember-glow p-5'}>
-                        <div className="flex items-start justify-between gap-3 mb-3">
-                          <span className={`text-xs font-semibold uppercase tracking-widest ${meta.isPrayer ? 'text-[#F6B25E]' : 'text-[#FF7A29]'}`}>
+                        <div className="flex items-start justify-between gap-3 mb-2.5">
+                          <span className={`text-xs font-semibold uppercase tracking-widest ${meta.isPrayer ? 'text-[#D97706] dark:text-[#F6B25E]' : 'text-lm-accent dark:text-[#FF7A29]'}`}>
                             {meta.icon} {meta.label}
                           </span>
-                          <span className="text-xs text-[#BFAEA3] flex-shrink-0">{timeAgo(post.createdAt)}</span>
+                          <span className="text-xs text-lm-muted dark:text-[#BFAEA3] flex-shrink-0">{timeAgo(post.createdAt)}</span>
                         </div>
-                        <h3 className="font-heading text-[#FFF4E8] font-bold leading-snug mb-2">{post.title}</h3>
-                        <p className="text-[#BFAEA3] text-sm line-clamp-2">{post.content}</p>
-                        <div className="flex items-center gap-4 mt-3 text-xs text-[#BFAEA3]">
+                        <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] font-bold leading-snug mb-1.5">{post.title}</h3>
+                        <p className="text-lm-muted dark:text-[#BFAEA3] text-sm line-clamp-2">{post.content}</p>
+                        <div className="flex items-center gap-4 mt-3 text-xs text-lm-muted dark:text-[#BFAEA3]">
                           <span>By {post.user.name ?? 'Anonymous'}</span>
                           <span>💬 {post.replies.length} {post.replies.length === 1 ? 'reply' : 'replies'}</span>
                         </div>
@@ -248,31 +193,31 @@ export default async function HomePage() {
                 return (
                   <Link key={`testimony-${testimony.id}`} href="/testimonies" className="block">
                     <div className="glass-card ember-border-left ember-glow p-5">
-                      <div className="flex items-start justify-between gap-3 mb-3">
-                        <span className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest">🔥 Testimony</span>
-                        <span className="text-xs text-[#BFAEA3] flex-shrink-0">{timeAgo(testimony.createdAt)}</span>
+                      <div className="flex items-start justify-between gap-3 mb-2.5">
+                        <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest">🔥 Testimony</span>
+                        <span className="text-xs text-lm-muted dark:text-[#BFAEA3] flex-shrink-0">{timeAgo(testimony.createdAt)}</span>
                       </div>
-                      <p className="font-heading text-[#FFF4E8] italic leading-relaxed line-clamp-3">
+                      <p className="font-heading text-lm-text dark:text-[#FFF4E8] italic leading-relaxed line-clamp-3">
                         &ldquo;{testimony.content}&rdquo;
                       </p>
-                      <p className="text-xs text-[#BFAEA3] mt-3">
+                      <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-2.5">
                         — {testimony.isAnonymous ? 'Anonymous' : (testimony.user.name ?? 'A believer')}
                       </p>
                     </div>
                   </Link>
                 )
               }) : (
-                <div className="glass-card ember-glow p-10 text-center">
+                <div className="glass-card ember-glow p-12 text-center">
                   <p className="text-4xl mb-4">🔥</p>
-                  <h3 className="font-heading text-[#FFF4E8] text-xl font-bold mb-2">
+                  <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl font-bold mb-2">
                     Be the first voice in this fellowship
                   </h3>
-                  <p className="text-[#BFAEA3] text-sm mb-6 max-w-sm mx-auto">
+                  <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-6 max-w-sm mx-auto">
                     Your story, your questions, your prayers — they matter here.
                   </p>
                   <Link
                     href="/forum"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#FF7A29]/15 text-[#FF7A29] border border-[#FF7A29]/25 font-semibold rounded-2xl hover:bg-[#FF7A29]/25 transition-all duration-300 text-sm"
+                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-lm-accent dark:bg-[#FF7A29]/15 text-white dark:text-[#FF7A29] border border-lm-accent dark:border-[#FF7A29]/25 font-semibold rounded-2xl hover:bg-secondary dark:hover:bg-[#FF7A29]/25 transition-all duration-300 text-sm"
                   >
                     Start the conversation
                   </Link>
@@ -281,100 +226,84 @@ export default async function HomePage() {
 
               {feed.length > 0 && (
                 <p className="text-center pt-2">
-                  <Link href="/forum" className="text-sm text-[#BFAEA3] hover:text-[#FF7A29] transition-colors">
+                  <Link href="/forum" className="text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-[#FF7A29] transition-colors">
                     View all community posts →
                   </Link>
                 </p>
               )}
             </main>
 
-            {/* RIGHT SIDEBAR — Spiritual Dashboard */}
-            <aside className="hidden lg:block space-y-4">
+            {/* SIDEBAR */}
+            <aside className="space-y-4">
 
-              {/* Verse of the Day */}
+              {/* Mini profile card */}
               <div className="glass-card-static ember-glow p-5">
-                <p className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest mb-4">📖 Verse of the Day</p>
-                {data.verse ? (
-                  <>
-                    <p className="font-heading text-[#FFF4E8] text-sm italic leading-relaxed scripture-glow line-clamp-4">
-                      &ldquo;{data.verse.text}&rdquo;
-                    </p>
-                    <p className="text-[#F6B25E] text-xs mt-3 font-semibold">{data.verse.reference}</p>
-                  </>
-                ) : (
-                  <p className="font-heading text-[#FFF4E8] text-sm italic leading-relaxed">
-                    &ldquo;Be strong and courageous. Do not be afraid.&rdquo;
-                  </p>
-                )}
-                <Link href="/verses" className="block mt-3 text-xs text-[#BFAEA3] hover:text-[#FF7A29] transition-colors">
-                  All verses →
-                </Link>
-              </div>
-
-              {/* Active Prayer Requests */}
-              <div className="glass-card-static gold-glow p-5">
-                <p className="text-xs text-[#F6B25E] font-semibold uppercase tracking-widest mb-4">🙏 Active Prayers</p>
-                {data.prayerPosts.length > 0 ? (
-                  <div className="space-y-3">
-                    {data.prayerPosts.map(post => (
-                      <div key={post.id} className="border-b border-[#F6B25E]/8 pb-3 last:border-0 last:pb-0">
-                        <p className="text-[#FFF4E8] text-xs leading-relaxed line-clamp-2">{post.content}</p>
-                        <p className="text-[#BFAEA3] text-xs mt-1">{timeAgo(post.createdAt)}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-[#BFAEA3] text-xs leading-relaxed">
-                    No active prayer requests yet. Be the first to share one.
-                  </p>
-                )}
-                <Link href="/forum" className="block mt-3 text-xs text-[#F6B25E] hover:text-[#FFF4E8] transition-colors">
-                  Post a prayer request →
-                </Link>
-              </div>
-
-              {/* Upcoming Events */}
-              {data.events.length > 0 && (
-                <div className="glass-card-static ember-glow p-5">
-                  <p className="text-xs text-[#FF7A29] font-semibold uppercase tracking-widest mb-4">📅 Upcoming</p>
-                  <div className="space-y-3">
-                    {data.events.map(event => (
-                      <div key={event.id} className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-[#FF7A29]/15 flex flex-col items-center justify-center flex-shrink-0 border border-[#FF7A29]/20">
-                          <span className="text-[#FF7A29] text-[9px] font-bold leading-none uppercase">
-                            {new Date(event.date).toLocaleDateString('en-US', { month: 'short' })}
-                          </span>
-                          <span className="text-[#FF7A29] text-sm font-bold leading-none">
-                            {new Date(event.date).getDate()}
-                          </span>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-[#FFF4E8] text-sm font-semibold truncate">{event.title}</p>
-                          <p className="text-[#BFAEA3] text-xs">
-                            {new Date(event.date).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                <div className="flex flex-col items-center text-center">
+                  {session.user.image ? (
+                    <Image src={session.user.image} alt="" width={52} height={52} className="rounded-full ring-2 ring-lm-accent/30 dark:ring-ember/30 mb-3" />
+                  ) : (
+                    <div className="w-[52px] h-[52px] rounded-full bg-lm-accent dark:bg-ember text-white flex items-center justify-center text-xl font-bold mb-3">
+                      {session.user.name?.[0]?.toUpperCase() ?? '?'}
+                    </div>
+                  )}
+                  <p className="font-heading font-bold text-lm-text dark:text-[#FFF4E8] text-base leading-tight">{session.user.name}</p>
+                  {data.profile?.favoriteVerse && (
+                    <p className="text-lm-accent dark:text-[#F6B25E] text-xs mt-1.5 italic line-clamp-2">✝ {data.profile.favoriteVerse}</p>
+                  )}
                 </div>
-              )}
+                {data.profile && (
+                  <div className="flex justify-around mt-4 pt-4 border-t border-lm-border dark:border-[#FF7A29]/10">
+                    <div className="text-center">
+                      <p className="text-base font-bold text-lm-text dark:text-[#FFF4E8]">{data.profile._count.forumPosts}</p>
+                      <p className="text-lm-muted dark:text-[#BFAEA3] text-xs">Posts</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-base font-bold text-lm-text dark:text-[#FFF4E8]">{data.profile._count.reflections}</p>
+                      <p className="text-lm-muted dark:text-[#BFAEA3] text-xs">Reflections</p>
+                    </div>
+                  </div>
+                )}
+                <Link href="/profile" className="block mt-3 text-center text-xs text-lm-accent dark:text-[#FF7A29] hover:text-secondary dark:hover:text-[#F6B25E] transition-colors font-semibold">
+                  View full profile →
+                </Link>
+              </div>
 
               {/* Community Pulse */}
-              <div className="glass-card-static p-5">
-                <p className="text-xs text-[#BFAEA3] font-semibold uppercase tracking-widest mb-4">Community Pulse</p>
-                <div className="space-y-2.5">
+              <div className="glass-card-static p-4">
+                <p className="text-xs text-lm-muted dark:text-[#BFAEA3] font-semibold uppercase tracking-widest mb-3">Community Pulse</p>
+                <div className="space-y-0">
                   {[
-                    { label: 'Discussions',     value: data.feedPosts.length,    icon: '💬' },
-                    { label: 'Prayer requests', value: data.prayerPosts.length,  icon: '🙏' },
-                    { label: 'Testimonies',     value: data.testimonies.length,  icon: '🔥' },
+                    { label: 'Discussions',     value: data.feedPosts.length,   icon: '💬' },
+                    { label: 'Prayer requests', value: data.prayerPosts.length, icon: '🙏' },
+                    { label: 'Testimonies',     value: data.testimonies.length, icon: '🔥' },
                   ].map(({ label, value, icon }) => (
-                    <div key={label} className="flex items-center justify-between">
-                      <span className="text-[#BFAEA3] text-sm">{icon} {label}</span>
-                      <span className="text-[#FFF4E8] font-bold text-sm">{value}</span>
+                    <div key={label} className="flex items-center justify-between py-2 border-b border-lm-border dark:border-[#FF7A29]/6 last:border-0">
+                      <span className="text-lm-muted dark:text-[#BFAEA3] text-sm">{icon} {label}</span>
+                      <span className="text-lm-text dark:text-[#FFF4E8] font-bold text-sm">{value}</span>
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* Navigation links */}
+              <div className="glass-card-static p-4">
+                <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">Navigate</p>
+                {([
+                  ['🔥', 'Community',      '/forum'],
+                  ['📖', 'Verses',         '/verses'],
+                  ['🕊', 'Devotions',      '/devotions'],
+                  ['✝',  'Testimonies',    '/testimonies'],
+                  ['📝', 'My Reflections', '/reflections'],
+                ] as const).map(([icon, label, href]) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="flex items-center gap-3 py-2 text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-[#FF7A29] transition-colors"
+                  >
+                    <span className="w-4 text-center">{icon}</span>
+                    <span>{label}</span>
+                  </Link>
+                ))}
               </div>
 
             </aside>
