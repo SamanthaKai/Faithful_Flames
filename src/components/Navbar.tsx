@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
@@ -23,25 +23,14 @@ export function Navbar() {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
 
-  const isHome = pathname === '/'
   const isActive = (href: string) =>
     href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/')
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 60)
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    handleScroll()
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   const initial =
     session?.user?.name?.[0]?.toUpperCase() ??
     session?.user?.email?.[0]?.toUpperCase() ??
     '?'
-
-  const transparent = isHome && !scrolled && !session
 
   const getLinkClass = (href: string) => {
     const active = isActive(href)
@@ -49,20 +38,11 @@ export function Navbar() {
     if (active) {
       return `${base} text-ember border-b-2 border-ember`
     }
-    if (transparent) {
-      return `${base} text-white/90 hover:text-white border-b-2 border-transparent`
-    }
     return `${base} text-[#2A140A] hover:text-black dark:text-[#BFAEA3] dark:hover:text-ember border-b-2 border-transparent hover:border-black/30 dark:hover:border-ember/40`
   }
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        transparent
-          ? 'bg-transparent border-b border-transparent'
-          : 'bg-[#FFF0E0]/95 dark:bg-[#0D0A0A]/95 backdrop-blur-md border-b border-[#F1D3B3] dark:border-ember/10'
-      }`}
-    >
+    <header className="sticky top-0 z-50 bg-[#FFF0E0]/95 dark:bg-[#0D0A0A]/95 backdrop-blur-md border-b border-[#F1D3B3] dark:border-ember/10 transition-colors duration-300">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
         <Logo size={34} />
 
@@ -81,11 +61,7 @@ export function Navbar() {
             type="button"
             onClick={toggle}
             aria-label="Toggle theme"
-            className={`p-2 rounded-lg transition-colors duration-200 ${
-              transparent
-                ? 'text-white/80 hover:text-white hover:bg-white/10'
-                : 'text-[#2A140A] hover:text-black hover:bg-black/8 dark:text-[#BFAEA3] dark:hover:text-ember dark:hover:bg-ember/8'
-            }`}
+            className="p-2 rounded-lg transition-colors duration-200 text-[#2A140A] hover:text-black hover:bg-black/8 dark:text-[#BFAEA3] dark:hover:text-ember dark:hover:bg-ember/8"
           >
             {theme === 'dark' ? (
               <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -142,11 +118,7 @@ export function Navbar() {
             <div className="flex items-center gap-2">
               <Link
                 href="/login"
-                className={`py-1.5 px-4 text-xs font-semibold rounded-lg border transition-all duration-200 ${
-                  transparent
-                    ? 'border-white/40 text-white bg-black/25 hover:bg-black/40'
-                    : 'border-[#2A140A]/30 text-[#2A140A] hover:bg-[#2A140A] hover:text-white hover:border-[#2A140A] dark:bg-transparent dark:border-ember/40 dark:text-ember dark:hover:bg-ember/8 dark:hover:text-ember'
-                }`}
+                className="py-1.5 px-4 text-xs font-semibold rounded-lg border transition-all duration-200 border-[#2A140A]/30 text-[#2A140A] hover:bg-[#2A140A] hover:text-white hover:border-[#2A140A] dark:bg-transparent dark:border-ember/40 dark:text-ember dark:hover:bg-ember/8 dark:hover:text-ember"
               >
                 Sign in
               </Link>
@@ -163,11 +135,7 @@ export function Navbar() {
         {/* Mobile hamburger */}
         <button
           type="button"
-          className={`md:hidden p-2 rounded-lg transition-colors ${
-            transparent
-              ? 'text-white/90 hover:bg-white/10'
-              : 'text-[#2A140A] hover:text-black dark:text-[#BFAEA3] dark:hover:text-ember'
-          }`}
+          className="md:hidden p-2 rounded-lg transition-colors text-[#2A140A] hover:text-black dark:text-[#BFAEA3] dark:hover:text-ember"
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
         >
