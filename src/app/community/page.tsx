@@ -99,7 +99,7 @@ export default async function CommunityPage() {
                     <div key={post.id} className="glass-card p-4 pointer-events-none select-none">
                       {meta && (
                         <span className="text-xs font-semibold text-lm-accent dark:text-ember uppercase tracking-widest mb-1.5 block">
-                          {meta.icon} {meta.label}
+                          {meta.label}
                         </span>
                       )}
                       <p className="font-heading font-bold text-lm-text dark:text-[#FFF4E8] text-sm leading-snug mb-1">
