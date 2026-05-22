@@ -429,7 +429,7 @@ export default async function HomePage() {
               </p>
               <div className="mt-5 flex items-center justify-between">
                 <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{prayerCount} prayer {prayerCount === 1 ? 'request' : 'requests'} active</p>
-                <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold inline-flex items-center gap-1"><Heart className="w-3 h-3" />Join in</span>
+                <Link href="/register" className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold inline-flex items-center gap-1 hover:underline"><Heart className="w-3 h-3" />Join in</Link>
               </div>
             </div>
           </ScrollReveal>

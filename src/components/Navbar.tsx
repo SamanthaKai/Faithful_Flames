@@ -144,7 +144,7 @@ export function Navbar() {
                 href="/login"
                 className={`py-1.5 px-4 text-xs font-semibold rounded-lg border transition-all duration-200 ${
                   transparent
-                    ? 'border-white/30 text-white hover:bg-white/10'
+                    ? 'border-white/40 text-white bg-black/25 hover:bg-black/40'
                     : 'border-ember/40 text-ember hover:bg-ember/8 dark:text-ember'
                 }`}
               >
