@@ -128,8 +128,8 @@ button, a {
 
   /* ── Glassmorphism cards — light default, dark override ────────────────── */
   .glass-card {
-    background: #FFFFFF;
-    border: 1px solid #F1E7D0;
+    background: #FFF8F0;
+    border: 1px solid #F1D3B3;
     border-radius: 24px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
@@ -155,8 +155,8 @@ button, a {
   }
 
   .glass-card-gold {
-    background: #FAF6EE;
-    border: 1px solid rgba(245,158,11,0.18);
+    background: #FFF5E6;
+    border: 1px solid rgba(255,122,26,0.18);
     border-radius: 24px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
@@ -182,8 +182,8 @@ button, a {
   }
 
   .glass-card-static {
-    background: #FFFFFF;
-    border: 1px solid #F1E7D0;
+    background: #FFF8F0;
+    border: 1px solid #F1D3B3;
     border-radius: 24px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.04);
   }

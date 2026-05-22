@@ -52,7 +52,7 @@ export function Navbar() {
     if (transparent) {
       return `${base} text-text-muted hover:text-text-warm border-b-2 border-transparent`
     }
-    return `${base} text-warm-gray hover:text-ember dark:text-[#BFAEA3] dark:hover:text-ember border-b-2 border-transparent hover:border-ember/40`
+    return `${base} text-[#6E4A34] hover:text-ember dark:text-[#BFAEA3] dark:hover:text-ember border-b-2 border-transparent hover:border-ember/40`
   }
 
   return (
@@ -60,7 +60,7 @@ export function Navbar() {
       className={`sticky top-0 z-50 transition-all duration-300 ${
         transparent
           ? 'bg-transparent border-b border-transparent'
-          : 'bg-white/95 dark:bg-[#0D0A0A]/95 backdrop-blur-md border-b border-[#E8D8C8] dark:border-ember/10'
+          : 'bg-[#FFF0E0]/95 dark:bg-[#0D0A0A]/95 backdrop-blur-md border-b border-[#F1D3B3] dark:border-ember/10'
       }`}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
@@ -84,7 +84,7 @@ export function Navbar() {
             className={`p-2 rounded-lg transition-colors duration-200 ${
               transparent
                 ? 'text-text-muted hover:text-text-warm hover:bg-white/10'
-                : 'text-warm-gray hover:text-ember dark:text-[#BFAEA3] hover:bg-ember/8'
+                : 'text-[#6E4A34] hover:text-ember dark:text-[#BFAEA3] hover:bg-[#FFE2C2] dark:hover:bg-ember/8'
             }`}
           >
             {theme === 'dark' ? (
@@ -115,15 +115,15 @@ export function Navbar() {
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-[#161111] rounded-xl shadow-xl border border-[#E8D8C8] dark:border-ember/15 overflow-hidden animate-fade-in">
-                  <div className="px-4 py-3 border-b border-[#E8D8C8] dark:border-ember/10">
-                    <p className="text-sm font-semibold text-[#3A2E2A] dark:text-[#FFF4E8] truncate">{session.user.name}</p>
-                    <p className="text-xs text-[#7C6B62] dark:text-[#BFAEA3] truncate">{session.user.email}</p>
+                <div className="absolute right-0 mt-2 w-52 bg-[#FFF8F0] dark:bg-[#161111] rounded-xl shadow-xl border border-[#F1D3B3] dark:border-ember/15 overflow-hidden animate-fade-in">
+                  <div className="px-4 py-3 border-b border-[#F1D3B3] dark:border-ember/10">
+                    <p className="text-sm font-semibold text-[#2A140A] dark:text-[#FFF4E8] truncate">{session.user.name}</p>
+                    <p className="text-xs text-[#6E4A34] dark:text-[#BFAEA3] truncate">{session.user.email}</p>
                   </div>
                   <div className="py-1">
-                    <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#3A2E2A] dark:text-[#FFF4E8] hover:bg-ember/8 transition-colors">Profile</Link>
-                    <Link href="/reflections" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#3A2E2A] dark:text-[#FFF4E8] hover:bg-ember/8 transition-colors">My Reflections</Link>
-                    <Link href="/journal" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#3A2E2A] dark:text-[#FFF4E8] hover:bg-ember/8 transition-colors">Prayer Journal</Link>
+                    <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">Profile</Link>
+                    <Link href="/reflections" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">My Reflections</Link>
+                    <Link href="/journal" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">Prayer Journal</Link>
                     {session.user.role === 'ADMIN' && (
                       <Link href="/admin" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-ember font-semibold hover:bg-ember/8 transition-colors">Admin Panel</Link>
                     )}
@@ -145,7 +145,7 @@ export function Navbar() {
                 className={`py-1.5 px-4 text-xs font-semibold rounded-lg border transition-all duration-200 ${
                   transparent
                     ? 'border-white/40 text-white bg-black/25 hover:bg-black/40'
-                    : 'border-ember/40 text-ember hover:bg-ember/8 dark:text-ember'
+                    : 'border-[rgba(255,122,26,0.25)] bg-[rgba(255,122,26,0.08)] text-[#8A4B1F] hover:bg-[#FFE2C2] hover:border-[rgba(255,122,26,0.4)] dark:bg-transparent dark:border-ember/40 dark:text-ember dark:hover:bg-ember/8'
                 }`}
               >
                 Sign in
@@ -180,7 +180,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {open && (
-        <div className="md:hidden border-t border-[#E8D8C8] dark:border-ember/10 bg-white/98 dark:bg-[#0D0A0A]/98 backdrop-blur-md animate-fade-in">
+        <div className="md:hidden border-t border-[#F1D3B3] dark:border-ember/10 bg-[#FFF0E0]/98 dark:bg-[#0D0A0A]/98 backdrop-blur-md animate-fade-in">
           <div className="px-4 py-3 space-y-0.5">
             {navLinks.map((link) => {
               const active = isActive(link.href)
@@ -191,8 +191,8 @@ export function Navbar() {
                   onClick={() => setOpen(false)}
                   className={`flex items-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-150 ${
                     active
-                      ? 'text-ember bg-ember/8 font-semibold'
-                      : 'text-[#3A2E2A] dark:text-[#BFAEA3] hover:text-ember hover:bg-ember/5'
+                      ? 'text-ember bg-[#FFE2C2] dark:bg-ember/8 font-semibold'
+                      : 'text-[#2A140A] dark:text-[#BFAEA3] hover:text-ember hover:bg-[#FFE2C2] dark:hover:bg-ember/5'
                   }`}
                 >
                   {active && <span className="w-1.5 h-1.5 rounded-full bg-ember flex-shrink-0" />}
@@ -200,15 +200,15 @@ export function Navbar() {
                 </Link>
               )
             })}
-            <div className="pt-3 border-t border-[#E8D8C8] dark:border-ember/10 flex gap-2 mt-1">
+            <div className="pt-3 border-t border-[#F1D3B3] dark:border-ember/10 flex gap-2 mt-1">
               {session ? (
                 <>
-                  <Link href="/profile" onClick={() => setOpen(false)} className="border border-ember/40 text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-ember/8 transition-colors">Profile</Link>
+                  <Link href="/profile" onClick={() => setOpen(false)} className="border border-[rgba(255,122,26,0.25)] bg-[rgba(255,122,26,0.08)] text-[#8A4B1F] dark:border-ember/40 dark:bg-transparent dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">Profile</Link>
                   <button type="button" onClick={() => signOut({ callbackUrl: '/' })} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 hover:bg-gold hover:text-[#0D0A0A] transition-colors">Sign out</button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setOpen(false)} className="border border-ember/40 text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-ember/8 transition-colors">Sign in</Link>
+                  <Link href="/login" onClick={() => setOpen(false)} className="border border-[rgba(255,122,26,0.25)] bg-[rgba(255,122,26,0.08)] text-[#8A4B1F] dark:border-ember/40 dark:bg-transparent dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">Sign in</Link>
                   <Link href="/register" onClick={() => setOpen(false)} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-gold hover:text-[#0D0A0A] transition-colors">Join</Link>
                 </>
               )}

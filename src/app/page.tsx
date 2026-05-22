@@ -18,14 +18,32 @@ import {
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
 async function getPublicData() {
-  const [verse, memberCount, prayerCount] = await Promise.all([
+  const [verse, memberCount, prayerCount, previewTestimony, previewPrayer, previewDiscussion, previewVoice] = await Promise.all([
     prisma.verse.findFirst({ where: { isDaily: true } }).then(
       (v) => v ?? prisma.verse.findFirst({ orderBy: { createdAt: 'desc' } })
     ),
     prisma.user.count(),
     prisma.forumPost.count({ where: { topic: 'PRAYER_REQUESTS', isFlagged: false } }),
+    prisma.testimony.findFirst({
+      where: { isApproved: true },
+      orderBy: { createdAt: 'desc' },
+      include: { user: { select: { name: true } } },
+    }),
+    prisma.forumPost.findFirst({
+      where: { topic: 'PRAYER_REQUESTS', isFlagged: false },
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.forumPost.findFirst({
+      where: { topic: { not: 'PRAYER_REQUESTS' }, isFlagged: false },
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.testimony.findFirst({
+      where: { isApproved: true },
+      orderBy: { createdAt: 'asc' },
+      include: { user: { select: { name: true } } },
+    }),
   ])
-  return { verse, memberCount, prayerCount }
+  return { verse, memberCount, prayerCount, previewTestimony, previewPrayer, previewDiscussion, previewVoice }
 }
 
 async function getDashboardData(userId: string) {
@@ -316,7 +334,7 @@ export default async function HomePage() {
   // ════════════════════════════════════════════════════════════════════════════
   // SIGNED OUT — Cinematic Landing Page
   // ════════════════════════════════════════════════════════════════════════════
-  const { verse, memberCount, prayerCount } = await getPublicData()
+  const { verse, memberCount, prayerCount, previewTestimony, previewPrayer, previewDiscussion, previewVoice } = await getPublicData()
 
   return (
     <div className="bg-cream text-lm-text dark:bg-[#0D0A0A] dark:text-[#FFF4E8]">
@@ -402,51 +420,94 @@ export default async function HomePage() {
         </ScrollReveal>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {/* Demo Testimony */}
+          {/* Testimony */}
           <ScrollReveal delay="0s">
             <div className="glass-card ember-glow ember-border-left p-6 h-full flex flex-col">
               <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4 inline-flex items-center gap-1.5">
                 <Flame className="w-3.5 h-3.5" />Testimony
               </span>
-              <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1">
-                &ldquo;I was in my darkest season when God showed up in the most unexpected way. This community helped me remember I wasn&apos;t alone.&rdquo;
-              </p>
-              <div className="mt-5 pt-4 border-t border-lm-border dark:border-[#FF7A29]/10 flex items-center justify-between">
-                <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">By Grace</p>
-                <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">2 hours ago</p>
-              </div>
+              {previewTestimony ? (
+                <>
+                  <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1 line-clamp-4">
+                    &ldquo;{previewTestimony.content}&rdquo;
+                  </p>
+                  <div className="mt-5 pt-4 border-t border-lm-border dark:border-[#FF7A29]/10 flex items-center justify-between">
+                    <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">
+                      {previewTestimony.isAnonymous ? 'Anonymous' : (previewTestimony.user.name ?? 'A believer')}
+                    </p>
+                    <Link href="/register" className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold hover:underline">Read more →</Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1">
+                    &ldquo;Be the first to share what God has done. Your testimony could spark someone else&apos;s faith.&rdquo;
+                  </p>
+                  <div className="mt-5 pt-4 border-t border-lm-border dark:border-[#FF7A29]/10">
+                    <Link href="/register" className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold hover:underline">Share yours →</Link>
+                  </div>
+                </>
+              )}
             </div>
           </ScrollReveal>
 
-          {/* Demo Prayer */}
+          {/* Prayer Request */}
           <ScrollReveal delay="0.12s">
             <div className="glass-card-gold gold-glow gold-border-left p-6 h-full flex flex-col">
               <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-4 inline-flex items-center gap-1.5">
                 <Heart className="w-3.5 h-3.5" />Prayer Request
               </span>
-              <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1">
-                &ldquo;Please pray for my family going through a difficult time. I believe God is still in control.&rdquo;
-              </p>
-              <div className="mt-5 flex items-center justify-between">
-                <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{prayerCount} prayer {prayerCount === 1 ? 'request' : 'requests'} active</p>
-                <Link href="/register" className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold inline-flex items-center gap-1 hover:underline"><Heart className="w-3 h-3" />Join in</Link>
-              </div>
+              {previewPrayer ? (
+                <>
+                  <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1 line-clamp-4">
+                    &ldquo;{previewPrayer.content}&rdquo;
+                  </p>
+                  <div className="mt-5 flex items-center justify-between">
+                    <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{prayerCount} prayer {prayerCount === 1 ? 'request' : 'requests'} active</p>
+                    <Link href="/register" className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold inline-flex items-center gap-1 hover:underline"><Heart className="w-3 h-3" />Join in</Link>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-base leading-relaxed italic flex-1">
+                    &ldquo;Lift each other up. Bring your burdens here and let the community carry them with you.&rdquo;
+                  </p>
+                  <div className="mt-5 flex items-center justify-between">
+                    <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{prayerCount} prayer {prayerCount === 1 ? 'request' : 'requests'} active</p>
+                    <Link href="/register" className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold inline-flex items-center gap-1 hover:underline"><Heart className="w-3 h-3" />Join in</Link>
+                  </div>
+                </>
+              )}
             </div>
           </ScrollReveal>
 
-          {/* Demo Discussion */}
+          {/* Discussion */}
           <ScrollReveal delay="0.24s">
             <div className="glass-card ember-glow p-6 h-full flex flex-col">
               <span className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest bg-[#FF7A29]/10 px-3 py-1 rounded-full w-fit mb-4 inline-flex items-center gap-1.5">
                 <MessageCircle className="w-3.5 h-3.5" />Discussion
               </span>
-              <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg font-bold mb-3 leading-snug flex-1">
-                What does trusting God daily look like for you?
-              </h3>
-              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-4">Active discussion · Trending now</p>
-              <Link href="/register" className="text-sm text-lm-accent dark:text-[#FF7A29] font-semibold hover:text-secondary dark:hover:text-[#F6B25E] transition-colors">
-                Join the conversation →
-              </Link>
+              {previewDiscussion ? (
+                <>
+                  <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg font-bold mb-3 leading-snug flex-1 line-clamp-3">
+                    {previewDiscussion.title}
+                  </h3>
+                  <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-4 line-clamp-2">{previewDiscussion.content}</p>
+                  <Link href="/register" className="text-sm text-lm-accent dark:text-[#FF7A29] font-semibold hover:text-secondary dark:hover:text-[#F6B25E] transition-colors">
+                    Join the conversation →
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg font-bold mb-3 leading-snug flex-1">
+                    What does walking with God look like for you today?
+                  </h3>
+                  <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-4">Start the first discussion in this community.</p>
+                  <Link href="/register" className="text-sm text-lm-accent dark:text-[#FF7A29] font-semibold hover:text-secondary dark:hover:text-[#F6B25E] transition-colors">
+                    Join the conversation →
+                  </Link>
+                </>
+              )}
             </div>
           </ScrollReveal>
         </div>
@@ -463,16 +524,26 @@ export default async function HomePage() {
             </div>
           </ScrollReveal>
 
-          {/* Featured member preview */}
+          {/* Community Voice */}
           <ScrollReveal delay="0.12s">
             <div className="glass-card-gold gold-glow p-8 h-full flex flex-col">
               <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest bg-[#F6B25E]/10 px-3 py-1 rounded-full w-fit mb-6 inline-flex items-center gap-1.5">
                 <Quote className="w-3.5 h-3.5" />Community Voice
               </span>
-              <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl italic leading-relaxed flex-1">
-                &ldquo;Learning to trust God one day at a time. This fellowship has become my anchor.&rdquo;
-              </p>
-              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mt-5">Samantha</p>
+              {previewVoice ? (
+                <>
+                  <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl italic leading-relaxed flex-1 line-clamp-4">
+                    &ldquo;{previewVoice.content}&rdquo;
+                  </p>
+                  <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mt-5">
+                    {previewVoice.isAnonymous ? 'Anonymous' : (previewVoice.user.name ?? 'A believer')}
+                  </p>
+                </>
+              ) : (
+                <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl italic leading-relaxed flex-1">
+                  &ldquo;Your voice belongs here. Share your story and strengthen someone else&apos;s faith.&rdquo;
+                </p>
+              )}
               <Link href="/register" className="mt-4 inline-flex items-center gap-1 text-sm text-[#D97706] dark:text-[#F6B25E] font-semibold hover:text-lm-text dark:hover:text-[#FFF4E8] transition-colors">
                 Meet the community →
               </Link>
