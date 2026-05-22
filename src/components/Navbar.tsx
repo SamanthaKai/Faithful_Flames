@@ -123,6 +123,7 @@ export function Navbar() {
                   <div className="py-1">
                     <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#3A2E2A] dark:text-[#FFF4E8] hover:bg-ember/8 transition-colors">Profile</Link>
                     <Link href="/reflections" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#3A2E2A] dark:text-[#FFF4E8] hover:bg-ember/8 transition-colors">My Reflections</Link>
+                    <Link href="/journal" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#3A2E2A] dark:text-[#FFF4E8] hover:bg-ember/8 transition-colors">Prayer Journal</Link>
                     {session.user.role === 'ADMIN' && (
                       <Link href="/admin" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-ember font-semibold hover:bg-ember/8 transition-colors">Admin Panel</Link>
                     )}

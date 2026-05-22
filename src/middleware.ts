@@ -19,5 +19,7 @@ export const config = {
     '/reflections/:path*',
     '/testimonies/:path*',
     '/profile/:path*',
+    '/journal/:path*',
+    '/journal',
   ],
 }

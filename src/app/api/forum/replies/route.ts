@@ -9,15 +9,15 @@ export async function POST(req: Request) {
   const session = await getServerSession(authOptions)
   if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { postId, content } = await req.json()
+  const { postId, content, parentId } = await req.json()
   if (!postId || !content?.trim()) return NextResponse.json({ error: 'Missing fields.' }, { status: 400 })
   if (containsProfanity(content)) {
     return NextResponse.json({ error: 'Content contains inappropriate language.' }, { status: 400 })
   }
 
   const reply = await prisma.forumReply.create({
-    data: { postId, userId: session.user.id, content },
-    include: { user: { select: { name: true, image: true } } },
+    data: { postId, userId: session.user.id, content, parentId: parentId ?? null },
+    include: { user: { select: { name: true } } },
   })
   return NextResponse.json(reply, { status: 201 })
 }

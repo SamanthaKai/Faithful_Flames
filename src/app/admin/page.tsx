@@ -5,12 +5,30 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-type Tab = 'verses' | 'articles' | 'devotions' | 'testimonies' | 'events' | 'forum'
+type Tab = 'verses' | 'articles' | 'devotions' | 'testimonies' | 'events' | 'forum' | 'accountability'
 
 interface Testimony { id: string; content: string; isAnonymous: boolean; isApproved: boolean; createdAt: string; user: { name: string | null } }
 interface Verse { id: string; reference: string; text: string; reflection: string; tags: string[]; isDaily: boolean }
 interface Post { id: string; title: string; content: string; topic: string; isFlagged: boolean; user: { name: string | null } }
 interface Event { id: string; title: string; description: string | null; date: string }
+
+interface AccReq {
+  id: string
+  focus: string
+  frequency: string
+  notes: string | null
+  status: 'PENDING' | 'MATCHED'
+  user: { id: string; name: string | null; email: string }
+  partner: { id: string; name: string | null; email: string } | null
+}
+
+const FOCUS_LABELS: Record<string, string> = {
+  BIBLE_READING: 'Bible Reading', PRAYER: 'Prayer', FASTING: 'Fasting',
+  PURITY: 'Purity', WORSHIP: 'Worship', OTHER: 'Other',
+}
+const FREQ_LABELS: Record<string, string> = {
+  DAILY: 'Daily', WEEKLY: 'Weekly', BIWEEKLY: 'Bi-weekly',
+}
 
 export default function AdminPage() {
   const { data: session, status } = useSession()
@@ -21,6 +39,10 @@ export default function AdminPage() {
   const [posts, setPosts] = useState<Post[]>([])
   const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(false)
+  const [accPending, setAccPending] = useState<AccReq[]>([])
+  const [accMatched, setAccMatched] = useState<AccReq[]>([])
+  const [selectedIds, setSelectedIds] = useState<string[]>([])
+  const [matching, setMatching] = useState(false)
 
   // Verse form
   const [vForm, setVForm] = useState({ reference: '', text: '', reflection: '', tags: '', isDaily: false })
@@ -46,6 +68,7 @@ export default function AdminPage() {
       devotions: () => Promise.resolve(),
       events: () => fetch('/api/admin/events').then(r => r.json()).then(setEvents),
       forum: () => fetch('/api/forum/posts?flagged=true').then(r => r.json()).then(setPosts),
+      accountability: () => fetch('/api/admin/accountability').then(r => r.json()).then(d => { setAccPending(d.pending ?? []); setAccMatched(d.matched ?? []) }),
     }
     fetches[tab]?.().finally(() => setLoading(false))
   }, [tab, status, session])
@@ -90,6 +113,33 @@ export default function AdminPage() {
     if (res.ok) { const ev = await res.json(); setEvents(p => [...p, ev]); setEForm({ title: '', description: '', date: '' }); toast.success('Event added!') }
   }
 
+  const toggleSelect = (userId: string) => {
+    setSelectedIds(prev =>
+      prev.includes(userId) ? prev.filter(id => id !== userId) : prev.length < 2 ? [...prev, userId] : prev
+    )
+  }
+
+  const handleMatch = async () => {
+    if (selectedIds.length !== 2) return
+    setMatching(true)
+    const res = await fetch('/api/admin/accountability/match', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userIdA: selectedIds[0], userIdB: selectedIds[1] }),
+    })
+    setMatching(false)
+    if (res.ok) {
+      toast.success('Partners matched! Both users have been notified by email.')
+      setSelectedIds([])
+      const data = await fetch('/api/admin/accountability').then(r => r.json())
+      setAccPending(data.pending ?? [])
+      setAccMatched(data.matched ?? [])
+    } else {
+      const { error } = await res.json()
+      toast.error(error ?? 'Failed to match.')
+    }
+  }
+
   const deletePost = async (id: string) => {
     if (!confirm('Delete this post?')) return
     await fetch(`/api/admin/forum/${id}`, { method: 'DELETE' })
@@ -106,6 +156,7 @@ export default function AdminPage() {
     { id: 'devotions', label: 'Devotions' },
     { id: 'events', label: 'Events' },
     { id: 'forum', label: 'Forum' },
+    { id: 'accountability', label: 'Accountability' },
   ]
 
   return (
@@ -247,6 +298,86 @@ export default function AdminPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Accountability */}
+      {tab === 'accountability' && !loading && (
+        <div className="space-y-8">
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-heading text-xl font-bold text-charcoal dark:text-cream">
+                Pending Requests ({accPending.length})
+              </h2>
+              {selectedIds.length === 2 && (
+                <button
+                  type="button"
+                  onClick={handleMatch}
+                  disabled={matching}
+                  className="btn-primary text-sm px-4 py-2"
+                >
+                  {matching ? 'Matching...' : 'Match selected pair'}
+                </button>
+              )}
+            </div>
+            {accPending.length === 0 ? (
+              <p className="text-warm-gray text-center py-8">No pending requests.</p>
+            ) : (
+              <div className="space-y-3">
+                {accPending.map(req => {
+                  const selected = selectedIds.includes(req.user.id)
+                  return (
+                    <button
+                      key={req.id}
+                      type="button"
+                      onClick={() => toggleSelect(req.user.id)}
+                      className={`w-full text-left card p-4 transition-all border-2 ${selected ? 'border-primary' : 'border-transparent'}`}
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div>
+                          <p className="font-semibold text-charcoal dark:text-cream text-sm">{req.user.name ?? 'Unknown'}</p>
+                          <p className="text-xs text-warm-gray">{req.user.email}</p>
+                          <div className="flex gap-3 mt-1 text-xs text-warm-gray">
+                            <span><strong className="text-charcoal dark:text-cream">Focus:</strong> {FOCUS_LABELS[req.focus] ?? req.focus}</span>
+                            <span><strong className="text-charcoal dark:text-cream">Frequency:</strong> {FREQ_LABELS[req.frequency] ?? req.frequency}</span>
+                          </div>
+                          {req.notes && <p className="text-xs text-warm-gray mt-1 italic">{req.notes}</p>}
+                        </div>
+                        <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center transition-colors ${selected ? 'bg-primary border-primary' : 'border-gray-300'}`}>
+                          {selected && <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                        </div>
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+            {selectedIds.length > 0 && selectedIds.length < 2 && (
+              <p className="text-xs text-warm-gray mt-2">Select one more person to create a pair.</p>
+            )}
+          </div>
+
+          <div>
+            <h2 className="font-heading text-xl font-bold text-charcoal dark:text-cream mb-4">
+              Matched Pairs ({accMatched.length})
+            </h2>
+            {accMatched.length === 0 ? (
+              <p className="text-warm-gray text-center py-8">No matched pairs yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {accMatched.map(req => (
+                  <div key={req.id} className="card p-4">
+                    <div className="flex items-center gap-3 text-sm">
+                      <span className="font-semibold text-charcoal dark:text-cream">{req.user.name ?? req.user.email}</span>
+                      <span className="text-warm-gray">+</span>
+                      <span className="font-semibold text-charcoal dark:text-cream">{req.partner?.name ?? req.partner?.email ?? 'Unknown'}</span>
+                      <span className="ml-auto text-xs text-warm-gray">{FOCUS_LABELS[req.focus] ?? req.focus} · {FREQ_LABELS[req.frequency] ?? req.frequency}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
