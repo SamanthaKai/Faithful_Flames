@@ -52,7 +52,7 @@ export function Navbar() {
     if (transparent) {
       return `${base} text-text-muted hover:text-text-warm border-b-2 border-transparent`
     }
-    return `${base} text-[#6E4A34] hover:text-ember dark:text-[#BFAEA3] dark:hover:text-ember border-b-2 border-transparent hover:border-ember/40`
+    return `${base} text-[#D9B38C] hover:text-ember dark:text-[#BFAEA3] dark:hover:text-ember border-b-2 border-transparent hover:border-ember/40`
   }
 
   return (
@@ -84,7 +84,7 @@ export function Navbar() {
             className={`p-2 rounded-lg transition-colors duration-200 ${
               transparent
                 ? 'text-text-muted hover:text-text-warm hover:bg-white/10'
-                : 'text-[#6E4A34] hover:text-ember dark:text-[#BFAEA3] hover:bg-[#FFE2C2] dark:hover:bg-ember/8'
+                : 'text-[#D9B38C] hover:text-ember dark:text-[#BFAEA3] hover:bg-[#FFE2C2] dark:hover:bg-ember/8'
             }`}
           >
             {theme === 'dark' ? (
@@ -145,7 +145,7 @@ export function Navbar() {
                 className={`py-1.5 px-4 text-xs font-semibold rounded-lg border transition-all duration-200 ${
                   transparent
                     ? 'border-white/40 text-white bg-black/25 hover:bg-black/40'
-                    : 'border-[rgba(255,122,26,0.25)] bg-[rgba(255,122,26,0.08)] text-[#8A4B1F] hover:bg-[#FFE2C2] hover:border-[rgba(255,122,26,0.4)] dark:bg-transparent dark:border-ember/40 dark:text-ember dark:hover:bg-ember/8'
+                    : 'border-[#C9A07A] bg-[#D9B38C] text-[#5C2E0A] hover:bg-[#C9A07A] hover:border-[#B8895A] dark:bg-transparent dark:border-ember/40 dark:text-ember dark:hover:bg-ember/8'
                 }`}
               >
                 Sign in
@@ -203,12 +203,12 @@ export function Navbar() {
             <div className="pt-3 border-t border-[#F1D3B3] dark:border-ember/10 flex gap-2 mt-1">
               {session ? (
                 <>
-                  <Link href="/profile" onClick={() => setOpen(false)} className="border border-[rgba(255,122,26,0.25)] bg-[rgba(255,122,26,0.08)] text-[#8A4B1F] dark:border-ember/40 dark:bg-transparent dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">Profile</Link>
+                  <Link href="/profile" onClick={() => setOpen(false)} className="border border-[#C9A07A] bg-[#D9B38C] text-[#5C2E0A] dark:border-ember/40 dark:bg-transparent dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#C9A07A] dark:hover:bg-ember/8 transition-colors">Profile</Link>
                   <button type="button" onClick={() => signOut({ callbackUrl: '/' })} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 hover:bg-gold hover:text-[#0D0A0A] transition-colors">Sign out</button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setOpen(false)} className="border border-[rgba(255,122,26,0.25)] bg-[rgba(255,122,26,0.08)] text-[#8A4B1F] dark:border-ember/40 dark:bg-transparent dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">Sign in</Link>
+                  <Link href="/login" onClick={() => setOpen(false)} className="border border-[#C9A07A] bg-[#D9B38C] text-[#5C2E0A] dark:border-ember/40 dark:bg-transparent dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#C9A07A] dark:hover:bg-ember/8 transition-colors">Sign in</Link>
                   <Link href="/register" onClick={() => setOpen(false)} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-gold hover:text-[#0D0A0A] transition-colors">Join</Link>
                 </>
               )}
