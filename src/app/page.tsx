@@ -8,18 +8,24 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { EmberParticles } from '@/components/EmberParticles'
 import { ScrollReveal } from '@/components/ScrollReveal'
+import { TimeGreeting } from '@/components/TimeGreeting'
 import { FORUM_TOPIC_MAP } from '@/lib/forum-topics'
 import {
-  Flame, Heart, MessageCircle, BookOpen, Book,
-  PenLine, Users, Shield, Handshake, Sun, Moon, Quote,
+  Flame, Heart, MessageCircle, BookOpen,
+  PenLine, Users, Shield, Quote, Sun,
 } from 'lucide-react'
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
-async function getPublicVerse() {
-  return prisma.verse.findFirst({ where: { isDaily: true } }).then(
-    (v) => v ?? prisma.verse.findFirst({ orderBy: { createdAt: 'desc' } })
-  )
+async function getPublicData() {
+  const [verse, memberCount, prayerCount] = await Promise.all([
+    prisma.verse.findFirst({ where: { isDaily: true } }).then(
+      (v) => v ?? prisma.verse.findFirst({ orderBy: { createdAt: 'desc' } })
+    ),
+    prisma.user.count(),
+    prisma.forumPost.count({ where: { topic: 'PRAYER_REQUESTS', isFlagged: false } }),
+  ])
+  return { verse, memberCount, prayerCount }
 }
 
 async function getDashboardData(userId: string) {
@@ -77,13 +83,6 @@ function timeAgo(date: Date) {
   return `${days}d ago`
 }
 
-function getGreeting(): { text: string } {
-  const hour = new Date().getHours()
-  if (hour < 12) return { text: 'Good morning' }
-  if (hour < 17) return { text: 'Good afternoon' }
-  return { text: 'Good evening' }
-}
-
 const TOPIC_META = FORUM_TOPIC_MAP
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
@@ -97,8 +96,6 @@ export default async function HomePage() {
   if (session?.user) {
     const data = await getDashboardData(session.user.id)
     const firstName = session.user.name?.split(' ')[0] ?? 'Friend'
-    const { text: greeting } = getGreeting()
-    const hour = new Date().getHours()
 
     type FeedPost      = typeof data.feedPosts[number]
     type FeedTestimony = typeof data.testimonies[number]
@@ -117,16 +114,7 @@ export default async function HomePage() {
         {/* ── HERO ─────────────────────────────────────────── */}
         <div className="bg-lm-section dark:bg-[#161111] border-b border-lm-border dark:border-[#FF7A29]/10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-center justify-between gap-8">
-            <div>
-              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm font-medium mb-1 flex items-center gap-1.5">
-                {hour < 17
-                  ? <Sun className="w-3.5 h-3.5" />
-                  : <Moon className="w-3.5 h-3.5" />}
-                {greeting}
-              </p>
-              <h1 className="font-heading text-3xl md:text-4xl font-bold text-lm-text dark:text-[#FFF4E8]">{firstName}</h1>
-              <p className="text-lm-muted dark:text-[#BFAEA3] mt-1.5 text-sm">How has your walk with God been today?</p>
-            </div>
+            <TimeGreeting firstName={firstName} />
             {data.verse && (
               <div className="hidden md:flex items-start gap-3 bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/15 rounded-2xl px-5 py-4 max-w-sm shadow-sm dark:shadow-none flex-shrink-0">
                 <BookOpen className="w-4 h-4 mt-0.5 flex-shrink-0 text-lm-accent dark:text-[#F6B25E]" />
@@ -212,7 +200,7 @@ export default async function HomePage() {
                         &ldquo;{testimony.content}&rdquo;
                       </p>
                       <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-2.5">
-                        — {testimony.isAnonymous ? 'Anonymous' : (testimony.user.name ?? 'A believer')}
+                        {testimony.isAnonymous ? 'Anonymous' : (testimony.user.name ?? 'A believer')}
                       </p>
                     </div>
                   </Link>
@@ -224,7 +212,7 @@ export default async function HomePage() {
                     Be the first voice in this fellowship
                   </h3>
                   <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-6 max-w-sm mx-auto">
-                    Your story, your questions, your prayers — they matter here.
+                    Your story, your questions, your prayers. They matter here.
                   </p>
                   <Link
                     href="/forum"
@@ -328,7 +316,7 @@ export default async function HomePage() {
   // ════════════════════════════════════════════════════════════════════════════
   // SIGNED OUT — Cinematic Landing Page
   // ════════════════════════════════════════════════════════════════════════════
-  const verse = await getPublicVerse()
+  const { verse, memberCount, prayerCount } = await getPublicData()
 
   return (
     <div className="bg-cream text-lm-text dark:bg-[#0D0A0A] dark:text-[#FFF4E8]">
@@ -361,7 +349,7 @@ export default async function HomePage() {
                 <Link href="/register" className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF7A29] text-white font-bold rounded-2xl hover:bg-[#F6B25E] hover:text-[#0D0A0A] transition-all duration-300 shadow-lg shadow-[#FF7A29]/20">
                   Join Fellowship
                 </Link>
-                <Link href="/forum" className="inline-flex items-center gap-2 px-8 py-3.5 border border-[#FFF4E8]/20 text-[#FFF4E8] font-semibold rounded-2xl hover:bg-[#FFF4E8]/10 transition-all duration-300">
+                <Link href="/community" className="inline-flex items-center gap-2 px-8 py-3.5 border border-[#FFF4E8]/20 text-[#FFF4E8] font-semibold rounded-2xl hover:bg-[#FFF4E8]/10 transition-all duration-300">
                   Explore Community
                 </Link>
               </div>
@@ -374,18 +362,18 @@ export default async function HomePage() {
                 <p className="font-heading text-base text-lm-text dark:text-[#FFF4E8] italic leading-relaxed line-clamp-3">
                   &ldquo;{verse?.text ?? 'Be strong and courageous. Do not be afraid; do not be discouraged, for the Lord your God will be with you.'}&rdquo;
                 </p>
-                <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-3 font-medium">— {verse?.reference ?? 'Joshua 1:9'}</p>
+                <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-3 font-medium">{verse?.reference ?? 'Joshua 1:9'}</p>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="glass-card-static gold-glow p-5 animate-float-delayed">
                   <p className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest mb-2 flex items-center gap-1.5"><Heart className="w-3.5 h-3.5" />Prayers</p>
-                  <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">∞</p>
+                  <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">{prayerCount}</p>
                   <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Active requests</p>
                 </div>
                 <div className="glass-card-static p-5 animate-float-slow">
                   <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-2 flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />Community</p>
-                  <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">Live</p>
-                  <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Growing together</p>
+                  <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">{memberCount}</p>
+                  <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Members and growing</p>
                 </div>
               </div>
             </div>
@@ -440,7 +428,7 @@ export default async function HomePage() {
                 &ldquo;Please pray for my family going through a difficult time. I believe God is still in control.&rdquo;
               </p>
               <div className="mt-5 flex items-center justify-between">
-                <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">12 people praying</p>
+                <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{prayerCount} prayer {prayerCount === 1 ? 'request' : 'requests'} active</p>
                 <span className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold inline-flex items-center gap-1"><Heart className="w-3 h-3" />Join in</span>
               </div>
             </div>
@@ -455,7 +443,7 @@ export default async function HomePage() {
               <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg font-bold mb-3 leading-snug flex-1">
                 What does trusting God daily look like for you?
               </h3>
-              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-4">34 replies · Trending now</p>
+              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-4">Active discussion · Trending now</p>
               <Link href="/register" className="text-sm text-lm-accent dark:text-[#FF7A29] font-semibold hover:text-secondary dark:hover:text-[#F6B25E] transition-colors">
                 Join the conversation →
               </Link>
@@ -484,7 +472,7 @@ export default async function HomePage() {
               <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl italic leading-relaxed flex-1">
                 &ldquo;Learning to trust God one day at a time. This fellowship has become my anchor.&rdquo;
               </p>
-              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mt-5">— Samantha</p>
+              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mt-5">Samantha</p>
               <Link href="/register" className="mt-4 inline-flex items-center gap-1 text-sm text-[#D97706] dark:text-[#F6B25E] font-semibold hover:text-lm-text dark:hover:text-[#FFF4E8] transition-colors">
                 Meet the community →
               </Link>
@@ -604,7 +592,7 @@ export default async function HomePage() {
             </Link>
           </div>
           <p className="text-lm-muted/50 dark:text-[#BFAEA3]/50 text-sm mt-8 italic">
-            &ldquo;For where two or three gather in my name, there am I with them.&rdquo; — Matthew 18:20
+            &ldquo;For where two or three gather in my name, there am I with them.&rdquo; (Matthew 18:20)
           </p>
         </ScrollReveal>
       </section>

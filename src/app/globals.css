@@ -217,6 +217,11 @@ button, a {
   }
 }
 
+/* ── Dark mode fixes for legacy color classes ──────────────────────────────── */
+.dark .text-warm-gray {
+  color: #BFAEA3;
+}
+
 /* ── Scroll reveal ──────────────────────────────────────────────────────────── */
 .reveal {
   opacity: 0;

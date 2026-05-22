@@ -68,7 +68,7 @@ export default function VersesPage() {
             Daily Verses
           </h1>
           <p className="text-lm-muted dark:text-[#BFAEA3] text-lg leading-relaxed">
-            Scripture to anchor your soul — meditate, reflect, and carry these words with you.
+            Scripture to anchor your soul. Meditate, reflect, and carry these words with you.
           </p>
           {isAdmin && (
             <button
@@ -139,7 +139,7 @@ export default function VersesPage() {
                   </blockquote>
 
                   <p className="font-semibold text-lm-accent dark:text-ember text-base tracking-wide">
-                    — {dailyVerse.reference}
+                    {dailyVerse.reference}
                   </p>
 
                   {dailyVerse.reflection && (
@@ -165,7 +165,7 @@ export default function VersesPage() {
                 </blockquote>
 
                 <p className="font-semibold text-lm-accent dark:text-ember mb-5 text-sm tracking-wide">
-                  — {verse.reference}
+                  {verse.reference}
                 </p>
 
                 {verse.reflection && (
@@ -191,7 +191,7 @@ export default function VersesPage() {
                   No verses yet
                 </p>
                 <p className="text-lm-muted dark:text-[#BFAEA3] text-sm">
-                  Check back soon — scripture is on the way.
+                  Check back soon. Scripture is on the way.
                 </p>
               </div>
             )}

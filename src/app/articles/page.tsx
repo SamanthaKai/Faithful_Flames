@@ -104,7 +104,7 @@ export default function ArticlesPage() {
               Articles
             </h1>
             <p className="text-lm-muted dark:text-[#BFAEA3] text-base max-w-lg leading-relaxed">
-              Long-form writings on faith, culture, and the Christian life — crafted to challenge and encourage.
+              Long-form writings on faith, culture, and the Christian life, crafted to challenge and encourage.
             </p>
           </div>
           {session ? (

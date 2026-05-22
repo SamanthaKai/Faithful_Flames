@@ -98,7 +98,7 @@ function ForumContent() {
               </h2>
               <p className="text-lm-muted dark:text-[#BFAEA3] text-sm leading-relaxed">
                 A safe space for young believers to connect, share, and grow together.
-                We&apos;re here to encourage — not debate or judge. Come as you are.
+                We&apos;re here to encourage, not debate or judge. Come as you are.
               </p>
             </div>
             <ol className="space-y-3 mb-6">
@@ -119,7 +119,7 @@ function ForumContent() {
               ))}
             </ol>
             <button type="button" onClick={dismissModal} className="w-full py-3 bg-lm-accent dark:bg-ember text-white font-bold rounded-xl hover:opacity-90 transition-opacity mb-3">
-              I understand — let me in
+              I understand, let me in
             </button>
             <p className="text-xs text-lm-muted dark:text-[#BFAEA3] text-center">
               By entering, you agree to honor this community.
@@ -141,7 +141,7 @@ function ForumContent() {
                 Community Forum
               </h1>
               <p className="text-lm-muted dark:text-[#BFAEA3] text-base max-w-lg leading-relaxed">
-                Ask, pray, encourage, and grow — together. This is the most alive place on the platform.
+                Ask, pray, encourage, and grow together. This is the most alive place on the platform.
               </p>
             </div>
             {session ? (

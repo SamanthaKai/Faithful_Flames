@@ -28,8 +28,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const post = await prisma.forumPost.findUnique({ where: { id: params.id } })
   if (!post) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  // Owner editing title/content
-  if ((body.title !== undefined || body.content !== undefined) && session.user.id === post.userId) {
+  // Owner or admin editing title/content
+  if ((body.title !== undefined || body.content !== undefined) &&
+      (session.user.id === post.userId || session.user.role === 'ADMIN')) {
     const updated = await prisma.forumPost.update({
       where: { id: params.id },
       data: {

@@ -93,7 +93,7 @@ export default function ReflectionsPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="section-title text-3xl mb-1">My Reflections</h1>
-          <p className="text-warm-gray text-sm">Private — only you can see these.</p>
+          <p className="text-warm-gray text-sm">Private. Only you can see these.</p>
         </div>
         <button onClick={() => { setEditing(null); setShowForm(true) }} className="btn-primary">
           + New Reflection

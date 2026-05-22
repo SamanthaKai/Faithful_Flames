@@ -27,7 +27,13 @@
       "PowerShell(cd \"e:\\\\Projects\\\\Faithful_Flames\"; npx tsc --noEmit 2>&1 | Where-Object { $_ -match \"page\\\\.tsx|Navbar|EmberParticles|ScrollReveal|PrayButton\" })",
       "Bash(node -e \"const p=require\\('./package.json'\\); const deps={...p.dependencies,...p.devDependencies}; const icons=Object.keys\\(deps\\).filter\\(k=>k.includes\\('icon'\\)||k.includes\\('lucide'\\)||k.includes\\('heroicon'\\)||k.includes\\('phosphor'\\)||k.includes\\('radix'\\)\\); console.log\\(icons\\)\")",
       "PowerShell(Get-ChildItem -Path \"e:\\\\Projects\\\\Faithful_Flames\" -File | Where-Object { $_.Name -match '\\\\.\\(json|js|ts\\)$' } | Select-Object -ExpandProperty Name)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(Get-ChildItem -Path \"e:\\\\Projects\\\\Faithful_Flames\" -Recurse -Depth 2)",
+      "Bash(Select-Object -Property FullName, PSIsContainer)",
+      "Bash(Sort-Object FullName)",
+      "PowerShell(head -100)",
+      "Bash(npx prisma *)",
+      "PowerShell($env:DATABASE_URL; [System.Environment]::GetEnvironmentVariable\\('DATABASE_URL', 'User'\\); [System.Environment]::GetEnvironmentVariable\\('DATABASE_URL', 'Machine'\\))"
     ]
   }
 }

@@ -118,7 +118,7 @@ export default function TestimoniesPage() {
               Testimonies
             </h1>
             <p className="text-lm-muted dark:text-[#BFAEA3] text-base max-w-lg leading-relaxed">
-              Real stories of God&apos;s faithfulness. Every testimony is sacred — share yours and encourage someone tonight.
+              Real stories of God&apos;s faithfulness. Every testimony is sacred. Share yours and encourage someone tonight.
             </p>
           </div>
           {session ? (
@@ -215,7 +215,7 @@ export default function TestimoniesPage() {
             {testimonies.map((t, index) => {
               const isFeatured = index === 0
               const displayName = t.isAnonymous ? 'Anonymous' : (t.user.name ?? 'Community Member')
-              const isOwner = !!session && session.user.id === t.userId
+              const isOwner = !!session && (session.user.id === t.userId || session.user.role === 'ADMIN')
 
               return (
                 <article

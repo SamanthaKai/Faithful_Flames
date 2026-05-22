@@ -71,7 +71,7 @@ export function Footer() {
             &copy; {new Date().getFullYear()} Faithful Flames. Built with love and faith.
           </p>
           <p className="text-xs text-warm-gray italic">
-            &ldquo;For the fire of God is a consuming fire.&rdquo; — Hebrews 12:29
+            &ldquo;For the fire of God is a consuming fire.&rdquo; (Hebrews 12:29)
           </p>
         </div>
 
