@@ -22,7 +22,6 @@ interface Post {
   title: string
   content: string
   topic: string
-  prayerCount: number
   createdAt: string
   user: { name: string | null }
   replies: Reply[]
@@ -206,7 +205,7 @@ export default function ForumPostPage() {
 
             {post.topic === 'PRAYER_REQUESTS' && (
               <div className="mt-5 pt-4 border-t border-gray-100 dark:border-[#3A3030]">
-                <PrayButton postId={post.id} initialCount={post.prayerCount} />
+                <PrayButton postId={post.id} />
               </div>
             )}
 

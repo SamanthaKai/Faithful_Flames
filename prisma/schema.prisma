@@ -130,15 +130,14 @@ model Reflection {
 }
 
 model ForumPost {
-  id          String     @id @default(cuid())
-  userId      String
-  title       String
-  content     String     @db.Text
-  topic       ForumTopic
-  isFlagged   Boolean    @default(false)
-  prayerCount Int        @default(0)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id        String     @id @default(cuid())
+  userId    String
+  title     String
+  content   String     @db.Text
+  topic     ForumTopic
+  isFlagged Boolean    @default(false)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   replies       ForumReply[]
