@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
+import { LikeButton } from '@/components/LikeButton'
+import { CommentsSection } from '@/components/CommentsSection'
 
 interface Verse {
   id: string
@@ -51,6 +53,8 @@ export default function VersesPage() {
       toast.error(error ?? 'Failed to add verse.')
     }
   }
+
+  const [openComments, setOpenComments] = useState<string | null>(null)
 
   const dailyVerse = verses.find((v) => v.isDaily)
   const restVerses = verses.filter((v) => !v.isDaily)
@@ -153,6 +157,22 @@ export default function VersesPage() {
                       {dailyVerse.tags.map((tag) => <span key={tag} className="tag">{tag}</span>)}
                     </div>
                   )}
+
+                  <div className="flex items-center justify-center gap-3 mt-6 pt-6 border-t border-lm-border dark:border-ember/10">
+                    <LikeButton contentType="VERSE" contentId={dailyVerse.id} />
+                    <button
+                      type="button"
+                      onClick={() => setOpenComments(openComments === dailyVerse.id ? null : dailyVerse.id)}
+                      className="text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-ember transition-colors"
+                    >
+                      {openComments === dailyVerse.id ? 'Hide comments' : 'Comments'}
+                    </button>
+                  </div>
+                  {openComments === dailyVerse.id && (
+                    <div className="text-left mt-2">
+                      <CommentsSection contentType="VERSE" contentId={dailyVerse.id} />
+                    </div>
+                  )}
                 </div>
               </article>
             )}
@@ -177,16 +197,29 @@ export default function VersesPage() {
                 )}
 
                 {verse.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-2 mb-5">
                     {verse.tags.map((tag) => <span key={tag} className="tag">{tag}</span>)}
                   </div>
+                )}
+
+                <div className="flex items-center gap-3 pt-4 border-t border-lm-border dark:border-ember/10">
+                  <LikeButton contentType="VERSE" contentId={verse.id} />
+                  <button
+                    type="button"
+                    onClick={() => setOpenComments(openComments === verse.id ? null : verse.id)}
+                    className="text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-ember transition-colors"
+                  >
+                    {openComments === verse.id ? 'Hide comments' : 'Comments'}
+                  </button>
+                </div>
+                {openComments === verse.id && (
+                  <CommentsSection contentType="VERSE" contentId={verse.id} />
                 )}
               </article>
             ))}
 
             {verses.length === 0 && (
               <div className="text-center py-20">
-                <p className="text-5xl mb-5">📖</p>
                 <p className="font-heading text-xl text-lm-text dark:text-[#FFF4E8] font-bold mb-2">
                   No verses yet
                 </p>

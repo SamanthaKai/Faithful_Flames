@@ -92,8 +92,7 @@ function ForumContent() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div className="bg-lm-card dark:bg-[#161111] border border-lm-border dark:border-ember/15 rounded-2xl max-w-lg w-full p-8 animate-slide-up max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="text-center mb-6">
-              <span className="text-4xl">🔥</span>
-              <h2 className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8] mt-3 mb-2">
+              <h2 className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8] mb-2">
                 Welcome to the Community
               </h2>
               <p className="text-lm-muted dark:text-[#BFAEA3] text-sm leading-relaxed">
@@ -135,7 +134,7 @@ function ForumContent() {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6">
             <div>
               <span className="text-xs font-semibold uppercase tracking-widest text-lm-accent dark:text-ember mb-3 block">
-                💬 Community
+                Community
               </span>
               <h1 className="font-heading text-4xl md:text-5xl font-bold text-lm-text dark:text-[#FFF4E8] mb-3">
                 Community Forum
@@ -186,7 +185,7 @@ function ForumContent() {
                     : 'bg-transparent text-lm-muted dark:text-[#BFAEA3] border-lm-border dark:border-[#FF7A29]/15 hover:border-lm-accent dark:hover:border-ember hover:text-lm-accent dark:hover:text-ember'
                 }`}
               >
-                {t.icon} {t.label}
+                {t.label}
               </button>
             ))}
           </div>
@@ -204,7 +203,7 @@ function ForumContent() {
                   className="input"
                 >
                   <option value="">Select a topic…</option>
-                  {TOPICS.map((t) => <option key={t.value} value={t.value}>{t.icon} {t.label}</option>)}
+                  {TOPICS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
                 <input
                   value={form.title}
@@ -278,8 +277,8 @@ function ForumContent() {
                           {/* Meta row */}
                           <div className="flex flex-wrap items-center gap-2 mb-2">
                             {meta && (
-                              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${isPrayer ? meta.light + ' dark:' + meta.dark.replace('dark:', '') : meta.light + ' dark:' + meta.dark.replace('dark:', '')}`}>
-                                {meta.icon} {meta.label}
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${meta.light} dark:${meta.dark}`}>
+                                {meta.label}
                               </span>
                             )}
                             <span className="text-xs text-lm-muted dark:text-[#BFAEA3]">
@@ -299,9 +298,9 @@ function ForumContent() {
 
                           {/* Footer */}
                           <div className="flex items-center gap-4 mt-3 text-xs text-lm-muted dark:text-[#BFAEA3]">
-                            <span>💬 {post._count.replies} {post._count.replies === 1 ? 'reply' : 'replies'}</span>
+                            <span>{post._count.replies} {post._count.replies === 1 ? 'reply' : 'replies'}</span>
                             {post._count.replies > 5 && (
-                              <span className="text-lm-accent dark:text-ember font-semibold">🔥 Active</span>
+                              <span className="text-lm-accent dark:text-ember font-semibold">Active</span>
                             )}
                           </div>
                         </div>
@@ -313,7 +312,6 @@ function ForumContent() {
 
               {posts.length === 0 && (
                 <div className="text-center py-20">
-                  <p className="text-5xl mb-5">💬</p>
                   <h3 className="font-heading text-xl font-bold text-lm-text dark:text-[#FFF4E8] mb-2">
                     Be the first voice in this fellowship
                   </h3>

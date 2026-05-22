@@ -63,7 +63,6 @@ export function PrayButton({ postId, initialCount = 0 }: PrayButtonProps) {
           : 'bg-ember/10 text-ember dark:text-[#FF7A29] border border-ember/20 dark:border-[#FF7A29]/20 hover:bg-ember/20 hover:shadow-[0_0_20px_rgba(255,122,41,0.2)]'
       }`}
     >
-      <span>{prayed ? '✨' : '🙏'}</span>
       <span>{prayed ? 'Praying' : submitting ? 'Joining…' : 'Join in prayer'}</span>
       {count > 0 && (
         <span className={`ml-1 px-2 py-0.5 rounded-full text-xs font-bold ${

@@ -3,6 +3,8 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import { LikeButton } from '@/components/LikeButton'
+import { CommentsSection } from '@/components/CommentsSection'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const article = await prisma.article.findUnique({ where: { id: params.id } })
@@ -24,9 +26,12 @@ export default async function ArticlePage({ params }: { params: { id: string } }
           <h1 className="font-heading text-3xl md:text-4xl font-bold text-charcoal dark:text-cream leading-tight mb-4">
             {article.title}
           </h1>
-          <p className="text-warm-gray text-sm">
-            Published {new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-warm-gray text-sm">
+              Published {new Date(article.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+            <LikeButton contentType="ARTICLE" contentId={article.id} />
+          </div>
         </header>
         <div className="prose-faithful">
           {article.content.split('\n\n').map((para, i) => (
@@ -34,6 +39,7 @@ export default async function ArticlePage({ params }: { params: { id: string } }
           ))}
         </div>
       </article>
+      <CommentsSection contentType="ARTICLE" contentId={article.id} />
     </div>
   )
 }

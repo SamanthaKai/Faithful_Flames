@@ -64,7 +64,7 @@ export default function DevotionsPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6">
           <div>
             <span className="text-xs font-semibold uppercase tracking-widest text-lm-accent dark:text-ember mb-3 block">
-              🕊 Daily Reading
+              Daily Reading
             </span>
             <h1 className="font-heading text-4xl md:text-5xl font-bold text-lm-text dark:text-[#FFF4E8] mb-3">
               Devotions
@@ -186,7 +186,6 @@ export default function DevotionsPage() {
 
             {devotions.length === 0 && (
               <div className="text-center py-20">
-                <p className="text-5xl mb-5">🕊</p>
                 <p className="font-heading text-xl text-lm-text dark:text-[#FFF4E8] font-bold mb-2">
                   No devotions yet
                 </p>

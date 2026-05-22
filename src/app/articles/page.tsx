@@ -26,13 +26,13 @@ function timeAgo(date: string) {
 }
 
 /* Category visual identity */
-const CAT_META: Record<string, { icon: string; light: string; dark: string; overlay: string }> = {
-  'Faith & Life': { icon: '✝',  light: 'bg-orange-50 text-orange-700 border-orange-200',   dark: 'bg-ember/10 text-ember border-ember/25',       overlay: 'from-orange-900/70 via-orange-900/40 to-transparent' },
-  'Bible Study':  { icon: '📖', light: 'bg-blue-50 text-blue-700 border-blue-200',          dark: 'bg-blue-400/10 text-blue-300 border-blue-400/25', overlay: 'from-blue-900/70 via-blue-900/40 to-transparent' },
-  'Culture':      { icon: '🌍', light: 'bg-green-50 text-green-700 border-green-200',        dark: 'bg-green-400/10 text-green-300 border-green-400/25', overlay: 'from-green-900/70 via-green-900/40 to-transparent' },
-  'Prayer':       { icon: '🙏', light: 'bg-amber-50 text-amber-700 border-amber-200',        dark: 'bg-gold/10 text-gold border-gold/25',           overlay: 'from-amber-900/70 via-amber-900/40 to-transparent' },
-  'Testimony':    { icon: '🔥', light: 'bg-red-50 text-red-700 border-red-200',              dark: 'bg-ember/10 text-ember border-ember/25',         overlay: 'from-red-900/70 via-red-900/40 to-transparent' },
-  'Other':        { icon: '✨', light: 'bg-stone-50 text-stone-700 border-stone-200',        dark: 'bg-[#BFAEA3]/10 text-[#BFAEA3] border-[#BFAEA3]/25', overlay: 'from-stone-900/70 via-stone-900/40 to-transparent' },
+const CAT_META: Record<string, { light: string; dark: string; overlay: string }> = {
+  'Faith & Life': { light: 'bg-orange-50 text-orange-700 border-orange-200',   dark: 'bg-ember/10 text-ember border-ember/25',       overlay: 'from-orange-900/70 via-orange-900/40 to-transparent' },
+  'Bible Study':  { light: 'bg-blue-50 text-blue-700 border-blue-200',          dark: 'bg-blue-400/10 text-blue-300 border-blue-400/25', overlay: 'from-blue-900/70 via-blue-900/40 to-transparent' },
+  'Culture':      { light: 'bg-green-50 text-green-700 border-green-200',        dark: 'bg-green-400/10 text-green-300 border-green-400/25', overlay: 'from-green-900/70 via-green-900/40 to-transparent' },
+  'Prayer':       { light: 'bg-amber-50 text-amber-700 border-amber-200',        dark: 'bg-gold/10 text-gold border-gold/25',           overlay: 'from-amber-900/70 via-amber-900/40 to-transparent' },
+  'Testimony':    { light: 'bg-red-50 text-red-700 border-red-200',              dark: 'bg-ember/10 text-ember border-ember/25',         overlay: 'from-red-900/70 via-red-900/40 to-transparent' },
+  'Other':        { light: 'bg-stone-50 text-stone-700 border-stone-200',        dark: 'bg-[#BFAEA3]/10 text-[#BFAEA3] border-[#BFAEA3]/25', overlay: 'from-stone-900/70 via-stone-900/40 to-transparent' },
 }
 
 function catMeta(category: string) {
@@ -43,8 +43,8 @@ function CategoryPill({ category, size = 'sm' }: { category: string; size?: 'sm'
   const meta = catMeta(category)
   const px = size === 'xs' ? 'px-2 py-0.5 text-xs' : 'px-3 py-1 text-xs'
   return (
-    <span className={`inline-flex items-center gap-1 ${px} rounded-full font-semibold border ${meta.light} dark:${meta.dark}`}>
-      {meta.icon} {category}
+    <span className={`inline-flex items-center ${px} rounded-full font-semibold border ${meta.light} dark:${meta.dark}`}>
+      {category}
     </span>
   )
 }
@@ -98,7 +98,7 @@ export default function ArticlesPage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6">
           <div>
             <span className="text-xs font-semibold uppercase tracking-widest text-lm-accent dark:text-ember mb-3 block">
-              📰 Digital Magazine
+              Digital Magazine
             </span>
             <h1 className="font-heading text-4xl md:text-5xl font-bold text-lm-text dark:text-[#FFF4E8] mb-3">
               Articles
@@ -172,7 +172,6 @@ export default function ArticlesPage() {
         ) : articles.length === 0 ? (
           /* Empty state */
           <div className="text-center py-24">
-            <p className="text-6xl mb-6">📰</p>
             <h2 className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8] mb-3">
               The magazine is warming up
             </h2>

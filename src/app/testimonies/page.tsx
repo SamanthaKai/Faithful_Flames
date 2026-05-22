@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import { LikeButton } from '@/components/LikeButton'
+import { CommentsSection } from '@/components/CommentsSection'
 
 interface Testimony {
   id: string
@@ -41,6 +43,7 @@ export default function TestimoniesPage() {
   const [editContent, setEditContent] = useState('')
   const [savingEdit, setSavingEdit] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [openComments, setOpenComments] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/testimonies')
@@ -112,7 +115,7 @@ export default function TestimoniesPage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-6">
           <div>
             <span className="text-xs font-semibold uppercase tracking-widest text-lm-accent dark:text-ember mb-3 block">
-              🔥 Stories of Faith
+              Stories of Faith
             </span>
             <h1 className="font-heading text-4xl md:text-5xl font-bold text-lm-text dark:text-[#FFF4E8] mb-3">
               Testimonies
@@ -198,7 +201,6 @@ export default function TestimoniesPage() {
           </div>
         ) : testimonies.length === 0 ? (
           <div className="text-center py-24">
-            <p className="text-6xl mb-6">🔥</p>
             <h2 className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8] mb-3">
               Your testimony could encourage someone tonight
             </h2>
@@ -238,7 +240,7 @@ export default function TestimoniesPage() {
                         <span className="text-xs text-lm-muted dark:text-[#BFAEA3]">{timeAgo(t.createdAt)}</span>
                         {isFeatured && (
                           <span className="text-xs font-semibold text-lm-accent dark:text-ember bg-lm-accent/10 dark:bg-ember/10 px-2 py-0.5 rounded-full">
-                            🔥 Latest
+                            Latest
                           </span>
                         )}
                       </div>
@@ -285,24 +287,37 @@ export default function TestimoniesPage() {
                         <p className={`text-lm-text dark:text-[#FFF4E8] leading-relaxed whitespace-pre-wrap ${isFeatured ? 'text-lg md:text-xl font-heading italic' : 'text-base'}`}>
                           {t.content}
                         </p>
-                        {isOwner && (
-                          <div className="flex gap-4 mt-4 pt-3 border-t border-gray-100 dark:border-[#3A3030]">
-                            <button
-                              type="button"
-                              onClick={() => handleStartEdit(t)}
-                              className="text-xs text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-ember transition-colors"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(t.id)}
-                              disabled={deletingId === t.id}
-                              className="text-xs text-lm-muted dark:text-[#BFAEA3] hover:text-red-500 transition-colors disabled:opacity-50"
-                            >
-                              {deletingId === t.id ? 'Deleting…' : 'Delete'}
-                            </button>
-                          </div>
+                        <div className="flex items-center gap-3 mt-4 pt-3 border-t border-lm-border dark:border-[#3A3030] flex-wrap">
+                          <LikeButton contentType="TESTIMONY" contentId={t.id} />
+                          <button
+                            type="button"
+                            onClick={() => setOpenComments(openComments === t.id ? null : t.id)}
+                            className="text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-ember transition-colors"
+                          >
+                            {openComments === t.id ? 'Hide comments' : 'Comments'}
+                          </button>
+                          {isOwner && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={() => handleStartEdit(t)}
+                                className="text-xs text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-ember transition-colors ml-auto"
+                              >
+                                Edit
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDelete(t.id)}
+                                disabled={deletingId === t.id}
+                                className="text-xs text-lm-muted dark:text-[#BFAEA3] hover:text-red-500 transition-colors disabled:opacity-50"
+                              >
+                                {deletingId === t.id ? 'Deleting…' : 'Delete'}
+                              </button>
+                            </>
+                          )}
+                        </div>
+                        {openComments === t.id && (
+                          <CommentsSection contentType="TESTIMONY" contentId={t.id} />
                         )}
                       </>
                     )}

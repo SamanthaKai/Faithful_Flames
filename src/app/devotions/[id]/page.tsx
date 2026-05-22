@@ -3,6 +3,8 @@ import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
+import { LikeButton } from '@/components/LikeButton'
+import { CommentsSection } from '@/components/CommentsSection'
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
   const devotion = await prisma.devotion.findUnique({ where: { id: params.id } })
@@ -21,8 +23,14 @@ export default async function DevotionPage({ params }: { params: { id: string } 
       <article>
         <header className="mb-8">
           <span className="tag bg-secondary/10 text-secondary mb-4 inline-block">Devotion</span>
-          <h1 className="font-heading text-3xl md:text-4xl font-bold text-charcoal dark:text-cream mb-4">{devotion.title}</h1>
-          <div className="bg-primary/5 border-l-4 border-primary rounded-r-lg px-5 py-4 mb-6">
+          <h1 className="font-heading text-3xl md:text-4xl font-bold text-charcoal dark:text-cream mb-3">{devotion.title}</h1>
+          <div className="flex items-center gap-4 mb-4">
+            <p className="text-warm-gray text-sm">
+              {new Date(devotion.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </p>
+            <LikeButton contentType="DEVOTION" contentId={devotion.id} />
+          </div>
+          <div className="bg-primary/5 border-l-4 border-primary rounded-r-lg px-5 py-4">
             <p className="text-primary font-semibold text-sm mb-1">Scripture</p>
             <p className="font-heading text-lg text-charcoal dark:text-cream italic">{devotion.scripture}</p>
           </div>
@@ -45,6 +53,7 @@ export default async function DevotionPage({ params }: { params: { id: string } 
           <p className="text-charcoal dark:text-cream/90 leading-relaxed">{devotion.reflectionQuestion}</p>
         </section>
       </article>
+      <CommentsSection contentType="DEVOTION" contentId={devotion.id} />
     </div>
   )
 }

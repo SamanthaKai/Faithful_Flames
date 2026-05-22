@@ -7,6 +7,7 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { FORUM_TOPIC_MAP } from '@/lib/forum-topics'
 import { PrayButton } from '@/components/PrayButton'
+import { LikeButton } from '@/components/LikeButton'
 
 interface Child {
   id: string
@@ -424,11 +425,10 @@ export default function ForumPostPage() {
             <h1 className="font-heading text-2xl md:text-3xl font-bold text-charcoal dark:text-cream mb-4">{post.title}</h1>
             <p className="text-charcoal dark:text-cream/90 leading-relaxed whitespace-pre-wrap">{post.content}</p>
 
-            {post.topic === 'PRAYER_REQUESTS' && (
-              <div className="mt-5 pt-4 border-t border-gray-100 dark:border-[#3A3030]">
-                <PrayButton postId={post.id} />
-              </div>
-            )}
+            <div className="mt-5 pt-4 border-t border-gray-100 dark:border-[#3A3030] flex items-center gap-3 flex-wrap">
+              <LikeButton contentType="FORUM_POST" contentId={post.id} />
+              {post.topic === 'PRAYER_REQUESTS' && <PrayButton postId={post.id} />}
+            </div>
 
             <div className="flex items-center gap-4 mt-4 pt-4 border-t border-gray-100 dark:border-[#3A3030]">
               {canManage ? (

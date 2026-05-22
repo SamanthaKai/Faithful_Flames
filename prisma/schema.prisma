@@ -29,6 +29,8 @@ model User {
   journalEntries           JournalEntry[]
   accountabilityRequest    AccountabilityRequest? @relation("AccountabilityUser")
   accountabilityPartnerFor AccountabilityRequest[] @relation("AccountabilityPartner")
+  comments                 Comment[]
+  likes                    Like[]
 }
 
 enum Role {
@@ -240,4 +242,36 @@ model AccountabilityRequest {
 
   user    User  @relation("AccountabilityUser", fields: [userId], references: [id], onDelete: Cascade)
   partner User? @relation("AccountabilityPartner", fields: [partnerId], references: [id], onDelete: SetNull)
+}
+
+enum ContentType {
+  VERSE
+  ARTICLE
+  DEVOTION
+  TESTIMONY
+  FORUM_POST
+}
+
+model Comment {
+  id          String      @id @default(cuid())
+  userId      String
+  content     String      @db.Text
+  contentType ContentType
+  contentId   String
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Like {
+  id          String      @id @default(cuid())
+  userId      String
+  contentType ContentType
+  contentId   String
+  createdAt   DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentType, contentId])
 }
