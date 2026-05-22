@@ -50,9 +50,9 @@ export function Navbar() {
       return `${base} text-ember border-b-2 border-ember`
     }
     if (transparent) {
-      return `${base} text-text-muted hover:text-text-warm border-b-2 border-transparent`
+      return `${base} text-white/90 hover:text-white border-b-2 border-transparent`
     }
-    return `${base} text-[#D9B38C] hover:text-ember dark:text-[#BFAEA3] dark:hover:text-ember border-b-2 border-transparent hover:border-ember/40`
+    return `${base} text-[#2A140A] hover:text-black dark:text-[#BFAEA3] dark:hover:text-ember border-b-2 border-transparent hover:border-black/30 dark:hover:border-ember/40`
   }
 
   return (
@@ -83,8 +83,8 @@ export function Navbar() {
             aria-label="Toggle theme"
             className={`p-2 rounded-lg transition-colors duration-200 ${
               transparent
-                ? 'text-text-muted hover:text-text-warm hover:bg-white/10'
-                : 'text-[#D9B38C] hover:text-ember dark:text-[#BFAEA3] hover:bg-[#FFE2C2] dark:hover:bg-ember/8'
+                ? 'text-white/80 hover:text-white hover:bg-white/10'
+                : 'text-[#2A140A] hover:text-black hover:bg-black/8 dark:text-[#BFAEA3] dark:hover:text-ember dark:hover:bg-ember/8'
             }`}
           >
             {theme === 'dark' ? (
@@ -118,14 +118,14 @@ export function Navbar() {
                 <div className="absolute right-0 mt-2 w-52 bg-[#FFF8F0] dark:bg-[#161111] rounded-xl shadow-xl border border-[#F1D3B3] dark:border-ember/15 overflow-hidden animate-fade-in">
                   <div className="px-4 py-3 border-b border-[#F1D3B3] dark:border-ember/10">
                     <p className="text-sm font-semibold text-[#2A140A] dark:text-[#FFF4E8] truncate">{session.user.name}</p>
-                    <p className="text-xs text-[#6E4A34] dark:text-[#BFAEA3] truncate">{session.user.email}</p>
+                    <p className="text-xs text-[#2A140A]/60 dark:text-[#BFAEA3] truncate">{session.user.email}</p>
                   </div>
                   <div className="py-1">
-                    <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">Profile</Link>
-                    <Link href="/reflections" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">My Reflections</Link>
-                    <Link href="/journal" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] dark:hover:bg-ember/8 transition-colors">Prayer Journal</Link>
+                    <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] hover:text-black dark:hover:bg-ember/8 dark:hover:text-[#FFF4E8] transition-colors">Profile</Link>
+                    <Link href="/reflections" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] hover:text-black dark:hover:bg-ember/8 dark:hover:text-[#FFF4E8] transition-colors">My Reflections</Link>
+                    <Link href="/journal" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] hover:text-black dark:hover:bg-ember/8 dark:hover:text-[#FFF4E8] transition-colors">Prayer Journal</Link>
                     {session.user.role === 'ADMIN' && (
-                      <Link href="/admin" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-ember font-semibold hover:bg-ember/8 transition-colors">Admin Panel</Link>
+                      <Link href="/admin" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-ember font-semibold hover:bg-[#FFE2C2] transition-colors">Admin Panel</Link>
                     )}
                     <button
                       type="button"
@@ -145,14 +145,14 @@ export function Navbar() {
                 className={`py-1.5 px-4 text-xs font-semibold rounded-lg border transition-all duration-200 ${
                   transparent
                     ? 'border-white/40 text-white bg-black/25 hover:bg-black/40'
-                    : 'border-[#C9A07A] bg-[#D9B38C] text-[#5C2E0A] hover:bg-[#C9A07A] hover:border-[#B8895A] dark:bg-transparent dark:border-ember/40 dark:text-ember dark:hover:bg-ember/8'
+                    : 'border-[#2A140A]/30 text-[#2A140A] hover:bg-[#2A140A] hover:text-white hover:border-[#2A140A] dark:bg-transparent dark:border-ember/40 dark:text-ember dark:hover:bg-ember/8 dark:hover:text-ember'
                 }`}
               >
                 Sign in
               </Link>
               <Link
                 href="/register"
-                className="py-1.5 px-4 text-xs font-semibold rounded-lg bg-ember text-white hover:bg-gold hover:text-[#0D0A0A] transition-all duration-200"
+                className="py-1.5 px-4 text-xs font-semibold rounded-lg bg-ember text-white hover:bg-[#2A140A] transition-all duration-200"
               >
                 Join
               </Link>
@@ -164,7 +164,9 @@ export function Navbar() {
         <button
           type="button"
           className={`md:hidden p-2 rounded-lg transition-colors ${
-            transparent ? 'text-[#FFF4E8] hover:bg-white/10' : 'text-warm-gray dark:text-[#BFAEA3] hover:text-ember'
+            transparent
+              ? 'text-white/90 hover:bg-white/10'
+              : 'text-[#2A140A] hover:text-black dark:text-[#BFAEA3] dark:hover:text-ember'
           }`}
           onClick={() => setOpen(!open)}
           aria-label="Toggle menu"
@@ -192,7 +194,7 @@ export function Navbar() {
                   className={`flex items-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-150 ${
                     active
                       ? 'text-ember bg-[#FFE2C2] dark:bg-ember/8 font-semibold'
-                      : 'text-[#2A140A] dark:text-[#BFAEA3] hover:text-ember hover:bg-[#FFE2C2] dark:hover:bg-ember/5'
+                      : 'text-[#2A140A] dark:text-[#BFAEA3] hover:text-black hover:bg-[#FFE2C2] dark:hover:text-ember dark:hover:bg-ember/5'
                   }`}
                 >
                   {active && <span className="w-1.5 h-1.5 rounded-full bg-ember flex-shrink-0" />}
@@ -203,16 +205,16 @@ export function Navbar() {
             <div className="pt-3 border-t border-[#F1D3B3] dark:border-ember/10 flex gap-2 mt-1">
               {session ? (
                 <>
-                  <Link href="/profile" onClick={() => setOpen(false)} className="border border-[#C9A07A] bg-[#D9B38C] text-[#5C2E0A] dark:border-ember/40 dark:bg-transparent dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#C9A07A] dark:hover:bg-ember/8 transition-colors">Profile</Link>
-                  <button type="button" onClick={() => signOut({ callbackUrl: '/' })} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 hover:bg-gold hover:text-[#0D0A0A] transition-colors">Sign out</button>
+                  <Link href="/profile" onClick={() => setOpen(false)} className="border border-[#2A140A]/30 text-[#2A140A] dark:border-ember/40 dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#2A140A] hover:text-white hover:border-[#2A140A] dark:hover:bg-ember/8 transition-colors">Profile</Link>
+                  <button type="button" onClick={() => signOut({ callbackUrl: '/' })} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 hover:bg-[#2A140A] transition-colors">Sign out</button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setOpen(false)} className="border border-[#C9A07A] bg-[#D9B38C] text-[#5C2E0A] dark:border-ember/40 dark:bg-transparent dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#C9A07A] dark:hover:bg-ember/8 transition-colors">Sign in</Link>
-                  <Link href="/register" onClick={() => setOpen(false)} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-gold hover:text-[#0D0A0A] transition-colors">Join</Link>
+                  <Link href="/login" onClick={() => setOpen(false)} className="border border-[#2A140A]/30 text-[#2A140A] dark:border-ember/40 dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#2A140A] hover:text-white hover:border-[#2A140A] dark:hover:bg-ember/8 transition-colors">Sign in</Link>
+                  <Link href="/register" onClick={() => setOpen(false)} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#2A140A] transition-colors">Join</Link>
                 </>
               )}
-              <button type="button" onClick={toggle} className="p-2 rounded-lg border border-[#E8D8C8] dark:border-ember/20 text-[#7C6B62] dark:text-[#BFAEA3] hover:border-ember/40 transition-colors">
+              <button type="button" onClick={toggle} className="p-2 rounded-lg border border-[#2A140A]/20 text-[#2A140A] dark:border-ember/20 dark:text-[#BFAEA3] hover:border-[#2A140A] hover:text-black dark:hover:border-ember/40 transition-colors">
                 {theme === 'dark' ? '☀️' : '🌙'}
               </button>
             </div>
