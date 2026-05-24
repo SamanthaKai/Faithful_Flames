@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
 import { Users, Camera, Trash2 } from 'lucide-react'
+import { UserAvatar } from '@/components/UserAvatar'
 
 interface UserProfile {
   id: string
@@ -176,20 +177,21 @@ export default function ProfilePage() {
         <div className="flex items-start gap-5 mb-6">
           {/* Avatar */}
           <div className="flex-shrink-0 relative group">
-            {(editing ? form.image : profile.image) ? (
-              <Image
-                src={editing ? form.image : profile.image!}
-                alt={profile.name ?? ''}
-                width={64} height={64}
-                className="rounded-full object-cover w-16 h-16"
-              />
-            ) : (
-              <div className="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center text-2xl font-bold">
-                {initial}
-              </div>
-            )}
-            {editing && (
+            {editing ? (
               <>
+                {form.image ? (
+                  <Image
+                    src={form.image}
+                    alt={profile.name ?? ''}
+                    width={64} height={64}
+                    className="rounded-full object-cover w-16 h-16"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center text-2xl font-bold">
+                    {initial}
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
@@ -207,6 +209,8 @@ export default function ProfilePage() {
                   onChange={handleImageFile}
                 />
               </>
+            ) : (
+              <UserAvatar src={profile.image} name={profile.name} size={64} />
             )}
           </div>
 

@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
-import { Flame, Heart, MessageCircle, BookOpen, Shield, Users, CheckCircle } from 'lucide-react'
+import { Flame, Heart, MessageCircle, BookOpen, Shield, Users } from 'lucide-react'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { FORUM_TOPIC_MAP } from '@/lib/forum-topics'
 
@@ -205,6 +205,29 @@ export default async function CommunityPage() {
                 <p className="text-lm-muted dark:text-[#BFAEA3] text-sm leading-relaxed">{desc}</p>
               </div>
             ))}
+          </div>
+        </ScrollReveal>
+
+        {/* ── MEMBER DIRECTORY ─────────────────────── */}
+        <ScrollReveal>
+          <div className="glass-card p-8 md:p-10 flex flex-col sm:flex-row items-center gap-8">
+            <div className="w-16 h-16 rounded-full bg-lm-accent/10 dark:bg-ember/10 flex items-center justify-center flex-shrink-0">
+              <Users className="w-8 h-8 text-lm-accent dark:text-ember" />
+            </div>
+            <div className="flex-1 text-center sm:text-left">
+              <h2 className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8] mb-2">
+                Meet the Community
+              </h2>
+              <p className="text-lm-muted dark:text-[#BFAEA3] text-sm leading-relaxed max-w-md">
+                Browse the member directory to connect with fellow believers. Each profile is a story of faith.
+              </p>
+            </div>
+            <Link
+              href="/members"
+              className="flex-shrink-0 inline-flex items-center gap-2 px-6 py-3 bg-lm-accent dark:bg-ember text-white font-semibold rounded-xl hover:opacity-90 transition-opacity text-sm"
+            >
+              <Users className="w-4 h-4" /> View Members
+            </Link>
           </div>
         </ScrollReveal>
 

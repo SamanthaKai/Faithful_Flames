@@ -8,6 +8,7 @@ import toast from 'react-hot-toast'
 import { FORUM_TOPIC_MAP } from '@/lib/forum-topics'
 import { PrayButton } from '@/components/PrayButton'
 import { LikeButton } from '@/components/LikeButton'
+import { UserAvatar } from '@/components/UserAvatar'
 
 interface Child {
   id: string
@@ -15,7 +16,7 @@ interface Child {
   content: string
   createdAt: string
   updatedAt: string
-  user: { name: string | null }
+  user: { name: string | null; image: string | null }
 }
 
 interface Reply {
@@ -24,7 +25,7 @@ interface Reply {
   content: string
   createdAt: string
   updatedAt: string
-  user: { name: string | null }
+  user: { name: string | null; image: string | null }
   children: Child[]
 }
 
@@ -35,7 +36,7 @@ interface Post {
   content: string
   topic: string
   createdAt: string
-  user: { name: string | null }
+  user: { name: string | null; image: string | null }
   replies: Reply[]
 }
 
@@ -111,8 +112,8 @@ function ReplyCard({
   return (
     <div className={depth > 0 ? 'ml-8 mt-3' : ''}>
       <div className="flex gap-3">
-        <div className="w-8 h-8 rounded-full bg-secondary/10 flex items-center justify-center text-secondary font-bold text-sm flex-shrink-0 mt-1">
-          {(reply.user.name?.[0] ?? '?').toUpperCase()}
+        <div className="mt-1">
+          <UserAvatar src={reply.user.image} name={reply.user.name} size={32} />
         </div>
         <div className="card p-4 flex-1">
           <p className="text-sm font-semibold text-charcoal dark:text-cream mb-1">{reply.user.name}</p>
@@ -269,13 +270,20 @@ export default function ForumPostPage() {
   const handleDeletePost = async () => {
     if (!confirm('Delete this post? This cannot be undone.')) return
     setDeletingPost(true)
-    const res = await fetch(`/api/forum/posts/${id}`, { method: 'DELETE' })
-    if (res.ok) {
-      toast.success('Post deleted.')
-      router.push('/forum')
-    } else {
+    try {
+      const res = await fetch(`/api/forum/posts/${id}`, { method: 'DELETE' })
+      if (res.ok) {
+        toast.success('Post deleted.')
+        router.refresh()
+        router.push('/forum')
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setDeletingPost(false)
+        toast.error((data as { error?: string }).error ?? 'Failed to delete post.')
+      }
+    } catch {
       setDeletingPost(false)
-      toast.error('Failed to delete post.')
+      toast.error('Network error. Please try again.')
     }
   }
 
@@ -366,7 +374,6 @@ export default function ForumPostPage() {
     </div>
   )
 
-  const initial = (post.user.name?.[0] ?? '?').toUpperCase()
   const topicLabel = FORUM_TOPIC_MAP[post.topic]?.label ?? post.topic
   const isOwner = !!session && session.user.id === post.userId
   const canManage = isOwner || (!!session && session.user.role === 'ADMIN')
@@ -379,9 +386,7 @@ export default function ForumPostPage() {
 
       <article className="card p-6 md:p-8 mb-8">
         <div className="flex items-start gap-4 mb-4">
-          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold flex-shrink-0">
-            {initial}
-          </div>
+          <UserAvatar src={post.user.image} name={post.user.name} size={40} />
           <div className="flex-1 min-w-0">
             <span className="text-xs font-medium bg-primary/10 text-primary px-2 py-0.5 rounded-full">
               {topicLabel}

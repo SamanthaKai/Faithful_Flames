@@ -3,9 +3,9 @@
 import { Suspense, useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import Link from 'next/link'
-import Image from 'next/image'
 import toast from 'react-hot-toast'
 import { FORUM_TOPICS } from '@/lib/forum-topics'
+import { UserAvatar } from '@/components/UserAvatar'
 
 const TOPICS = FORUM_TOPICS
 
@@ -251,7 +251,6 @@ function ForumContent() {
             <div className="space-y-3">
               {posts.map((post) => {
                 const meta = topicMeta(post.topic)
-                const initial = (post.user.name?.[0] ?? '?').toUpperCase()
                 const isPrayer = post.topic === 'PRAYER_REQUESTS'
 
                 return (
@@ -263,15 +262,7 @@ function ForumContent() {
                     }`}>
                       <div className="flex items-start gap-4">
                         {/* Avatar */}
-                        <div className="flex-shrink-0">
-                          {post.user.image ? (
-                            <Image src={post.user.image} alt="" width={40} height={40} className="rounded-full ring-2 ring-lm-border dark:ring-ember/20" />
-                          ) : (
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${isPrayer ? 'bg-amber-100 dark:bg-[#F6B25E]/15 text-amber-700 dark:text-[#F6B25E]' : 'bg-lm-accent/15 dark:bg-ember/15 text-lm-accent dark:text-ember'}`}>
-                              {initial}
-                            </div>
-                          )}
-                        </div>
+                        <UserAvatar src={post.user.image} name={post.user.name} size={40} />
 
                         <div className="flex-1 min-w-0">
                           {/* Meta row */}

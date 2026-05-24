@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import toast from 'react-hot-toast'
+import { UserAvatar } from '@/components/UserAvatar'
 
 interface Comment {
   id: string
@@ -157,23 +157,10 @@ export function CommentsSection({ contentType, contentId }: Props) {
           {comments.map((comment) => {
             const isOwner =
               session?.user?.id === comment.userId || session?.user?.role === 'ADMIN'
-            const initial = (comment.user.name?.[0] ?? '?').toUpperCase()
             return (
               <div key={comment.id} className="flex gap-3">
                 <div className="flex-shrink-0 mt-0.5">
-                  {comment.user.image ? (
-                    <Image
-                      src={comment.user.image}
-                      alt=""
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-lm-accent/15 dark:bg-ember/15 flex items-center justify-center text-xs font-bold text-lm-accent dark:text-ember">
-                      {initial}
-                    </div>
-                  )}
+                  <UserAvatar src={comment.user.image} name={comment.user.name} size={32} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">

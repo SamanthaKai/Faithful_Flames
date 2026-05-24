@@ -35,7 +35,10 @@
       "Bash(npx prisma *)",
       "PowerShell($env:DATABASE_URL; [System.Environment]::GetEnvironmentVariable\\('DATABASE_URL', 'User'\\); [System.Environment]::GetEnvironmentVariable\\('DATABASE_URL', 'Machine'\\))",
       "Bash(Get-ChildItem -Path \"src\\\\app\" -Directory -Exclude \"\\(auth\\)\")",
-      "Bash(Select-Object Name)"
+      "Bash(Select-Object Name)",
+      "Bash(Sort-Object)",
+      "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\api\\\\members\\\\[id]\")",
+      "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\members\\\\[id]\")"
     ]
   }
 }

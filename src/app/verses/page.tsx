@@ -13,6 +13,26 @@ interface Verse {
   reflection: string
   tags: string[]
   isDaily: boolean
+  createdAt: string
+}
+
+function formatVerseDate(dateStr: string): string {
+  return new Date(dateStr).toLocaleDateString('en-GB', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+}
+
+function isToday(dateStr: string): boolean {
+  const d = new Date(dateStr)
+  const now = new Date()
+  return (
+    d.getDate() === now.getDate() &&
+    d.getMonth() === now.getMonth() &&
+    d.getFullYear() === now.getFullYear()
+  )
 }
 
 export default function VersesPage() {
@@ -129,9 +149,14 @@ export default function VersesPage() {
                 {/* Warm top accent bar */}
                 <div className="h-1 w-full bg-gradient-to-r from-lm-accent via-amber-400 to-lm-accent dark:from-ember dark:via-gold dark:to-ember" />
                 <div className="p-10 md:p-14 text-center">
-                  <span className="inline-block text-xs font-semibold uppercase tracking-widest text-lm-accent dark:text-ember mb-6">
-                    ✦ Today&apos;s Verse ✦
-                  </span>
+                  <div className="flex flex-col items-center gap-1 mb-6">
+                    <span className="inline-block text-xs font-semibold uppercase tracking-widest text-lm-accent dark:text-ember">
+                      {isToday(dailyVerse.createdAt) ? '✦ Today\'s Verse ✦' : '✦ Daily Verse ✦'}
+                    </span>
+                    <span className="text-xs text-lm-muted dark:text-[#BFAEA3]">
+                      Posted on {formatVerseDate(dailyVerse.createdAt)}
+                    </span>
+                  </div>
 
                   {/* Large quote mark */}
                   <div className="text-7xl font-heading leading-none text-lm-accent/15 dark:text-ember/15 select-none -mb-4">
@@ -202,15 +227,20 @@ export default function VersesPage() {
                   </div>
                 )}
 
-                <div className="flex items-center gap-3 pt-4 border-t border-lm-border dark:border-ember/10">
-                  <LikeButton contentType="VERSE" contentId={verse.id} />
-                  <button
-                    type="button"
-                    onClick={() => setOpenComments(openComments === verse.id ? null : verse.id)}
-                    className="text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-ember transition-colors"
-                  >
-                    {openComments === verse.id ? 'Hide comments' : 'Comments'}
-                  </button>
+                <div className="flex items-center justify-between pt-4 border-t border-lm-border dark:border-ember/10">
+                  <div className="flex items-center gap-3">
+                    <LikeButton contentType="VERSE" contentId={verse.id} />
+                    <button
+                      type="button"
+                      onClick={() => setOpenComments(openComments === verse.id ? null : verse.id)}
+                      className="text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-ember transition-colors"
+                    >
+                      {openComments === verse.id ? 'Hide comments' : 'Comments'}
+                    </button>
+                  </div>
+                  <span className="text-xs text-lm-muted dark:text-[#BFAEA3]">
+                    {formatVerseDate(verse.createdAt)}
+                  </span>
                 </div>
                 {openComments === verse.id && (
                   <CommentsSection contentType="VERSE" contentId={verse.id} />

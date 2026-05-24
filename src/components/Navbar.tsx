@@ -13,6 +13,7 @@ const navLinks = [
   { href: '/verses',      label: 'Verses'      },
   { href: '/devotions',   label: 'Devotions'   },
   { href: '/forum',       label: 'Community'   },
+  { href: '/members',     label: 'Members'     },
   { href: '/testimonies', label: 'Testimonies' },
   { href: '/articles',    label: 'Articles'    },
 ]

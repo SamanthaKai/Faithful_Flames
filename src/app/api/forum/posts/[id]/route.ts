@@ -13,11 +13,11 @@ export async function GET(_req: Request, { params }: { params: { id: string } })
         where: { isFlagged: false, parentId: null },
         orderBy: { createdAt: 'asc' },
         include: {
-          user: { select: { name: true } },
+          user: { select: { name: true, image: true } },
           children: {
             where: { isFlagged: false },
             orderBy: { createdAt: 'asc' },
-            include: { user: { select: { name: true } } },
+            include: { user: { select: { name: true, image: true } } },
           },
         },
       },
