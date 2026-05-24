@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
+import { timeAgo } from '@/lib/time'
 
 const MOODS = ['Grateful', 'Hopeful', 'Struggling', 'Peaceful', 'Anxious', 'Joyful', 'Doubtful', 'Overwhelmed']
 
@@ -95,7 +96,7 @@ export default function ReflectionsPage() {
           <h1 className="section-title text-3xl mb-1">My Reflections</h1>
           <p className="text-warm-gray text-sm">Private. Only you can see these.</p>
         </div>
-        <button onClick={() => { setEditing(null); setShowForm(true) }} className="btn-primary">
+        <button type="button" onClick={() => { setEditing(null); setShowForm(true) }} className="btn-primary">
           + New Reflection
         </button>
       </div>
@@ -157,7 +158,7 @@ export default function ReflectionsPage() {
       ) : reflections.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-warm-gray text-lg mb-4">No reflections yet. Start writing your faith journey.</p>
-          <button onClick={() => setShowForm(true)} className="btn-primary">Write your first reflection</button>
+          <button type="button" onClick={() => setShowForm(true)} className="btn-primary">Write your first reflection</button>
         </div>
       ) : (
         <div className="space-y-4">
@@ -171,13 +172,13 @@ export default function ReflectionsPage() {
                   </div>
                   <p className="text-warm-gray text-sm line-clamp-3 leading-relaxed mb-3">{r.content}</p>
                   <p className="text-xs text-warm-gray">
-                    {new Date(r.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+                    {timeAgo(r.createdAt)}
                     {r.updatedAt !== r.createdAt && ' · edited'}
                   </p>
                 </div>
                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button onClick={() => openEdit(r)} className="p-2 rounded-lg text-warm-gray hover:text-primary hover:bg-primary/5 transition-colors text-sm">Edit</button>
-                  <button onClick={() => handleDelete(r.id)} className="p-2 rounded-lg text-warm-gray hover:text-red-500 hover:bg-red-50 transition-colors text-sm">Delete</button>
+                  <button type="button" onClick={() => openEdit(r)} className="p-2 rounded-lg text-warm-gray hover:text-primary hover:bg-primary/5 transition-colors text-sm">Edit</button>
+                  <button type="button" onClick={() => handleDelete(r.id)} className="p-2 rounded-lg text-warm-gray hover:text-red-500 hover:bg-red-50 transition-colors text-sm">Delete</button>
                 </div>
               </div>
             </article>

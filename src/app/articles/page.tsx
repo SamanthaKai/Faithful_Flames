@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import Image from 'next/image'
 import toast from 'react-hot-toast'
+import { timeAgo } from '@/lib/time'
 
 const CATEGORIES = ['Faith & Life', 'Bible Study', 'Culture', 'Prayer', 'Testimony', 'Other']
 
@@ -20,10 +21,6 @@ function readingTime(text: string) {
   return `${Math.max(1, Math.round(text.trim().split(/\s+/).length / 200))} min read`
 }
 
-function timeAgo(date: string) {
-  const d = new Date(date)
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
-}
 
 /* Category visual identity */
 const CAT_META: Record<string, { light: string; dark: string; overlay: string }> = {

@@ -39,7 +39,8 @@
       "Bash(Sort-Object)",
       "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\api\\\\members\\\\[id]\")",
       "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\members\\\\[id]\")",
-      "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\api\\\\verses\\\\[id]\")"
+      "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\api\\\\verses\\\\[id]\")",
+      "PowerShell(cd \"e:\\\\Projects\\\\Faithful_Flames\"; $env:DATABASE_URL = \\(Get-Content .env.local | Select-String \"^DATABASE_URL=\" | ForEach-Object { $_ -replace \"DATABASE_URL=\",\"\" }\\); npx prisma db push 2>&1)"
     ],
     "additionalDirectories": [
       "e:\\Projects\\Faithful_Flames\\src\\app\\api\\verses"

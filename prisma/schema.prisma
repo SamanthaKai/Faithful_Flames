@@ -31,6 +31,7 @@ model User {
   accountabilityPartnerFor AccountabilityRequest[] @relation("AccountabilityPartner")
   comments                 Comment[]
   likes                    Like[]
+  articles                 Article[]
 }
 
 enum Role {
@@ -95,6 +96,8 @@ model Article {
   isPublished Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  authorId    String?
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
 }
 
 model Devotion {

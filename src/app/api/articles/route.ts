@@ -23,6 +23,7 @@ export async function POST(req: Request) {
       content: body.content,
       category: body.category,
       isPublished: true,
+      authorId: session.user.id,
     },
   })
   return NextResponse.json(article, { status: 201 })

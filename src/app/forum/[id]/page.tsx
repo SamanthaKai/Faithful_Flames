@@ -6,6 +6,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { FORUM_TOPIC_MAP } from '@/lib/forum-topics'
+import { timeAgo } from '@/lib/time'
 import { PrayButton } from '@/components/PrayButton'
 import { LikeButton } from '@/components/LikeButton'
 import { UserAvatar } from '@/components/UserAvatar'
@@ -143,7 +144,7 @@ function ReplyCard({
 
           <div className="flex items-center gap-4 mt-2 flex-wrap">
             <p className="text-xs text-warm-gray">
-              {new Date(reply.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              {timeAgo(reply.createdAt)}
             </p>
             {depth === 0 && session && (
               <button
@@ -392,7 +393,7 @@ export default function ForumPostPage() {
               {topicLabel}
             </span>
             <p className="text-sm text-warm-gray mt-1">
-              {post.user.name} · {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+              {post.user.name} · {timeAgo(post.createdAt)}
             </p>
           </div>
         </div>
