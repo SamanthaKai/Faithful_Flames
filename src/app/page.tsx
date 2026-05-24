@@ -34,7 +34,7 @@ async function getPublicData() {
       orderBy: { createdAt: 'desc' },
     }),
     prisma.forumPost.findFirst({
-      where: { topic: { not: 'PRAYER_REQUESTS' }, isFlagged: false },
+      where: { topic: { notIn: ['PRAYER_REQUESTS', 'TESTIMONIES'] }, isFlagged: false },
       orderBy: { createdAt: 'desc' },
     }),
     prisma.testimony.findFirst({

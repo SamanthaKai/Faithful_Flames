@@ -25,7 +25,7 @@ const GUIDELINES = [
 export default async function CommunityPage() {
   const [recentPosts, prayerPosts, testimonies, memberCount] = await Promise.all([
     prisma.forumPost.findMany({
-      where: { isFlagged: false, topic: { not: 'PRAYER_REQUESTS' } },
+      where: { isFlagged: false, topic: { notIn: ['PRAYER_REQUESTS', 'TESTIMONIES'] } },
       orderBy: { createdAt: 'desc' },
       take: 4,
       include: { user: { select: { name: true } }, _count: { select: { replies: true } } },
