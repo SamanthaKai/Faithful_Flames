@@ -15,7 +15,6 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/forum/:path*',
     '/reflections',
     '/reflections/:path*',
     '/testimonies/:path*',

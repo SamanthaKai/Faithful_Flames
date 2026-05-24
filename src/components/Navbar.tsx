@@ -15,7 +15,6 @@ const navLinks = [
   { href: '/forum',       label: 'Community'   },
   { href: '/members',     label: 'Members'     },
   { href: '/articles',    label: 'Articles'    },
-  { href: '/testimonies', label: 'Testimonies' },
 ]
 
 export function Navbar() {
