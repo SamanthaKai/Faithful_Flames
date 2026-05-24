@@ -341,7 +341,7 @@ export default async function HomePage() {
 
       {/* ── HERO ───────────────────────────────────────────── */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        <Image src="/faithful.png" alt="" fill className="object-cover object-center" priority />
+        <Image src="/faithful.png" alt="Young believers gathered around a campfire, representing the Faithful Flames community" fill className="object-cover object-center" priority />
         <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/65 to-black/40" />
         <div className="absolute inset-0 bg-gradient-to-t from-cream dark:from-[#0D0A0A] via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#FF7A29]/12 to-transparent" />
@@ -367,7 +367,7 @@ export default async function HomePage() {
                 <Link href="/register" className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#FF7A29] text-white font-bold rounded-2xl hover:bg-[#F6B25E] hover:text-[#0D0A0A] transition-all duration-300 shadow-lg shadow-[#FF7A29]/20">
                   Join Fellowship
                 </Link>
-                <Link href="/community" className="inline-flex items-center gap-2 px-8 py-3.5 border border-[#FFF4E8]/20 text-[#FFF4E8] font-semibold rounded-2xl hover:bg-[#FFF4E8]/10 transition-all duration-300">
+                <Link href="/forum" className="inline-flex items-center gap-2 px-8 py-3.5 border border-[#FFF4E8]/20 text-[#FFF4E8] font-semibold rounded-2xl hover:bg-[#FFF4E8]/10 transition-all duration-300">
                   Explore Community
                 </Link>
               </div>
@@ -385,13 +385,19 @@ export default async function HomePage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="glass-card-static gold-glow p-5 animate-float-delayed">
                   <p className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold uppercase tracking-widest mb-2 flex items-center gap-1.5"><Heart className="w-3.5 h-3.5" />Prayers</p>
-                  <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">{prayerCount}</p>
-                  <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Active requests</p>
+                  {prayerCount > 0 ? (
+                    <>
+                      <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">{prayerCount}</p>
+                      <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Active requests</p>
+                    </>
+                  ) : (
+                    <p className="text-sm font-semibold text-lm-text dark:text-[#FFF4E8] leading-snug mt-1">A place to be heard</p>
+                  )}
                 </div>
                 <div className="glass-card-static p-5 animate-float-slow">
                   <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-2 flex items-center gap-1.5"><Users className="w-3.5 h-3.5" />Community</p>
                   <p className="text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">{memberCount}</p>
-                  <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Members and growing</p>
+                  <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-1">Growing every day</p>
                 </div>
               </div>
             </div>
@@ -463,7 +469,7 @@ export default async function HomePage() {
                     &ldquo;{previewPrayer.content}&rdquo;
                   </p>
                   <div className="mt-5 flex items-center justify-between">
-                    <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{prayerCount} prayer {prayerCount === 1 ? 'request' : 'requests'} active</p>
+                    <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{prayerCount > 0 ? `${prayerCount} prayer ${prayerCount === 1 ? 'request' : 'requests'} active` : 'Bring your burdens here'}</p>
                     <Link href="/register" className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold inline-flex items-center gap-1 hover:underline"><Heart className="w-3 h-3" />Join in</Link>
                   </div>
                 </>
@@ -473,7 +479,7 @@ export default async function HomePage() {
                     &ldquo;Lift each other up. Bring your burdens here and let the community carry them with you.&rdquo;
                   </p>
                   <div className="mt-5 flex items-center justify-between">
-                    <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{prayerCount} prayer {prayerCount === 1 ? 'request' : 'requests'} active</p>
+                    <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{prayerCount > 0 ? `${prayerCount} prayer ${prayerCount === 1 ? 'request' : 'requests'} active` : 'Bring your burdens here'}</p>
                     <Link href="/register" className="text-xs text-[#D97706] dark:text-[#F6B25E] font-semibold inline-flex items-center gap-1 hover:underline"><Heart className="w-3 h-3" />Join in</Link>
                   </div>
                 </>

@@ -29,7 +29,7 @@ export default function ReflectionsPage() {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    if (status === 'unauthenticated') router.push('/login')
+    if (status === 'unauthenticated') router.push('/login?callbackUrl=/reflections')
   }, [status, router])
 
   useEffect(() => {
