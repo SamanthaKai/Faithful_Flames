@@ -95,6 +95,22 @@ export default function AdminPage() {
     if (res.ok) { const v = await res.json(); setVerses(p => [v, ...p]); setVForm({ reference: '', text: '', reflection: '', tags: '', isDaily: false }); toast.success('Verse added!') }
   }
 
+  const deleteVerse = async (id: string) => {
+    if (!confirm('Delete this verse? This cannot be undone.')) return
+    const res = await fetch(`/api/verses/${id}`, { method: 'DELETE' })
+    if (res.ok) { setVerses(p => p.filter(v => v.id !== id)); toast.success('Verse deleted.') }
+    else toast.error('Failed to delete verse.')
+  }
+
+  const toggleDailyVerse = async (id: string, current: boolean) => {
+    const res = await fetch(`/api/verses/${id}`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isDaily: !current }),
+    })
+    if (res.ok) { setVerses(p => p.map(v => v.id === id ? { ...v, isDaily: !current } : v)); toast.success(!current ? 'Set as daily verse.' : 'Removed from daily.') }
+    else toast.error('Failed to update verse.')
+  }
+
   const submitArticle = async (e: React.FormEvent) => {
     e.preventDefault()
     const res = await fetch('/api/articles', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(aForm) })
@@ -233,13 +249,30 @@ export default function AdminPage() {
           <div className="space-y-2">
             {verses.map(v => (
               <div key={v.id} className="card p-4 flex items-center justify-between gap-4">
-                <div>
+                <div className="flex-1 min-w-0">
                   <p className="font-semibold text-primary text-sm">{v.reference}</p>
                   <p className="text-charcoal dark:text-cream/80 text-xs line-clamp-1">{v.text}</p>
                 </div>
-                {v.isDaily && <span className="tag text-xs">Daily</span>}
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {v.isDaily && <span className="tag text-xs">Daily</span>}
+                  <button
+                    type="button"
+                    onClick={() => toggleDailyVerse(v.id, v.isDaily)}
+                    className="px-3 py-1 rounded-lg border border-lm-border dark:border-ember/20 text-xs text-warm-gray hover:text-primary transition-colors"
+                  >
+                    {v.isDaily ? 'Unset daily' : 'Set daily'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteVerse(v.id)}
+                    className="px-3 py-1 rounded-lg border border-red-200 text-red-600 text-xs hover:bg-red-50 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
+            {verses.length === 0 && <p className="text-warm-gray text-center py-8">No verses yet.</p>}
           </div>
         </div>
       )}

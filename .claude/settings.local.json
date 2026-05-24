@@ -38,7 +38,11 @@
       "Bash(Select-Object Name)",
       "Bash(Sort-Object)",
       "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\api\\\\members\\\\[id]\")",
-      "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\members\\\\[id]\")"
+      "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\members\\\\[id]\")",
+      "Bash(mkdir -p \"e:\\\\Projects\\\\Faithful_Flames\\\\src\\\\app\\\\api\\\\verses\\\\[id]\")"
+    ],
+    "additionalDirectories": [
+      "e:\\Projects\\Faithful_Flames\\src\\app\\api\\verses"
     ]
   }
 }
