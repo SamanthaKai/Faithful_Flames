@@ -51,7 +51,7 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session: sessionData }) {
       if (user) {
         token.id = user.id
         const dbUser = await prisma.user.findUnique({
@@ -63,6 +63,10 @@ export const authOptions: NextAuthOptions = {
         if (isAdmin && dbUser?.role !== 'ADMIN') {
           await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } })
         }
+      }
+      if (trigger === 'update' && sessionData) {
+        if (sessionData.name  !== undefined) token.name    = sessionData.name
+        if (sessionData.image !== undefined) token.picture = sessionData.image
       }
       return token
     },

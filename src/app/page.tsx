@@ -263,7 +263,7 @@ export default async function HomePage() {
                       {session.user.name?.[0]?.toUpperCase() ?? '?'}
                     </div>
                   )}
-                  <p className="font-heading font-bold text-lm-text dark:text-[#FFF4E8] text-base leading-tight">{session.user.name}</p>
+                  <p className="font-heading font-bold text-lm-text dark:text-[#FFF4E8] text-base leading-tight">{data.profile?.name ?? session.user.name}</p>
                   {data.profile?.favoriteVerse && (
                     <p className="text-lm-accent dark:text-[#F6B25E] text-xs mt-1.5 italic line-clamp-2">{data.profile.favoriteVerse}</p>
                   )}
