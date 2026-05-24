@@ -113,7 +113,7 @@ export default async function HomePage() {
   // ════════════════════════════════════════════════════════════════════════════
   if (session?.user) {
     const data = await getDashboardData(session.user.id)
-    const firstName = session.user.name?.split(' ')[0] ?? 'Friend'
+    const firstName = (data.profile?.name ?? session.user.name)?.split(' ')[0] ?? 'Friend'
 
     type FeedPost      = typeof data.feedPosts[number]
     type FeedTestimony = typeof data.testimonies[number]
