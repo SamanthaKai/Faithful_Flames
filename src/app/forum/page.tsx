@@ -6,6 +6,7 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { FORUM_TOPICS } from '@/lib/forum-topics'
 import { UserAvatar } from '@/components/UserAvatar'
+import { FORUM_SEED_POSTS, type SeedPost } from '@/data/forum-seed-posts'
 
 const TOPICS = FORUM_TOPICS
 
@@ -84,6 +85,14 @@ function ForumContent() {
   }
 
   const topicMeta = (value: string) => TOPICS.find((t) => t.value === value)
+
+  // Seed posts fill the forum when a category has no real posts yet.
+  // Once real posts appear in a category these auto-disappear — no cleanup needed.
+  const visibleSeedPosts: SeedPost[] = posts.length === 0
+    ? (activeTopic
+        ? FORUM_SEED_POSTS.filter((p) => p.topic === activeTopic)
+        : FORUM_SEED_POSTS)
+    : []
 
   return (
     <>
@@ -249,6 +258,7 @@ function ForumContent() {
             </div>
           ) : (
             <div className="space-y-3">
+              {/* Real posts — clickable, full interaction */}
               {posts.map((post) => {
                 const meta = topicMeta(post.topic)
                 const isPrayer = post.topic === 'PRAYER_REQUESTS'
@@ -261,11 +271,9 @@ function ForumContent() {
                         : 'border-l-lm-accent dark:border-l-ember'
                     }`}>
                       <div className="flex items-start gap-4">
-                        {/* Avatar */}
                         <UserAvatar src={post.user.image} name={post.user.name} size={40} />
 
                         <div className="flex-1 min-w-0">
-                          {/* Meta row */}
                           <div className="flex flex-wrap items-center gap-2 mb-2">
                             {meta && (
                               <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${meta.light} dark:${meta.dark}`}>
@@ -277,17 +285,14 @@ function ForumContent() {
                             </span>
                           </div>
 
-                          {/* Title */}
                           <h2 className="font-heading text-base font-bold text-lm-text dark:text-[#FFF4E8] group-hover:text-lm-accent dark:group-hover:text-ember transition-colors mb-1 leading-snug">
                             {post.title}
                           </h2>
 
-                          {/* Preview */}
                           <p className="text-lm-muted dark:text-[#BFAEA3] text-sm line-clamp-2 leading-relaxed">
                             {post.content}
                           </p>
 
-                          {/* Footer */}
                           <div className="flex items-center gap-4 mt-3 text-xs text-lm-muted dark:text-[#BFAEA3]">
                             <span>{post._count.replies} {post._count.replies === 1 ? 'reply' : 'replies'}</span>
                             {post._count.replies > 5 && (
@@ -301,7 +306,67 @@ function ForumContent() {
                 )
               })}
 
-              {posts.length === 0 && (
+              {/* Seed posts — read-only preview, auto-hidden once real posts exist per filter */}
+              {visibleSeedPosts.map((post) => {
+                const meta = topicMeta(post.topic)
+                const isPrayer = post.topic === 'PRAYER_REQUESTS'
+
+                return (
+                  <article
+                    key={post.id}
+                    className={`card p-5 border-l-4 ${
+                      isPrayer
+                        ? 'border-l-amber-400 dark:border-l-[#F6B25E]'
+                        : 'border-l-lm-accent dark:border-l-ember'
+                    }`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <UserAvatar src={null} name={post.user.name} size={40} />
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          {meta && (
+                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${meta.light} dark:${meta.dark}`}>
+                              {meta.label}
+                            </span>
+                          )}
+                          <span className="text-xs text-lm-muted dark:text-[#BFAEA3]">
+                            {post.user.name} · {timeAgo(post.createdAt)}
+                          </span>
+                        </div>
+
+                        <h2 className="font-heading text-base font-bold text-lm-text dark:text-[#FFF4E8] mb-1 leading-snug">
+                          {post.title}
+                        </h2>
+
+                        <p className="text-lm-muted dark:text-[#BFAEA3] text-sm line-clamp-2 leading-relaxed">
+                          {post.content}
+                        </p>
+
+                        <div className="flex items-center justify-between mt-3">
+                          <div className="flex items-center gap-4 text-xs text-lm-muted dark:text-[#BFAEA3]">
+                            <span>{post._count.replies} {post._count.replies === 1 ? 'reply' : 'replies'}</span>
+                            {post._count.replies > 5 && (
+                              <span className="text-lm-accent dark:text-ember font-semibold">Active</span>
+                            )}
+                          </div>
+                          {!session && (
+                            <Link
+                              href="/login"
+                              className="text-xs text-lm-accent dark:text-ember font-semibold hover:underline"
+                            >
+                              Sign in to join this conversation →
+                            </Link>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                )
+              })}
+
+              {/* Empty state — only when no real posts AND no seed posts cover this filter */}
+              {posts.length === 0 && visibleSeedPosts.length === 0 && (
                 <div className="text-center py-20">
                   <h3 className="font-heading text-xl font-bold text-lm-text dark:text-[#FFF4E8] mb-2">
                     Be the first voice in this fellowship
