@@ -224,20 +224,30 @@ export default async function HomePage() {
                   </Link>
                 )
               }) : (
-                <div className="glass-card ember-glow p-12 text-center">
-                  <Flame className="w-10 h-10 mx-auto mb-4 text-lm-accent dark:text-[#FF7A29]" />
-                  <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl font-bold mb-2">
-                    Be the first voice in this fellowship
-                  </h3>
-                  <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-6 max-w-sm mx-auto">
-                    Your story, your questions, your prayers. They matter here.
+                <div className="glass-card ember-glow p-8">
+                  <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-5 flex items-center gap-1.5">
+                    <BookOpen className="w-3.5 h-3.5" />Today&apos;s Verse
                   </p>
-                  <Link
-                    href="/forum"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-lm-accent dark:bg-[#FF7A29]/15 text-white dark:text-[#FF7A29] border border-lm-accent dark:border-[#FF7A29]/25 font-semibold rounded-2xl hover:bg-secondary dark:hover:bg-[#FF7A29]/25 transition-all duration-300 text-sm"
-                  >
-                    Start the conversation
-                  </Link>
+                  {data.verse ? (
+                    <>
+                      <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg italic leading-relaxed mb-3">
+                        &ldquo;{data.verse.text}&rdquo;
+                      </p>
+                      <p className="text-lm-accent dark:text-[#F6B25E] text-sm font-semibold">{data.verse.reference}</p>
+                    </>
+                  ) : (
+                    <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg italic leading-relaxed">
+                      &ldquo;Where two or three gather in my name, there am I with them.&rdquo;
+                    </p>
+                  )}
+                  <div className="mt-5 pt-4 border-t border-lm-border dark:border-[#FF7A29]/10 flex items-center justify-between">
+                    <p className="text-lm-muted dark:text-[#BFAEA3] text-xs leading-relaxed max-w-xs">
+                      The community feed is quiet right now — use the actions above to spark a conversation.
+                    </p>
+                    <Link href="/verses" className="flex-shrink-0 text-xs text-lm-accent dark:text-[#FF7A29] font-semibold hover:underline ml-4">
+                      All verses →
+                    </Link>
+                  </div>
                 </div>
               )}
 
@@ -285,40 +295,28 @@ export default async function HomePage() {
                 </Link>
               </div>
 
-              {/* Community Pulse */}
-              <div className="glass-card-static p-4">
-                <p className="text-xs text-lm-muted dark:text-[#BFAEA3] font-semibold uppercase tracking-widest mb-3">Community Pulse</p>
-                <div className="space-y-0">
-                  {([
-                    { label: 'Discussions',     value: data.feedPosts.length,   Icon: MessageCircle },
-                    { label: 'Prayer requests', value: data.prayerPosts.length, Icon: Heart },
-                    { label: 'Testimonies',     value: data.testimonies.length, Icon: Flame },
-                  ] as { label: string; value: number; Icon: React.ElementType }[]).map(({ label, value, Icon }) => (
-                    <div key={label} className="flex items-center justify-between py-2 border-b border-lm-border dark:border-[#FF7A29]/6 last:border-0">
-                      <span className="text-lm-muted dark:text-[#BFAEA3] text-sm flex items-center gap-1.5"><Icon className="w-3.5 h-3.5" />{label}</span>
-                      <span className="text-lm-text dark:text-[#FFF4E8] font-bold text-sm">{value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Navigation links */}
+              {/* Navigation — counts shown as badges where available; badge hidden when zero */}
               <div className="glass-card-static p-4">
                 <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">Navigate</p>
                 {([
-                  { Icon: Users,       label: 'Community',      href: '/forum' },
-                  { Icon: BookOpen,    label: 'Verses',         href: '/verses' },
-                  { Icon: Sun,         label: 'Devotions',      href: '/devotions' },
-                  { Icon: Flame,       label: 'Testimonies',    href: '/testimonies' },
-                  { Icon: PenLine,     label: 'My Reflections', href: '/reflections' },
-                ] as { Icon: React.ElementType; label: string; href: string }[]).map(({ Icon, label, href }) => (
+                  { Icon: Users,    label: 'Community',     href: '/forum',        count: data.feedPosts.length },
+                  { Icon: BookOpen, label: 'Verses',        href: '/verses',       count: 0 },
+                  { Icon: Sun,      label: 'Devotions',     href: '/devotions',    count: 0 },
+                  { Icon: Flame,    label: 'Testimonies',   href: '/testimonies',  count: data.testimonies.length },
+                  { Icon: PenLine,  label: 'My Reflections',href: '/reflections',  count: 0 },
+                ] as { Icon: React.ElementType; label: string; href: string; count: number }[]).map(({ Icon, label, href, count }) => (
                   <Link
                     key={href}
                     href={href}
                     className="flex items-center gap-3 py-2 text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-[#FF7A29] transition-colors"
                   >
                     <Icon className="w-4 h-4 flex-shrink-0" />
-                    <span>{label}</span>
+                    <span className="flex-1">{label}</span>
+                    {count > 0 && (
+                      <span className="text-xs font-bold text-lm-accent dark:text-[#FF7A29] bg-lm-accent/10 dark:bg-[#FF7A29]/10 px-1.5 py-0.5 rounded-full leading-none">
+                        {count}
+                      </span>
+                    )}
                   </Link>
                 ))}
               </div>
