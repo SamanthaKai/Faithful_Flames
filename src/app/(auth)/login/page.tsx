@@ -11,6 +11,7 @@ const AUTH_ERRORS: Record<string, string> = {
   OAuthAccountNotLinked: 'Sign-in failed. Try a different method or contact support.',
   Callback: 'Something went wrong during sign-in. Please try again.',
   AccessDenied: 'Access denied.',
+  EmailNotVerified: 'Please verify your email before signing in.',
   Default: 'Sign-in failed. Please try again.',
 }
 
@@ -25,6 +26,7 @@ function LoginForm() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null)
 
   const handleGoogle = async () => {
     setGoogleLoading(true)
@@ -36,9 +38,10 @@ function LoginForm() {
     setLoading(true)
     const res = await signIn('credentials', { email, password, redirect: false })
     setLoading(false)
-    if (res?.error) {
-      const msg = AUTH_ERRORS[res.error] ?? AUTH_ERRORS.Default
-      toast.error(msg)
+    if (res?.error === 'EmailNotVerified') {
+      setUnverifiedEmail(email)
+    } else if (res?.error) {
+      toast.error(AUTH_ERRORS[res.error] ?? AUTH_ERRORS.Default)
     } else {
       toast.success('Welcome back!')
       router.push('/')
@@ -58,13 +61,27 @@ function LoginForm() {
         </div>
 
         <div className="card p-6 md:p-8">
-          {registered && (
-            <div className="mb-5 px-4 py-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-sm text-green-700 dark:text-green-400">
-              Account created! Sign in below.
+          {registered && !unverifiedEmail && (
+            <div className="mb-5 px-4 py-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-700 dark:text-amber-400">
+              Account created! Check your inbox for a verification email before signing in.
             </div>
           )}
 
-          {errorMessage && (
+          {unverifiedEmail && (
+            <div className="mb-5 px-4 py-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-700 dark:text-amber-400">
+              <p className="font-semibold mb-1">Email not verified</p>
+              <p className="mb-2">Please verify your email before signing in.{' '}
+                <Link
+                  href={`/check-email?email=${encodeURIComponent(unverifiedEmail)}`}
+                  className="underline font-semibold"
+                >
+                  Resend verification email →
+                </Link>
+              </p>
+            </div>
+          )}
+
+          {errorMessage && !unverifiedEmail && (
             <div className="mb-5 px-4 py-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-sm text-red-700 dark:text-red-400">
               {errorMessage}
             </div>
