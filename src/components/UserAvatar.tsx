@@ -3,6 +3,77 @@
 import { useState } from 'react'
 import Image from 'next/image'
 
+// ── Flame avatar palette ──────────────────────────────────────────────────────
+// Adjust these colors to change the per-user flame tones.
+const FLAME_PALETTE = [
+  { primary: '#FF7A29', inner: '#FFBB6B' },  // ember orange
+  { primary: '#F6B25E', inner: '#FFD166' },  // warm gold
+  { primary: '#E05C2A', inner: '#FF9F3E' },  // deep flame
+  { primary: '#D97706', inner: '#FCD34D' },  // amber
+  { primary: '#C2410C', inner: '#F97316' },  // deep red-orange
+  { primary: '#FBBF24', inner: '#FEF08A' },  // bright gold
+] as const
+
+function hashName(name: string | null): number {
+  const s = name ?? 'default'
+  let h = 0
+  for (let i = 0; i < s.length; i++) {
+    h = (Math.imul(31, h) + s.charCodeAt(i)) | 0
+  }
+  return Math.abs(h) % FLAME_PALETTE.length
+}
+
+function FlameAvatar({ name, size }: { name: string | null; size: number }) {
+  const { primary, inner } = FLAME_PALETTE[hashName(name)]
+  return (
+    <div
+      className="rounded-full flex items-center justify-center flex-shrink-0"
+      style={{ width: size, height: size }}
+      title={name ?? undefined}
+      aria-hidden="true"
+    >
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+        {/* Circle background — soft tinted */}
+        <circle cx="20" cy="20" r="20" fill={primary} opacity="0.13" />
+        {/* Outer flame body */}
+        <path
+          d="M20 35
+             C13 35 9 29.5 9 24
+             C9 19.5 12 16.5 13.5 13.5
+             C14.5 11 14 8 14 8
+             C16 11 17 12.5 18 14
+             C18 10.5 16.5 7 16.5 7
+             C18.5 10 20 13 20 15.5
+             C21 12.5 22 9.5 24 7
+             C23 10 23 13 24 15.5
+             C26 12 27.5 9.5 28 8
+             C28 8 27 11 27 13.5
+             C28.5 16.5 31 19.5 31 24
+             C31 29.5 27 35 20 35 Z"
+          fill={primary}
+          opacity="0.82"
+        />
+        {/* Inner flame highlight */}
+        <path
+          d="M20 31
+             C17 31 15 28 15 25
+             C15 22 17 19.5 18 17.5
+             C18.5 19.5 19 21 20 22.5
+             C21 21 21.5 19.5 22 17.5
+             C23 19.5 25 22 25 25
+             C25 28 23 31 20 31 Z"
+          fill={inner}
+          opacity="0.72"
+        />
+        {/* Tip glow */}
+        <ellipse cx="20" cy="13" rx="2.5" ry="3.5" fill={inner} opacity="0.48" />
+      </svg>
+    </div>
+  )
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
 interface UserAvatarProps {
   src: string | null
   name: string | null
@@ -20,20 +91,14 @@ function getInitials(name: string | null): string {
 
 export function UserAvatar({ src, name, size = 40, className = '', ringClass }: UserAvatarProps) {
   const [open, setOpen] = useState(false)
-  const initial = getInitials(name)
   const ring = ringClass ?? 'ring-2 ring-lm-border dark:ring-ember/20'
 
-  const fallback = (
-    <div
-      className="rounded-full flex items-center justify-center font-bold bg-lm-accent/15 dark:bg-ember/15 text-lm-accent dark:text-ember flex-shrink-0"
-      style={{ width: size, height: size, fontSize: Math.max(10, Math.round(size * 0.38)) }}
-    >
-      {initial}
-    </div>
-  )
-
   if (!src) {
-    return <div className={`flex-shrink-0 ${className}`}>{fallback}</div>
+    return (
+      <div className={`flex-shrink-0 ${className}`}>
+        <FlameAvatar name={name} size={size} />
+      </div>
+    )
   }
 
   return (

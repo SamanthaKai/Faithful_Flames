@@ -15,6 +15,7 @@ import {
   PenLine, Users, Shield, Quote, Sun, ChevronRight,
 } from 'lucide-react'
 import { UserAvatar } from '@/components/UserAvatar'
+import { HeroIllustration } from '@/components/HeroIllustration'
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
@@ -147,30 +148,7 @@ export default async function HomePage() {
                 <p className="text-lm-muted dark:text-[#BFAEA3] text-xs mt-2">{heroQuote.reference}</p>
               </div>
             </div>
-            <div className="hidden lg:block flex-shrink-0">
-              <svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg" className="w-64 h-40" aria-hidden="true">
-                <rect width="260" height="160" fill="#FFF3E6" />
-                <circle cx="200" cy="45" r="28" fill="#FFBB6B" opacity="0.5" />
-                <circle cx="200" cy="45" r="18" fill="#FF9F3E" opacity="0.65" />
-                <path d="M0 110 Q50 75 100 95 Q150 115 200 75 Q230 55 260 80 L260 160 L0 160 Z" fill="#8DAF6A" opacity="0.6" />
-                <path d="M0 140 Q60 118 120 132 Q180 146 260 122 L260 160 L0 160 Z" fill="#6D9B42" opacity="0.7" />
-                <line x1="20" y1="160" x2="20" y2="130" stroke="#4A7A28" strokeWidth="1.5" strokeLinecap="round" />
-                <ellipse cx="20" cy="127" rx="5" ry="7" fill="#5E9834" opacity="0.75" />
-                <line x1="20" y1="140" x2="12" y2="128" stroke="#4A7A28" strokeWidth="1" strokeLinecap="round" />
-                <line x1="20" y1="138" x2="28" y2="126" stroke="#4A7A28" strokeWidth="1" strokeLinecap="round" />
-                <line x1="100" y1="160" x2="100" y2="125" stroke="#4A7A28" strokeWidth="1.5" strokeLinecap="round" />
-                <ellipse cx="100" cy="122" rx="6" ry="8" fill="#6DB240" opacity="0.85" />
-                <line x1="90" y1="145" x2="82" y2="132" stroke="#4A7A28" strokeWidth="1" strokeLinecap="round" />
-                <ellipse cx="80" cy="130" rx="5" ry="6" fill="#5E9834" opacity="0.65" />
-                <circle cx="35" cy="152" r="3" fill="#FFB347" opacity="0.75" />
-                <circle cx="42" cy="148" r="2.5" fill="#FF8C42" opacity="0.65" />
-                <circle cx="145" cy="145" r="3" fill="#FFD166" opacity="0.75" />
-                <line x1="235" y1="160" x2="235" y2="128" stroke="#4A7A28" strokeWidth="1.5" strokeLinecap="round" />
-                <ellipse cx="235" cy="125" rx="5" ry="7" fill="#5E9834" opacity="0.85" />
-                <line x1="220" y1="155" x2="212" y2="140" stroke="#4A7A28" strokeWidth="1" strokeLinecap="round" />
-                <ellipse cx="210" cy="137" rx="4" ry="5" fill="#6DB240" opacity="0.65" />
-              </svg>
-            </div>
+            <HeroIllustration />
           </div>
         </div>
 
@@ -178,18 +156,18 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {([
-              { href: '/testimonies', Icon: Flame,         label: 'Share Testimony',  desc: 'Encourage others by sharing your story'    },
-              { href: '/forum',       Icon: Heart,         label: 'Ask for Prayer',   desc: 'Submit a prayer request to the community'  },
-              { href: '/forum',       Icon: MessageCircle, label: 'Start Discussion', desc: 'Start a conversation and connect'          },
-              { href: '/reflections', Icon: PenLine,       label: 'Write Reflection', desc: 'Write your thoughts and grow spiritually'  },
-            ]).map(({ href, Icon, label, desc }) => (
+              { href: '/testimonies', Icon: Flame,         label: 'Share Testimony',  desc: 'Encourage others by sharing your story',    animate: true  },
+              { href: '/forum',       Icon: Heart,         label: 'Ask for Prayer',   desc: 'Submit a prayer request to the community',  animate: false },
+              { href: '/forum',       Icon: MessageCircle, label: 'Start Discussion', desc: 'Start a conversation and connect',           animate: false },
+              { href: '/reflections', Icon: PenLine,       label: 'Write Reflection', desc: 'Write your thoughts and grow spiritually',   animate: false },
+            ]).map(({ href, Icon, label, desc, animate }) => (
               <Link
                 key={label}
                 href={href}
                 className="bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/12 rounded-2xl p-4 flex items-center gap-3 group hover:shadow-md hover:-translate-y-0.5 transition-all"
               >
                 <div className="w-10 h-10 rounded-full bg-lm-accent/10 dark:bg-[#FF7A29]/10 flex items-center justify-center flex-shrink-0">
-                  <Icon className="w-5 h-5 text-lm-accent dark:text-[#FF7A29] group-hover:scale-110 transition-transform" />
+                  <Icon className={`w-5 h-5 text-lm-accent dark:text-[#FF7A29] group-hover:scale-110 transition-transform${animate ? ' flame-icon-animated' : ''}`} />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-bold text-lm-text dark:text-[#FFF4E8] leading-tight">{label}</p>
@@ -341,13 +319,14 @@ export default async function HomePage() {
               {/* Profile card */}
               <div className="bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/12 rounded-2xl p-5">
                 <div className="flex flex-col items-center text-center">
-                  {session.user.image ? (
-                    <Image src={session.user.image} alt="" width={64} height={64} className="rounded-full ring-2 ring-lm-accent/25 dark:ring-ember/25 mb-3" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-lm-accent/15 dark:bg-ember/15 text-lm-accent dark:text-ember flex items-center justify-center text-2xl font-bold mb-3">
-                      {session.user.name?.[0]?.toUpperCase() ?? '?'}
-                    </div>
-                  )}
+                  <div className="mb-3">
+                    <UserAvatar
+                      src={data.profile?.image ?? session.user.image ?? null}
+                      name={data.profile?.name ?? session.user.name ?? null}
+                      size={64}
+                      ringClass="ring-2 ring-lm-accent/25 dark:ring-ember/25"
+                    />
+                  </div>
                   <p className="font-heading font-bold text-lm-text dark:text-[#FFF4E8] text-base leading-tight">{data.profile?.name ?? session.user.name}</p>
                   {memberSince && (
                     <p className="text-lm-muted dark:text-[#BFAEA3] text-xs mt-1">Member since {memberSince}</p>
@@ -377,18 +356,18 @@ export default async function HomePage() {
               <div className="bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/12 rounded-2xl p-4">
                 <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">Navigate</p>
                 {([
-                  { Icon: Users,    label: 'Community',      href: '/forum'       },
-                  { Icon: BookOpen, label: 'Verses',         href: '/verses'      },
-                  { Icon: Sun,      label: 'Devotions',      href: '/devotions'   },
-                  { Icon: Flame,    label: 'Testimonies',    href: '/testimonies' },
-                  { Icon: PenLine,  label: 'My Reflections', href: '/reflections' },
-                ] as { Icon: React.ElementType; label: string; href: string }[]).map(({ Icon, label, href }) => (
+                  { Icon: Users,    label: 'Community',      href: '/forum',       animate: false },
+                  { Icon: BookOpen, label: 'Verses',         href: '/verses',      animate: false },
+                  { Icon: Sun,      label: 'Devotions',      href: '/devotions',   animate: false },
+                  { Icon: Flame,    label: 'Testimonies',    href: '/testimonies', animate: true  },
+                  { Icon: PenLine,  label: 'My Reflections', href: '/reflections', animate: false },
+                ] as { Icon: React.ElementType; label: string; href: string; animate: boolean }[]).map(({ Icon, label, href, animate }) => (
                   <Link
                     key={href}
                     href={href}
                     className="flex items-center gap-3 py-2.5 text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-[#FF7A29] transition-colors"
                   >
-                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <Icon className={`w-4 h-4 flex-shrink-0${animate ? ' flame-icon-animated' : ''}`} />
                     <span className="flex-1">{label}</span>
                     <ChevronRight className="w-3.5 h-3.5 opacity-40" />
                   </Link>

@@ -264,3 +264,18 @@ button, a {
 .ember-cta-glow  { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(245,158,11,0.09) 0%, transparent 70%); }
 .dark .ember-ray-glow  { background: radial-gradient(ellipse 60% 40% at 50% 30%, rgba(255,122,41,0.06) 0%, transparent 70%); }
 .dark .ember-cta-glow  { background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(255,122,41,0.08) 0%, transparent 70%); }
+
+/* ── Flame icon breathing animation ────────────────────────────────────────── */
+@keyframes flamePulse {
+  0%, 100% { opacity: 0.85; transform: scale(0.97); }
+  50%       { opacity: 1;    transform: scale(1.00); }
+}
+
+.flame-icon-animated {
+  animation: flamePulse 3.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flame-icon-animated { animation: none; }
+}
