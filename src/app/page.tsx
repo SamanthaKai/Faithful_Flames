@@ -12,8 +12,9 @@ import { TimeGreeting } from '@/components/TimeGreeting'
 import { FORUM_TOPIC_MAP } from '@/lib/forum-topics'
 import {
   Flame, Heart, MessageCircle, BookOpen,
-  PenLine, Users, Shield, Quote, Sun,
+  PenLine, Users, Shield, Quote, Sun, ChevronRight,
 } from 'lucide-react'
+import { UserAvatar } from '@/components/UserAvatar'
 
 // ─── Data fetching ────────────────────────────────────────────────────────────
 
@@ -83,6 +84,7 @@ async function getDashboardData(userId: string) {
         image: true,
         bio: true,
         favoriteVerse: true,
+        createdAt: true,
         _count: { select: { forumPosts: true, reflections: true } },
       },
     }),
@@ -103,6 +105,16 @@ function timeAgo(date: Date) {
 
 const TOPIC_META = FORUM_TOPIC_MAP
 
+const ENCOURAGEMENT_QUOTES = [
+  { text: 'Let all that you do be done in love.',                    reference: '1 Corinthians 16:14' },
+  { text: 'I can do all things through Christ who strengthens me.',  reference: 'Philippians 4:13'    },
+  { text: 'Trust in the Lord with all your heart.',                  reference: 'Proverbs 3:5'        },
+  { text: 'Be strong and courageous. Do not be afraid.',             reference: 'Joshua 1:9'          },
+  { text: 'The Lord is my shepherd; I shall not want.',              reference: 'Psalm 23:1'          },
+  { text: 'For I know the plans I have for you, declares the Lord.', reference: 'Jeremiah 29:11'      },
+  { text: 'Love one another as I have loved you.',                   reference: 'John 15:12'          },
+]
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default async function HomePage() {
@@ -114,36 +126,51 @@ export default async function HomePage() {
   if (session?.user) {
     const data = await getDashboardData(session.user.id)
     const firstName = (data.profile?.name ?? session.user.name)?.split(' ')[0] ?? 'Friend'
-
-    type FeedPost      = typeof data.feedPosts[number]
-    type FeedTestimony = typeof data.testimonies[number]
-    type FeedEntry     = { kind: 'post'; item: FeedPost } | { kind: 'testimony'; item: FeedTestimony }
-
-    const feed: FeedEntry[] = [
-      ...data.feedPosts.map(p  => ({ kind: 'post'      as const, item: p })),
-      ...data.testimonies.map(t => ({ kind: 'testimony' as const, item: t })),
-    ]
-      .sort((a, b) => new Date(b.item.createdAt).getTime() - new Date(a.item.createdAt).getTime())
-      .slice(0, 10)
+    const memberSince = data.profile?.createdAt
+      ? new Date(data.profile.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      : null
+    const heroQuote = ENCOURAGEMENT_QUOTES[new Date().getDay()]
 
     return (
       <div className="bg-cream text-lm-text dark:bg-[#0D0A0A] dark:text-[#FFF4E8] min-h-screen">
 
         {/* ── HERO ─────────────────────────────────────────── */}
-        <div className="bg-lm-section dark:bg-[#161111] border-b border-lm-border dark:border-[#FF7A29]/10">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-center justify-between gap-8">
-            <TimeGreeting firstName={firstName} />
-            {data.verse && (
-              <div className="hidden md:flex items-start gap-3 bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/15 rounded-2xl px-5 py-4 max-w-sm shadow-sm dark:shadow-none flex-shrink-0">
-                <BookOpen className="w-4 h-4 mt-0.5 flex-shrink-0 text-lm-accent dark:text-[#F6B25E]" />
-                <div className="min-w-0">
-                  <p className="text-lm-text dark:text-[#FFF4E8] text-sm italic leading-relaxed line-clamp-2">
-                    &ldquo;{data.verse.text}&rdquo;
-                  </p>
-                  <p className="text-lm-accent dark:text-[#F6B25E] text-xs font-semibold mt-1.5">{data.verse.reference}</p>
-                </div>
+        <div className="bg-[#FFF3E6] dark:bg-[#161111] border-b border-lm-border dark:border-[#FF7A29]/10 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 flex items-center gap-6">
+            <div className="flex-1 min-w-0">
+              <TimeGreeting firstName={firstName} />
+            </div>
+            <div className="hidden md:flex items-start gap-3 bg-white/80 dark:bg-[#1E1818]/80 border border-lm-border dark:border-[#FF7A29]/15 rounded-2xl px-5 py-4 max-w-[280px] shadow-sm flex-shrink-0">
+              <span className="text-3xl text-lm-accent dark:text-[#F6B25E] font-bold leading-none flex-shrink-0 mt-[-2px]">&ldquo;</span>
+              <div className="min-w-0">
+                <p className="text-lm-text dark:text-[#FFF4E8] text-sm italic leading-relaxed line-clamp-3">{heroQuote.text}</p>
+                <p className="text-lm-muted dark:text-[#BFAEA3] text-xs mt-2">{heroQuote.reference}</p>
               </div>
-            )}
+            </div>
+            <div className="hidden lg:block flex-shrink-0">
+              <svg viewBox="0 0 260 160" xmlns="http://www.w3.org/2000/svg" className="w-64 h-40" aria-hidden="true">
+                <rect width="260" height="160" fill="#FFF3E6" />
+                <circle cx="200" cy="45" r="28" fill="#FFBB6B" opacity="0.5" />
+                <circle cx="200" cy="45" r="18" fill="#FF9F3E" opacity="0.65" />
+                <path d="M0 110 Q50 75 100 95 Q150 115 200 75 Q230 55 260 80 L260 160 L0 160 Z" fill="#8DAF6A" opacity="0.6" />
+                <path d="M0 140 Q60 118 120 132 Q180 146 260 122 L260 160 L0 160 Z" fill="#6D9B42" opacity="0.7" />
+                <line x1="20" y1="160" x2="20" y2="130" stroke="#4A7A28" strokeWidth="1.5" strokeLinecap="round" />
+                <ellipse cx="20" cy="127" rx="5" ry="7" fill="#5E9834" opacity="0.75" />
+                <line x1="20" y1="140" x2="12" y2="128" stroke="#4A7A28" strokeWidth="1" strokeLinecap="round" />
+                <line x1="20" y1="138" x2="28" y2="126" stroke="#4A7A28" strokeWidth="1" strokeLinecap="round" />
+                <line x1="100" y1="160" x2="100" y2="125" stroke="#4A7A28" strokeWidth="1.5" strokeLinecap="round" />
+                <ellipse cx="100" cy="122" rx="6" ry="8" fill="#6DB240" opacity="0.85" />
+                <line x1="90" y1="145" x2="82" y2="132" stroke="#4A7A28" strokeWidth="1" strokeLinecap="round" />
+                <ellipse cx="80" cy="130" rx="5" ry="6" fill="#5E9834" opacity="0.65" />
+                <circle cx="35" cy="152" r="3" fill="#FFB347" opacity="0.75" />
+                <circle cx="42" cy="148" r="2.5" fill="#FF8C42" opacity="0.65" />
+                <circle cx="145" cy="145" r="3" fill="#FFD166" opacity="0.75" />
+                <line x1="235" y1="160" x2="235" y2="128" stroke="#4A7A28" strokeWidth="1.5" strokeLinecap="round" />
+                <ellipse cx="235" cy="125" rx="5" ry="7" fill="#5E9834" opacity="0.85" />
+                <line x1="220" y1="155" x2="212" y2="140" stroke="#4A7A28" strokeWidth="1" strokeLinecap="round" />
+                <ellipse cx="210" cy="137" rx="4" ry="5" fill="#6DB240" opacity="0.65" />
+              </svg>
+            </div>
           </div>
         </div>
 
@@ -151,131 +178,179 @@ export default async function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {([
-              { href: '/testimonies', Icon: Flame,         label: 'Share Testimony'  },
-              { href: '/forum',       Icon: Heart,         label: 'Ask for Prayer'   },
-              { href: '/forum',       Icon: MessageCircle, label: 'Start Discussion' },
-              { href: '/reflections', Icon: PenLine,       label: 'Write Reflection' },
-            ]).map(({ href, Icon, label }) => (
+              { href: '/testimonies', Icon: Flame,         label: 'Share Testimony',  desc: 'Encourage others by sharing your story'    },
+              { href: '/forum',       Icon: Heart,         label: 'Ask for Prayer',   desc: 'Submit a prayer request to the community'  },
+              { href: '/forum',       Icon: MessageCircle, label: 'Start Discussion', desc: 'Start a conversation and connect'          },
+              { href: '/reflections', Icon: PenLine,       label: 'Write Reflection', desc: 'Write your thoughts and grow spiritually'  },
+            ]).map(({ href, Icon, label, desc }) => (
               <Link
                 key={label}
                 href={href}
-                className="glass-card-static flex flex-col items-center gap-2.5 py-5 px-3 text-center group hover:shadow-md hover:-translate-y-0.5 transition-all"
+                className="bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/12 rounded-2xl p-4 flex items-center gap-3 group hover:shadow-md hover:-translate-y-0.5 transition-all"
               >
-                <Icon className="w-5 h-5 text-lm-accent dark:text-[#FF7A29] group-hover:scale-110 transition-transform" />
-                <span className="text-xs font-semibold text-lm-muted dark:text-[#BFAEA3] group-hover:text-lm-accent dark:group-hover:text-[#FF7A29] transition-colors">{label}</span>
+                <div className="w-10 h-10 rounded-full bg-lm-accent/10 dark:bg-[#FF7A29]/10 flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-5 h-5 text-lm-accent dark:text-[#FF7A29] group-hover:scale-110 transition-transform" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-lm-text dark:text-[#FFF4E8] leading-tight">{label}</p>
+                  <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-0.5 hidden sm:block leading-snug">{desc}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-lm-muted dark:text-[#BFAEA3] flex-shrink-0 group-hover:text-lm-accent dark:group-hover:text-[#FF7A29] transition-colors" />
               </Link>
             ))}
           </div>
         </div>
 
         {/* ── MAIN BODY ─────────────────────────────────────── */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-16">
           <div className="grid lg:grid-cols-[1fr_288px] gap-8">
 
-            {/* COMMUNITY FEED */}
-            <main className="space-y-3 min-w-0">
-              {feed.length > 0 ? feed.map((entry) => {
-                if (entry.kind === 'post') {
-                  const post  = entry.item
-                  const meta  = TOPIC_META[post.topic] ?? { label: post.topic, labelSingular: post.topic, icon: '', isPrayer: false, light: '', dark: '' }
-                  const TopicIcon = post.topic === 'PRAYER_REQUESTS' ? Heart
-                    : post.topic === 'BIBLE_QUESTIONS'  ? BookOpen
-                    : post.topic === 'ACCOUNTABILITY'   ? Shield
-                    : Flame
-                  return (
-                    <Link key={`post-${post.id}`} href={`/forum/${post.id}`} className="block">
-                      <div className={meta.isPrayer
-                        ? 'glass-card-gold gold-border-left gold-glow p-5'
-                        : 'glass-card ember-border-left ember-glow p-5'}>
-                        <div className="flex items-start justify-between gap-3 mb-2.5">
-                          <span className={`inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest ${meta.isPrayer ? 'text-[#D97706] dark:text-[#F6B25E]' : 'text-lm-accent dark:text-[#FF7A29]'}`}>
-                            <TopicIcon className="w-3.5 h-3.5" />{meta.label}
-                          </span>
-                          <span className="text-xs text-lm-muted dark:text-[#BFAEA3] flex-shrink-0">{timeAgo(post.createdAt)}</span>
-                        </div>
-                        <h3 className="font-heading text-lm-text dark:text-[#FFF4E8] font-bold leading-snug mb-1.5">{post.title}</h3>
-                        <p className="text-lm-muted dark:text-[#BFAEA3] text-sm line-clamp-2">{post.content}</p>
-                        <div className="flex items-center gap-4 mt-3 text-xs text-lm-muted dark:text-[#BFAEA3]">
-                          <span>By {post.user.name ?? 'Anonymous'}</span>
-                          <span className="inline-flex items-center gap-1"><MessageCircle className="w-3 h-3" />{post.replies.length} {post.replies.length === 1 ? 'reply' : 'replies'}</span>
-                        </div>
-                      </div>
-                    </Link>
-                  )
-                }
+            <main className="space-y-6 min-w-0">
 
-                const testimony = entry.item
-                return (
-                  <Link key={`testimony-${testimony.id}`} href="/testimonies" className="block">
-                    <div className="glass-card ember-border-left ember-glow p-5">
-                      <div className="flex items-start justify-between gap-3 mb-2.5">
-                        <span className="inline-flex items-center gap-1.5 text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest">
-                          <Flame className="w-3.5 h-3.5" />Testimony
-                        </span>
-                        <span className="text-xs text-lm-muted dark:text-[#BFAEA3] flex-shrink-0">{timeAgo(testimony.createdAt)}</span>
-                      </div>
-                      <p className="font-heading text-lm-text dark:text-[#FFF4E8] italic leading-relaxed line-clamp-3">
-                        &ldquo;{testimony.content}&rdquo;
-                      </p>
-                      <p className="text-xs text-lm-muted dark:text-[#BFAEA3] mt-2.5">
-                        {testimony.isAnonymous ? 'Anonymous' : (testimony.user.name ?? 'A believer')}
-                      </p>
-                    </div>
-                  </Link>
-                )
-              }) : (
-                <div className="glass-card ember-glow p-8">
-                  <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-5 flex items-center gap-1.5">
+              {/* TODAY'S VERSE */}
+              <div className="glass-card-static ember-glow p-6 relative overflow-hidden">
+                <div className="absolute right-0 top-0 bottom-0 w-44 pointer-events-none select-none hidden sm:block">
+                  <svg viewBox="0 0 180 200" xmlns="http://www.w3.org/2000/svg" className="h-full w-full" aria-hidden="true">
+                    <path d="M30 200 Q60 155 90 170 Q120 185 150 155 L180 165 L180 200 Z" fill="#8DAF6A" opacity="0.2" />
+                    <rect x="82" y="65" width="16" height="88" rx="3" fill="#C4874A" opacity="0.4" />
+                    <rect x="60" y="88" width="60" height="15" rx="3" fill="#C4874A" opacity="0.4" />
+                    <line x1="55" y1="200" x2="55" y2="150" stroke="#5E9834" strokeWidth="2.5" strokeLinecap="round" />
+                    <ellipse cx="55" cy="146" rx="9" ry="12" fill="#6DB240" opacity="0.5" />
+                    <line x1="42" y1="180" x2="30" y2="162" stroke="#5E9834" strokeWidth="1.5" strokeLinecap="round" />
+                    <ellipse cx="27" cy="158" rx="7" ry="9" fill="#5E9834" opacity="0.4" />
+                    <line x1="130" y1="200" x2="130" y2="148" stroke="#5E9834" strokeWidth="2.5" strokeLinecap="round" />
+                    <ellipse cx="130" cy="144" rx="9" ry="12" fill="#6DB240" opacity="0.5" />
+                    <line x1="143" y1="178" x2="155" y2="160" stroke="#5E9834" strokeWidth="1.5" strokeLinecap="round" />
+                    <ellipse cx="158" cy="156" rx="7" ry="9" fill="#5E9834" opacity="0.4" />
+                    <circle cx="40" cy="192" r="4.5" fill="#FFB347" opacity="0.55" />
+                    <circle cx="52" cy="196" r="3" fill="#FF8C42" opacity="0.45" />
+                    <circle cx="143" cy="193" r="4.5" fill="#FFD166" opacity="0.55" />
+                    <circle cx="155" cy="188" r="3" fill="#FFB347" opacity="0.45" />
+                    <circle cx="90" cy="200" r="3" fill="#FFB347" opacity="0.35" />
+                  </svg>
+                </div>
+                <div className="relative pr-0 sm:pr-44">
+                  <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-4 flex items-center gap-1.5">
                     <BookOpen className="w-3.5 h-3.5" />Today&apos;s Verse
                   </p>
-                  {data.verse ? (
-                    <>
-                      <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg italic leading-relaxed mb-3">
-                        &ldquo;{data.verse.text}&rdquo;
-                      </p>
-                      <p className="text-lm-accent dark:text-[#F6B25E] text-sm font-semibold">{data.verse.reference}</p>
-                    </>
-                  ) : (
-                    <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-lg italic leading-relaxed">
-                      &ldquo;Where two or three gather in my name, there am I with them.&rdquo;
-                    </p>
+                  <p className="font-heading text-lm-text dark:text-[#FFF4E8] text-xl md:text-2xl italic leading-relaxed mb-2">
+                    &ldquo;{data.verse?.text ?? 'Where two or three gather in my name, there am I with them.'}&rdquo;
+                  </p>
+                  {data.verse && (
+                    <p className="text-lm-accent dark:text-[#F6B25E] text-sm font-semibold mb-4">{data.verse.reference}</p>
                   )}
-                  <div className="mt-5 pt-4 border-t border-lm-border dark:border-[#FF7A29]/10 flex items-center justify-between">
-                    <p className="text-lm-muted dark:text-[#BFAEA3] text-xs leading-relaxed max-w-xs">
-                      The community feed is quiet right now — use the actions above to spark a conversation.
-                    </p>
-                    <Link href="/verses" className="flex-shrink-0 text-xs text-lm-accent dark:text-[#FF7A29] font-semibold hover:underline ml-4">
-                      All verses →
+                  <div className="border-t border-lm-border dark:border-[#FF7A29]/10 pt-4 flex items-center gap-4">
+                    {data.feedPosts.length === 0 && (
+                      <p className="text-lm-muted dark:text-[#BFAEA3] text-xs leading-relaxed flex-1">
+                        The community feed is quiet right now — use the actions above to spark a conversation.
+                      </p>
+                    )}
+                    <Link
+                      href="/verses"
+                      className={`inline-flex items-center gap-1 text-sm font-semibold text-lm-accent dark:text-[#FF7A29] hover:text-secondary dark:hover:text-[#F6B25E] transition-colors flex-shrink-0 ${data.feedPosts.length > 0 ? 'ml-auto' : ''}`}
+                    >
+                      View all verses <ChevronRight className="w-3.5 h-3.5" />
                     </Link>
                   </div>
                 </div>
-              )}
+              </div>
 
-              {feed.length > 0 && (
-                <p className="text-center pt-2">
-                  <Link href="/forum" className="text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-[#FF7A29] transition-colors">
-                    View all community posts →
-                  </Link>
-                </p>
-              )}
+              {/* COMMUNITY FEED */}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-heading text-lg font-bold text-lm-text dark:text-[#FFF4E8] flex items-center gap-2">
+                    <Users className="w-5 h-5 text-lm-accent dark:text-[#FF7A29]" />
+                    Community Feed
+                  </h2>
+                  <span className="text-xs text-lm-muted dark:text-[#BFAEA3] bg-lm-section dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/12 rounded-lg px-3 py-1.5 flex items-center gap-1 select-none">
+                    Latest <ChevronRight className="w-3 h-3 rotate-90 opacity-60" />
+                  </span>
+                </div>
+
+                {data.feedPosts.length > 0 ? (
+                  <div className="space-y-3">
+                    {data.feedPosts.slice(0, 5).map((post) => {
+                      const meta = TOPIC_META[post.topic] ?? { label: post.topic, labelSingular: post.topic, isPrayer: false }
+                      const TopicIcon = post.topic === 'PRAYER_REQUESTS' ? Heart
+                        : post.topic === 'BIBLE_QUESTIONS'  ? BookOpen
+                        : post.topic === 'ACCOUNTABILITY'   ? Shield
+                        : Flame
+                      return (
+                        <Link key={post.id} href={`/forum/${post.id}`} className="block group">
+                          <article className={`rounded-2xl p-5 bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/10 border-l-4 ${
+                            meta.isPrayer
+                              ? 'border-l-amber-400 dark:border-l-[#F6B25E]'
+                              : 'border-l-lm-accent dark:border-l-ember'
+                          } hover:shadow-md hover:-translate-y-0.5 transition-all`}>
+                            <div className="flex items-start gap-3">
+                              <UserAvatar src={post.user.image} name={post.user.name} size={40} />
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                                  <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ${
+                                    meta.isPrayer
+                                      ? 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-[#F6B25E]/10 dark:text-[#F6B25E] dark:border-[#F6B25E]/25'
+                                      : 'bg-lm-accent/10 text-lm-accent border-lm-accent/20 dark:bg-[#FF7A29]/10 dark:text-[#FF7A29] dark:border-[#FF7A29]/25'
+                                  }`}>
+                                    <TopicIcon className="w-2.5 h-2.5" />{meta.label}
+                                  </span>
+                                  <span className="text-xs text-lm-muted dark:text-[#BFAEA3]">
+                                    {post.user.name} · {timeAgo(post.createdAt)}
+                                  </span>
+                                </div>
+                                <h3 className="font-heading text-base font-bold text-lm-text dark:text-[#FFF4E8] group-hover:text-lm-accent dark:group-hover:text-ember transition-colors mb-1 leading-snug">
+                                  {post.title}
+                                </h3>
+                                <p className="text-lm-muted dark:text-[#BFAEA3] text-sm line-clamp-2">{post.content}</p>
+                                <div className="flex items-center gap-1 mt-2.5 text-xs text-lm-muted dark:text-[#BFAEA3]">
+                                  <MessageCircle className="w-3 h-3" />
+                                  {post.replies.length} {post.replies.length === 1 ? 'reply' : 'replies'}
+                                </div>
+                              </div>
+                            </div>
+                          </article>
+                        </Link>
+                      )
+                    })}
+                    {data.feedPosts.length > 5 && (
+                      <p className="text-center pt-1">
+                        <Link href="/forum" className="text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-[#FF7A29] transition-colors">
+                          View all community posts →
+                        </Link>
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <div className="bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/10 rounded-2xl p-10 text-center">
+                    <div className="w-12 h-12 rounded-full bg-lm-accent/10 dark:bg-[#FF7A29]/10 flex items-center justify-center mx-auto mb-4">
+                      <Users className="w-6 h-6 text-lm-accent dark:text-[#FF7A29]" />
+                    </div>
+                    <p className="font-heading font-bold text-lm-text dark:text-[#FFF4E8] mb-1">No recent activity</p>
+                    <p className="text-lm-muted dark:text-[#BFAEA3] text-sm mb-5">Be the first to share, ask, or start a discussion.</p>
+                    <Link href="/forum" className="inline-flex items-center gap-2 px-5 py-2 border border-lm-accent dark:border-[#FF7A29] text-lm-accent dark:text-[#FF7A29] rounded-xl text-sm font-semibold hover:bg-lm-accent hover:text-white dark:hover:bg-[#FF7A29] dark:hover:text-white transition-colors">
+                      Get started
+                    </Link>
+                  </div>
+                )}
+              </div>
+
             </main>
 
             {/* SIDEBAR */}
             <aside className="space-y-4">
 
-              {/* Mini profile card */}
-              <div className="glass-card-static ember-glow p-5">
+              {/* Profile card */}
+              <div className="bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/12 rounded-2xl p-5">
                 <div className="flex flex-col items-center text-center">
                   {session.user.image ? (
-                    <Image src={session.user.image} alt="" width={52} height={52} className="rounded-full ring-2 ring-lm-accent/30 dark:ring-ember/30 mb-3" />
+                    <Image src={session.user.image} alt="" width={64} height={64} className="rounded-full ring-2 ring-lm-accent/25 dark:ring-ember/25 mb-3" />
                   ) : (
-                    <div className="w-[52px] h-[52px] rounded-full bg-lm-accent dark:bg-ember text-white flex items-center justify-center text-xl font-bold mb-3">
+                    <div className="w-16 h-16 rounded-full bg-lm-accent/15 dark:bg-ember/15 text-lm-accent dark:text-ember flex items-center justify-center text-2xl font-bold mb-3">
                       {session.user.name?.[0]?.toUpperCase() ?? '?'}
                     </div>
                   )}
                   <p className="font-heading font-bold text-lm-text dark:text-[#FFF4E8] text-base leading-tight">{data.profile?.name ?? session.user.name}</p>
-                  {data.profile?.favoriteVerse && (
-                    <p className="text-lm-accent dark:text-[#F6B25E] text-xs mt-1.5 italic line-clamp-2">{data.profile.favoriteVerse}</p>
+                  {memberSince && (
+                    <p className="text-lm-muted dark:text-[#BFAEA3] text-xs mt-1">Member since {memberSince}</p>
                   )}
                 </div>
                 {data.profile && (
@@ -290,33 +365,32 @@ export default async function HomePage() {
                     </div>
                   </div>
                 )}
-                <Link href="/profile" className="block mt-3 text-center text-xs text-lm-accent dark:text-[#FF7A29] hover:text-secondary dark:hover:text-[#F6B25E] transition-colors font-semibold">
+                <Link
+                  href="/profile"
+                  className="mt-4 block w-full bg-lm-accent dark:bg-[#FF7A29] text-white text-center font-semibold text-sm py-2.5 rounded-xl hover:bg-secondary dark:hover:bg-[#F6B25E] dark:hover:text-[#0D0A0A] transition-colors"
+                >
                   View full profile →
                 </Link>
               </div>
 
-              {/* Navigation — counts shown as badges where available; badge hidden when zero */}
-              <div className="glass-card-static p-4">
+              {/* Navigate card */}
+              <div className="bg-white dark:bg-[#1E1818] border border-lm-border dark:border-[#FF7A29]/12 rounded-2xl p-4">
                 <p className="text-xs text-lm-accent dark:text-[#FF7A29] font-semibold uppercase tracking-widest mb-3">Navigate</p>
                 {([
-                  { Icon: Users,    label: 'Community',     href: '/forum',        count: data.feedPosts.length },
-                  { Icon: BookOpen, label: 'Verses',        href: '/verses',       count: 0 },
-                  { Icon: Sun,      label: 'Devotions',     href: '/devotions',    count: 0 },
-                  { Icon: Flame,    label: 'Testimonies',   href: '/testimonies',  count: data.testimonies.length },
-                  { Icon: PenLine,  label: 'My Reflections',href: '/reflections',  count: 0 },
-                ] as { Icon: React.ElementType; label: string; href: string; count: number }[]).map(({ Icon, label, href, count }) => (
+                  { Icon: Users,    label: 'Community',      href: '/forum'       },
+                  { Icon: BookOpen, label: 'Verses',         href: '/verses'      },
+                  { Icon: Sun,      label: 'Devotions',      href: '/devotions'   },
+                  { Icon: Flame,    label: 'Testimonies',    href: '/testimonies' },
+                  { Icon: PenLine,  label: 'My Reflections', href: '/reflections' },
+                ] as { Icon: React.ElementType; label: string; href: string }[]).map(({ Icon, label, href }) => (
                   <Link
                     key={href}
                     href={href}
-                    className="flex items-center gap-3 py-2 text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-[#FF7A29] transition-colors"
+                    className="flex items-center gap-3 py-2.5 text-sm text-lm-muted dark:text-[#BFAEA3] hover:text-lm-accent dark:hover:text-[#FF7A29] transition-colors"
                   >
                     <Icon className="w-4 h-4 flex-shrink-0" />
                     <span className="flex-1">{label}</span>
-                    {count > 0 && (
-                      <span className="text-xs font-bold text-lm-accent dark:text-[#FF7A29] bg-lm-accent/10 dark:bg-[#FF7A29]/10 px-1.5 py-0.5 rounded-full leading-none">
-                        {count}
-                      </span>
-                    )}
+                    <ChevronRight className="w-3.5 h-3.5 opacity-40" />
                   </Link>
                 ))}
               </div>
