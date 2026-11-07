@@ -5,7 +5,6 @@ import { Providers } from '@/components/Providers'
 import { Navbar } from '@/components/Navbar'
 import { Footer } from '@/components/Footer'
 import { VisitTracker } from '@/components/VisitTracker'
-import { ClickSparks } from '@/components/ClickSparks'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter', display: 'swap' })
@@ -45,7 +44,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Footer />
           </div>
           <VisitTracker />
-          <ClickSparks />
           <Toaster
             position="bottom-center"
             toastOptions={{
