@@ -15,7 +15,7 @@ export async function POST(req: Request) {
   const body = await readBody(req)
   if (typeof body.website === 'string' && body.website) return json({ ok: true }, 201) // honeypot
   if (rateLimited(`prayer:${clientIp(req)}`, 5, 60 * 60_000)) {
-    return fail('Thank you — you have sent several requests already. Please try again a little later.', 429)
+    return fail('Thank you. You have sent several requests already. Please try again a little later.', 429)
   }
 
   const content = text(body.content, { min: 5, max: 2000 })

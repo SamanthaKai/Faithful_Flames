@@ -85,7 +85,7 @@ export async function sendVerificationEmail(email: string, token: string) {
                 If you didn&rsquo;t create an account, you can safely ignore this email.
               </p>
               <p style="margin:10px 0 0;font-size:11px;color:#b8a898;font-style:italic;text-align:center;">
-                &ldquo;For the fire of God is a consuming fire.&rdquo; &mdash; Hebrews 12:29
+                &ldquo;For the fire of God is a consuming fire.&rdquo; Hebrews 12:29
               </p>
             </td>
           </tr>

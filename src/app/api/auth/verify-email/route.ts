@@ -19,7 +19,7 @@ function page(status: number, cfg: PageConfig): Response {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>${cfg.title} — Faithful Flames</title>
+  <title>${cfg.title} · Faithful Flames</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -68,7 +68,7 @@ function page(status: number, cfg: PageConfig): Response {
       <h1>${cfg.heading}</h1>
       <p>${cfg.body}</p>
       <a href="${cfg.linkHref}">${cfg.linkLabel}</a>
-      <p class="footnote">&ldquo;The Lord himself goes before you and will be with you.&rdquo; &mdash; Deuteronomy 31:8</p>
+      <p class="footnote">&ldquo;The Lord himself goes before you and will be with you.&rdquo; Deuteronomy 31:8</p>
     </div>
   </div>
 </body>
@@ -136,7 +136,7 @@ export async function GET(req: Request) {
       title: 'Link Expired',
       icon: '⏰',
       heading: 'Link Expired',
-      body: 'This verification link expired (links are valid for 24&nbsp;hours). Request a new one from the sign-in page — it only takes a moment.',
+      body: 'This verification link expired (links are valid for 24&nbsp;hours). Request a new one from the sign-in page. It only takes a moment.',
       linkHref: '/login',
       linkLabel: 'Request a new link',
       accentColor: '#6B6258',
@@ -158,7 +158,7 @@ export async function GET(req: Request) {
     title: 'Email Verified!',
     icon: '🔥',
     heading: 'Email Verified!',
-    body: 'Welcome to Faithful Flames! Your account is now active. Sign in and join the community &mdash; your story matters here.',
+    body: 'Welcome to Faithful Flames! Your account is now active. Sign in and join the community. Your story matters here.',
     linkHref: '/login',
     linkLabel: 'Sign in to your account',
     accentColor: '#9B2C1D',

@@ -74,7 +74,7 @@ function CheckEmailContent() {
 
           {sent ? (
             <div className="mb-4 px-4 py-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-sm text-green-700 dark:text-green-400">
-              Sent! Check your inbox — and spam just in case.
+              Sent! Check your inbox, and spam just in case.
             </div>
           ) : (
             <button

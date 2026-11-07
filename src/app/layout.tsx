@@ -19,7 +19,7 @@ const cormorant = Cormorant_Garamond({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Faithful Flames — a digital campfire for young believers',
+    default: 'Faithful Flames: a digital campfire for young believers',
     template: '%s · Faithful Flames',
   },
   description:
