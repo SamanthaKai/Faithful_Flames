@@ -2,13 +2,8 @@ export const dynamic = 'force-dynamic'
 import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { LikeButton } from '@/components/LikeButton'
-import { CommentsSection } from '@/components/CommentsSection'
-import { ArticleActions } from '@/components/ArticleActions'
-import { timeAgo } from '@/lib/time'
+import { BookmarkButton } from '@/components/BookmarkButton'
 
 function renderBlock(block: string, i: number) {
   const t = block.trim()
@@ -46,18 +41,13 @@ function renderContent(content: string) {
 }
 
 export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
-  const article = await prisma.article.findUnique({ where: { id: params.id } })
+  const article = await prisma.article.findFirst({ where: { id: params.id, isPublished: true } })
   return { title: article?.title ?? 'Article' }
 }
 
 export default async function ArticlePage({ params }: { params: { id: string } }) {
-  const [article, session] = await Promise.all([
-    prisma.article.findUnique({ where: { id: params.id, isPublished: true } }),
-    getServerSession(authOptions),
-  ])
+  const article = await prisma.article.findFirst({ where: { id: params.id, isPublished: true } })
   if (!article) notFound()
-
-  const canEdit = session?.user?.role === 'ADMIN' || (!!session?.user && article.authorId === session.user.id)
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 animate-fade-in">
@@ -72,17 +62,15 @@ export default async function ArticlePage({ params }: { params: { id: string } }
           </h1>
           <div className="flex items-center gap-4">
             <p className="text-warm-gray text-sm">
-              Published {timeAgo(article.publishedAt)}
+              {article.publishedAt.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
             </p>
-            <LikeButton contentType="ARTICLE" contentId={article.id} />
+            <BookmarkButton contentType="ARTICLE" contentId={article.id} />
           </div>
         </header>
-        <div className="prose-faithful">
+        <div className="prose-fire">
           {renderContent(article.content)}
         </div>
       </article>
-      {canEdit && <ArticleActions article={{ id: article.id, title: article.title, content: article.content, category: article.category }} />}
-      <CommentsSection contentType="ARTICLE" contentId={article.id} />
     </div>
   )
 }

@@ -1,37 +1,38 @@
 export const dynamic = 'force-dynamic'
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { fail, isResponse, json, readBody, requireUser, text } from '@/lib/api'
 
+// The account is intentionally small: a display name (shown on comments) and email.
 export async function GET() {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
+  const session = await requireUser()
+  if (isResponse(session)) return session
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { id: true, name: true, email: true, image: true, favoriteVerse: true, bio: true, createdAt: true, role: true },
+    select: { id: true, name: true, email: true },
   })
-  return NextResponse.json(user)
-}
-
-export async function DELETE() {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) return NextResponse.json({ error: 'Not logged in' }, { status: 401 })
-
-  await prisma.user.delete({ where: { id: session.user.id } })
-  return NextResponse.json({ ok: true })
+  return json(user)
 }
 
 export async function PATCH(req: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { name, favoriteVerse, bio, image } = await req.json()
+  const session = await requireUser()
+  if (isResponse(session)) return session
+  const name = text((await readBody(req)).name, { min: 2, max: 40 })
+  if (!name) return fail('Display name must be 2 to 40 characters.')
   const user = await prisma.user.update({
     where: { id: session.user.id },
-    data: { name, favoriteVerse, bio, ...(image !== undefined ? { image: image || null } : {}) },
-    select: { id: true, name: true, email: true, image: true, favoriteVerse: true, bio: true, createdAt: true },
+    data: { name },
+    select: { id: true, name: true, email: true },
   })
-  return NextResponse.json(user)
+  return json(user)
+}
+
+export async function DELETE() {
+  const session = await requireUser()
+  if (isResponse(session)) return session
+  // Other members' replies to this user's comments survive as top-level comments.
+  await prisma.$transaction([
+    prisma.comment.updateMany({ where: { parent: { userId: session.user.id } }, data: { parentId: null } }),
+    prisma.user.delete({ where: { id: session.user.id } }),
+  ])
+  return json({ ok: true })
 }

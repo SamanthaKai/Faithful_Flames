@@ -1,27 +1,40 @@
 export const dynamic = 'force-dynamic'
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { bool, clientIp, fail, getSession, json, rateLimited, readBody, text } from '@/lib/api'
+import { getPublishedTestimonies } from '@/lib/testimonies'
+import { containsProfanity } from '@/lib/profanity'
 
+// GET — approved testimonies only
 export async function GET() {
-  const testimonies = await prisma.testimony.findMany({
-    where: { isApproved: true },
-    orderBy: { createdAt: 'desc' },
-    include: { user: { select: { name: true, id: true } } },
-  })
-  return NextResponse.json(testimonies)
+  return json(await getPublishedTestimonies())
 }
 
+// POST { title, content, displayName?, isAnonymous?, website? }
+// Open to visitors. Nothing is published until an admin approves it.
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const body = await readBody(req)
+  if (typeof body.website === 'string' && body.website) return json({ ok: true }, 201) // honeypot
+  if (rateLimited(`testimony:${clientIp(req)}`, 3, 60 * 60_000)) {
+    return fail('Thank you for sharing! Please try again a little later.', 429)
+  }
 
-  const { content, isAnonymous } = await req.json()
-  if (!content?.trim()) return NextResponse.json({ error: 'Content required.' }, { status: 400 })
+  const title = text(body.title, { min: 3, max: 120 })
+  if (title === null) return fail('Please give your testimony a title (3 to 120 characters).')
+  const content = text(body.content, { min: 20, max: 6000 })
+  if (content === null) return fail('Please write between 20 and 6,000 characters.')
+  const displayName = text(body.displayName, { max: 60 })
+  if (displayName === null) return fail('Please keep your name under 60 characters.')
+  if (containsProfanity(title) || containsProfanity(content)) return fail('Please keep the language kind and clean.')
 
-  const testimony = await prisma.testimony.create({
-    data: { userId: session.user.id, content, isAnonymous: isAnonymous ?? false },
+  const session = await getSession()
+  await prisma.testimony.create({
+    data: {
+      userId: session?.user?.id ?? null,
+      title,
+      content,
+      displayName: displayName || null,
+      isAnonymous: bool(body.isAnonymous),
+    },
   })
-  return NextResponse.json(testimony, { status: 201 })
+  return json({ ok: true }, 201)
 }

@@ -54,17 +54,17 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, trigger, session: sessionData }) {
-      if (user) {
-        token.id = user.id
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { role: true },
-        })
-        const isAdmin = user.email === process.env.ADMIN_EMAIL
-        token.role = isAdmin ? 'ADMIN' : (dbUser?.role ?? 'USER')
-        if (isAdmin && dbUser?.role !== 'ADMIN') {
-          await prisma.user.update({ where: { id: user.id }, data: { role: 'ADMIN' } })
-        }
+      if (user) token.id = user.id
+
+      // The database role is the only source of admin access (managed with
+      // `npm run admin`). Re-read it at sign-in and at most once a minute after,
+      // so a demotion takes effect on the server without waiting for the
+      // session to expire.
+      const now = Date.now()
+      if (token.id && (user || !token.roleCheckedAt || now - token.roleCheckedAt > 60_000)) {
+        const dbUser = await prisma.user.findUnique({ where: { id: token.id }, select: { role: true } })
+        token.role = dbUser?.role ?? 'USER'
+        token.roleCheckedAt = now
       }
       if (trigger === 'update' && sessionData) {
         if (sessionData.name  !== undefined) token.name    = sessionData.name

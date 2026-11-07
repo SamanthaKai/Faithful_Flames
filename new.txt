@@ -1,0 +1,295 @@
+# Faithful Flames – Website Refinement & Feature Simplification
+
+We are refining the existing Faithful Flames website: https://faithful-flames.vercel.app/
+
+Faithful Flames is a digital campfire for young believers. Its purpose is to help young Christians grow in God's Word, share testimonies, support one another through prayer, and build meaningful connections around daily devotionals.
+
+The website is already built and deployed. **Do not rebuild it from scratch.** First inspect the existing codebase, architecture, database, authentication system, routes, components and current functionality.
+
+Your task is to simplify and refine the existing platform while preserving its identity and working features.
+
+## 1. Design direction
+
+Retain the existing Faithful Flames branding and visual identity.
+
+The preferred visual direction is:
+- ✅ Campfire-inspired branding.
+- ✅ Elegant typography with a balance of modern and editorial design.
+- ✅ Warm, welcoming and peaceful atmosphere.
+- ✅ Responsive layouts for desktop, tablet and mobile.
+- ✅ Consistent spacing, typography, buttons and cards.
+- ✅ Do something you wouldn't do, don't be generic. 
+
+Do not turn the website into a generic church website or a generic social media platform.
+
+The design should communicate the feeling of a digital campfire where young believers gather to grow in Christ.
+
+Simplify the interface by removing unnecessary sections, duplicated content, excessive calls to action and redundant navigation.
+
+## 2. The four main features
+
+### A. Daily Verse / Devotionals
+
+These are ONE feature, not two separate modules.
+
+Each daily devotion should contain:
+- ✅ Date.
+- ✅ Bible verse/reference.
+- ✅ Scripture text.
+- ✅ Devotional reflection.
+- ✅ Practical application.
+- ✅ Optional closing prayer.
+
+The homepage should feature the current day's devotion, displaying the scripture and a short preview of the reflection.
+
+Visitors should be able to open and read the full devotion.
+
+Each devotion should have:
+- ✅ Bookmark functionality for signed-in users.
+- ✅ Private personal notes for signed-in users.
+- ✅ A discussion section for the current day's devotion.
+
+Previous devotions should remain accessible for reading.
+
+### B. Prayer Requests
+
+Allow visitors to submit prayer requests.
+
+Requirements:
+- ✅ Prayer request submission form.
+- ✅ Option to submit anonymously.
+- ✅ Option to request private handling.
+- ✅ Public prayer requests should only be displayed with explicit consent.
+- ✅ Allow signed-in members to indicate that they have prayed for a request.
+- ✅ Admin moderation and management.
+
+Protect sensitive information. Private requests must never appear publicly.
+
+### C. Testimonies
+
+Allow visitors to share testimonies of God's faithfulness.
+
+Requirements:
+- ✅ Testimony submission form.
+- ✅ Testimony title and content.
+- ✅ Optional author display name.
+- ✅ Option to submit anonymously.
+- ✅ Admin approval before publication.
+- ✅ Public testimony listing.
+- ✅ Individual testimony reading pages.
+
+Keep the presentation clean and readable.
+
+### D. Daily Devotion Discussions
+
+This is not a general-purpose forum.
+
+Every discussion must belong to a specific daily devotion.
+
+Requirements:
+- ✅ Each daily devotion has its own discussion section.
+- ✅ Only authenticated users can comment.
+- ✅ Members can comment and reply to comments.
+- ✅ Display the commenter's chosen display name.
+- ✅ Keep interactions simple.
+- ✅ Include basic comment moderation and reporting.
+- ✅ Do not introduce private messaging or unrelated forum categories.
+
+**Important: Daily discussion expiry**
+
+Discussions must automatically close when the next calendar day begins.
+
+For example:
+- ✅ November 7 devotion: comments are open throughout November 7.
+- ✅ At midnight, the November 7 discussion closes.
+- ✅ November 8 devotion: a new discussion opens.
+- ✅ Previous discussions remain readable but become permanently read-only.
+
+Use the Africa/Kampala timezone for determining the daily boundary.
+
+Enforce the closing rule on the backend, not just through frontend controls. A user must not be able to bypass the expiry by submitting a request directly to the API.
+
+Do not delete old comments or discussions.
+
+## 3. User accounts and authentication
+
+Keep the existing authentication system.
+
+However, registration should remain optional for browsing the website.
+
+Visitors should be able to:
+- ✅ Read daily devotions.
+- ✅ Read articles, if retained as supporting content.
+- ✅ Read published testimonies.
+- ✅ View public prayer requests.
+
+Signed-in members should additionally be able to:
+- ✅ Save/bookmark devotions.
+- ✅ Save/bookmark articles.
+- ✅ Write private personal notes on devotions.
+- ✅ Participate in daily discussions.
+- ✅ Manage their own bookmarks and notes.
+- ✅ Submit contributions where authentication is required.
+
+Do not introduce:
+- ✅ Elaborate user profiles.
+- ✅ Member directories.
+- ✅ Public follower counts.
+- ✅ Personalized social dashboards.
+- ✅ Unnecessary social networking features.
+
+Keep authentication simple and secure.
+
+Personal notes must remain private to their owners.
+
+## 4. Admin dashboard
+
+Retain the existing `/admin` dashboard and simplify it to support:
+
+- ✅ Create, edit and publish daily devotions.
+- ✅ Manage articles if the existing article feature is retained.
+- ✅ Review, approve and reject testimonies.
+- ✅ Review and manage prayer requests.
+- ✅ Moderate comments and reported content.
+- ✅ View basic website analytics, including daily visitors.
+
+Do not introduce unnecessary administrative modules.
+
+Ensure admin routes and operations are properly protected.
+
+## 5. Navigation and homepage
+
+Keep the homepage focused.
+
+The primary navigation should contain:
+
+1. ✅ Home
+2. ✅ Daily Devotion
+3. ✅ Prayer
+4. ✅ Testimonies
+
+The daily devotion page should provide access to its associated discussion.
+
+Do not make discussions a separate general-purpose forum destination.
+
+The homepage should prioritize:
+- ✅ A clear Faithful Flames introduction.
+- ✅ Today's featured devotion.
+- ✅ A short devotional preview.
+- ✅ Prayer requests.
+- ✅ Recent testimonies.
+- ✅ A simple invitation to participate.
+
+Keep the existing campfire branding prominent.
+
+## 6. Features to remove or discontinue
+
+Remove the following functionality from the public experience:
+
+- ✅ General-purpose forum categories.
+- ✅ Standalone forum discussions unrelated to daily devotions.
+- ✅ General forum post creation.
+- ✅ Public member directory.
+- ✅ Public membership count.
+- ✅ Personal reflection/journaling as a separate module.
+- ✅ Events management.
+- ✅ Elaborate user profiles.
+- ✅ Personalized member dashboards.
+
+✅ Convert the existing reflection functionality into private personal notes attached to individual devotions, where possible.
+  _(Reflections table now holds per-devotion notes. Older reflections and prayer-journal entries were tied to verses, not devotions, so they can't be linked; they're shown read-only under "Earlier writing" on each member's page.)_
+
+Do not delete existing user data, testimonies, prayer requests or historical discussions without first identifying what would be affected.
+
+## 7. Technical requirements
+
+Before implementation:
+
+1. ✅ Inspect the entire existing project.
+2. ✅ Identify the frontend framework and backend architecture.
+3. ✅ Identify the existing database schema and authentication provider.
+4. ✅ Identify reusable components and existing functionality.
+5. ✅ Identify dependencies and potential breaking changes.
+6. ✅ Provide a brief implementation plan.
+
+Then implement the changes using the existing technology stack.
+
+Important requirements:
+- ✅ Do not replace the existing framework.
+- ✅ Do not unnecessarily introduce new dependencies.
+- ✅ Preserve existing working functionality.
+- ✅ Implement proper authorization and data validation.
+- ✅ Protect private notes and prayer requests.
+- ✅ Enforce daily discussion expiry server-side.
+- ✅ Avoid duplicate database records and migrations.
+- ✅ Maintain responsive design.
+- ✅ Ensure existing deployment configuration remains functional.
+
+## 8. Testing and deployment readiness
+
+After implementation, verify:
+
+- ✅ Daily devotion creation and publishing.
+- ✅ Correct scripture and reflection display.
+- ✅ Previous devotion accessibility.
+- ✅ Bookmark functionality.
+- ✅ Private personal notes.
+- ✅ Prayer request submission and privacy.
+- ✅ Testimony submission and moderation.
+- ✅ Authentication and authorization. _(Email/password sign-in tested. Google sign-in unchanged but not tested locally.)_
+- ✅ Daily discussion creation and commenting.
+- ✅ Discussion closure at midnight in Africa/Kampala. _(Exact 23:59:59.999 → 00:00 EAT boundary tested with a simulated clock; API blocks posting/editing/deleting on past days. Not observed live across a real midnight.)_
+- ✅ Historical discussions remaining readable.
+- ✅ Admin permissions.
+- ✅ Mobile responsiveness. _(No horizontal overflow at 375px and 768px on every public page and /admin; screenshots checked in light and dark.)_
+- ✅ Existing routes and navigation.
+
+Do not claim a feature works unless you have tested it.
+
+Do not deploy automatically. First provide a summary of changes, database migrations, outstanding issues and deployment instructions.
+
+## Final objective
+
+Faithful Flames should remain a warm, welcoming digital campfire for young believers.
+
+Its four central experiences are:
+
+1. Growing through God's Word.
+2. Supporting one another through prayer.
+3. Sharing testimonies.
+4. Discussing each day's devotion together.
+
+Keep the platform simple, purposeful, secure and maintainable.
+
+**Build what is necessary. Resist unnecessary feature expansion.**
+
+
+---
+
+# Status — refinement complete (7 November 2026)
+
+Everything above marked ✅ is built **and tested**: 132 end-to-end API/page checks against a local production build on a throwaway copy of the database, 14 midnight-boundary checks, typecheck and production build. Nothing has been deployed.
+
+## Database changes (additive only — safe for `prisma db push` in the Vercel build)
+- Devotion: + scriptureText, application, dayKey (Kampala date), updatedAt; prayerPoint & reflectionQuestion now optional.
+- Testimony: + title, displayName, reviewedAt; userId optional (visitors can submit).
+- Reflection: + devotionId (private notes on a devotion).
+- Comment: + parentId (replies), isHidden, deletedAt.
+- New tables: Bookmark, CommentReport, PrayerRequest, PrayerRequestPrayer, DailyVisit.
+- No tables or columns removed. Forum, events, accountability, journal, likes and verse tables are kept untouched.
+- Tested: old schema + sample data → new schema with no `--accept-data-loss` → all rows intact.
+
+## Still to decide / not done
+- ❎ Old forum "Prayer Requests" posts were not copied into the new prayer wall (people never chose the new privacy options for them). Data is kept; can be migrated later if you want.
+- ❎ Old Daily Verses (Verse table) were not merged into devotions. Data kept; no longer shown.
+- ❎ Old comments on articles and old likes are no longer displayed (kept in the database).
+- ❎ One-devotion-per-day and one-note-per-devotion are enforced in the API, not by a DB unique constraint (adding one would make the Vercel build demand --accept-data-loss).
+- ❎ Rate limiting on public forms is per server instance (best effort on Vercel).
+- ❎ ESLint isn't configured in this project, so `next lint` wasn't run.
+
+## Deploy steps
+1. Review and commit the changes (not committed yet).
+2. Push to the branch Vercel deploys. The build runs `prisma generate && prisma db push && next build`, which applies the additive schema changes.
+3. Admin login: `npm run admin -- create <admin-email>` (asks for name + password), sign in as that account, then `npm run admin -- demote kissasamantha123@gmail.com`. Remove the ADMIN_EMAIL variable from Vercel.
+4. Sign in as the admin → /admin → Devotions → create today's devotion.
+5. Spot-check: /, /devotions, /prayer, /testimonies, submit a test prayer request, approve it in admin.

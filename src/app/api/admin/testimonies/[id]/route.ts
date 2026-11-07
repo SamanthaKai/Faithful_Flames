@@ -1,25 +1,26 @@
 export const dynamic = 'force-dynamic'
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { fail, isResponse, json, readBody, requireAdmin } from '@/lib/api'
 
+// PATCH { action: 'approve' | 'reject' | 'pending' }
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions)
-  if (session?.user?.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-
-  const { isApproved } = await req.json()
-  const testimony = await prisma.testimony.update({
-    where: { id: params.id },
-    data: { isApproved },
-  })
-  return NextResponse.json(testimony)
+  const session = await requireAdmin()
+  if (isResponse(session)) return session
+  const { action } = await readBody(req)
+  const data =
+    action === 'approve' ? { isApproved: true, reviewedAt: new Date() }
+    : action === 'reject' ? { isApproved: false, reviewedAt: new Date() }
+    : action === 'pending' ? { isApproved: false, reviewedAt: null }
+    : null
+  if (!data) return fail('Invalid action.')
+  const exists = await prisma.testimony.count({ where: { id: params.id } })
+  if (!exists) return fail('Not found.', 404)
+  return json(await prisma.testimony.update({ where: { id: params.id }, data }))
 }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions)
-  if (session?.user?.role !== 'ADMIN') return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-
-  await prisma.testimony.delete({ where: { id: params.id } })
-  return NextResponse.json({ ok: true })
+  const session = await requireAdmin()
+  if (isResponse(session)) return session
+  await prisma.testimony.deleteMany({ where: { id: params.id } })
+  return json({ ok: true })
 }

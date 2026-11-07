@@ -18,14 +18,14 @@ export async function POST(req: Request) {
   }
 
   const hashed = await bcrypt.hash(password, 12)
-  const isAdmin = email === process.env.ADMIN_EMAIL
 
+  // Registration never grants admin; admins are managed with `npm run admin`.
   await prisma.user.create({
     data: {
       name,
       email,
       password: hashed,
-      role: isAdmin ? 'ADMIN' : 'USER',
+      role: 'USER',
       // emailVerified is intentionally null until the user clicks the link
     },
   })

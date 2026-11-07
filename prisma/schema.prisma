@@ -32,6 +32,10 @@ model User {
   comments                 Comment[]
   likes                    Like[]
   articles                 Article[]
+  bookmarks                Bookmark[]
+  commentReports           CommentReport[]
+  prayerRequests           PrayerRequest[]
+  prayedFor                PrayerRequestPrayer[]
 }
 
 enum Role {
@@ -100,41 +104,66 @@ model Article {
   author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
 }
 
+// One devotion per calendar day (Africa/Kampala). The Daily Verse and the
+// devotion are a single feature: `scripture` is the reference, `scriptureText`
+// the passage itself, `teaching` the reflection, `prayerPoint` the closing prayer.
 model Devotion {
   id                 String   @id @default(cuid())
   title              String
   scripture          String
+  scriptureText      String?  @db.Text
   teaching           String   @db.Text
-  prayerPoint        String   @db.Text
-  reflectionQuestion String
+  application        String?  @db.Text
+  prayerPoint        String?  @db.Text
+  reflectionQuestion String?
+  /// YYYY-MM-DD in Africa/Kampala. Null only for devotions created before this field existed.
+  /// Uniqueness (one devotion per day) is enforced in the admin API; a DB unique
+  /// constraint would make `prisma db push` in the Vercel build demand --accept-data-loss.
+  dayKey             String?
   publishedAt        DateTime @default(now())
   isPublished        Boolean  @default(false)
   createdAt          DateTime @default(now())
+  updatedAt          DateTime @default(now()) @updatedAt
+
+  notes Reflection[]
+
+  @@index([dayKey])
 }
 
 model Testimony {
-  id          String   @id @default(cuid())
-  userId      String
-  content     String   @db.Text
-  isAnonymous Boolean  @default(false)
-  isApproved  Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id          String    @id @default(cuid())
+  userId      String?
+  title       String?
+  displayName String?
+  content     String    @db.Text
+  isAnonymous Boolean   @default(false)
+  isApproved  Boolean   @default(false)
+  /// Set when an admin approves or rejects. Pending = not approved and not reviewed.
+  reviewedAt  DateTime?
+  createdAt   DateTime  @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+// Private personal notes. Rows with a devotionId are notes on that devotion
+// (one per user per devotion); older rows without one are legacy reflections.
 model Reflection {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String
-  content   String   @db.Text
-  mood      String?
-  verseId   String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String    @id @default(cuid())
+  userId     String
+  title      String
+  content    String    @db.Text
+  mood       String?
+  verseId    String?
+  devotionId String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
-  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  verse Verse? @relation(fields: [verseId], references: [id])
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  verse    Verse?    @relation(fields: [verseId], references: [id])
+  devotion Devotion? @relation(fields: [devotionId], references: [id], onDelete: Cascade)
+
+  // One note per user per devotion, enforced in the notes API (see Devotion.dayKey comment).
+  @@index([userId, devotionId])
 }
 
 model ForumPost {
@@ -255,16 +284,99 @@ enum ContentType {
   FORUM_POST
 }
 
+// Devotion discussions use contentType = DEVOTION and contentId = devotion id.
 model Comment {
   id          String      @id @default(cuid())
   userId      String
   content     String      @db.Text
   contentType ContentType
   contentId   String
+  parentId    String?
+  isHidden    Boolean     @default(false)
+  deletedAt   DateTime?
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   Comment?        @relation("CommentReplies", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  replies  Comment[]       @relation("CommentReplies")
+  reports  CommentReport[]
+
+  @@index([contentType, contentId])
+}
+
+model CommentReport {
+  id         String    @id @default(cuid())
+  commentId  String
+  userId     String
+  reason     String?
+  resolvedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+}
+
+model Bookmark {
+  id          String      @id @default(cuid())
+  userId      String
+  contentType ContentType
+  contentId   String
+  createdAt   DateTime    @default(now())
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, contentType, contentId])
+}
+
+enum PrayerStatus {
+  PENDING
+  APPROVED
+  ARCHIVED
+}
+
+// A request is shown publicly only when status = APPROVED, isPrivate = false
+// and shareConsent = true. Private requests are never returned by public APIs.
+model PrayerRequest {
+  id           String       @id @default(cuid())
+  userId       String?
+  name         String?
+  content      String       @db.Text
+  isAnonymous  Boolean      @default(false)
+  isPrivate    Boolean      @default(false)
+  shareConsent Boolean      @default(false)
+  status       PrayerStatus @default(PENDING)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @default(now()) @updatedAt
+
+  user    User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  prayers PrayerRequestPrayer[]
+
+  @@index([status, isPrivate, shareConsent])
+}
+
+model PrayerRequestPrayer {
+  id        String   @id @default(cuid())
+  userId    String
+  requestId String
+  createdAt DateTime @default(now())
+
+  user    User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  request PrayerRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, requestId])
+}
+
+// One row per anonymous visitor per Kampala day (basic analytics, no personal data).
+model DailyVisit {
+  day       String
+  visitorId String
+  views     Int      @default(1)
+  createdAt DateTime @default(now())
+
+  @@id([day, visitorId])
 }
 
 model Like {

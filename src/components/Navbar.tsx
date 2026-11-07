@@ -1,196 +1,168 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { Logo } from './Logo'
 import { useTheme } from './ThemeProvider'
-import Image from 'next/image'
 
-const navLinks = [
-  { href: '/',            label: 'Home'        },
-  { href: '/verses',      label: 'Verses'      },
-  { href: '/devotions',   label: 'Devotions'   },
-  { href: '/forum',       label: 'Community'   },
-  { href: '/members',     label: 'Members'     },
-  { href: '/articles',    label: 'Articles'    },
+const NAV = [
+  { href: '/', label: 'Home' },
+  { href: '/devotions', label: 'Daily Devotion' },
+  { href: '/prayer', label: 'Prayer' },
+  { href: '/testimonies', label: 'Testimonies' },
 ]
+
+function ThemeIcon({ dark }: { dark: boolean }) {
+  return dark ? (
+    <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+      <path strokeLinecap="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.36-6.36-.71.71M6.34 17.66l-.71.71m12.02 0-.71-.71M6.34 6.34l-.71-.71M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" />
+    </svg>
+  ) : (
+    <svg className="h-[18px] w-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M20.35 15.35A9 9 0 0 1 8.65 3.65 9 9 0 1 0 20.35 15.35Z" />
+    </svg>
+  )
+}
 
 export function Navbar() {
   const { data: session } = useSession()
   const { theme, toggle } = useTheme()
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
-  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const [menu, setMenu] = useState(false)
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/')
+  useEffect(() => {
+    setOpen(false)
+    setMenu(false)
+  }, [pathname])
 
-  const initial =
-    session?.user?.name?.[0]?.toUpperCase() ??
-    session?.user?.email?.[0]?.toUpperCase() ??
-    '?'
-
-  const getLinkClass = (href: string) => {
-    const active = isActive(href)
-    const base = 'text-sm font-medium transition-all duration-200 pb-0.5 relative'
-    if (active) {
-      return `${base} text-ember border-b-2 border-ember`
-    }
-    return `${base} text-[#2A140A] hover:text-black dark:text-[#BFAEA3] dark:hover:text-ember border-b-2 border-transparent hover:border-black/30 dark:hover:border-ember/40`
-  }
+  const isActive = (href: string) => (href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(href + '/'))
+  const initial = (session?.user?.name?.[0] ?? session?.user?.email?.[0] ?? '·').toUpperCase()
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FFF0E0]/95 dark:bg-[#0D0A0A]/95 backdrop-blur-md border-b border-[#F1D3B3] dark:border-ember/10 transition-colors duration-300">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-6">
-        <Logo size={34} />
+    <header className="sticky top-0 z-50 border-b border-lm-border/80 bg-cream/90 backdrop-blur-md dark:border-ember/10 dark:bg-[#0D0A0A]/90">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6" aria-label="Main">
+        <Logo size={30} />
 
-        {/* Desktop links */}
-        <div className="hidden md:flex items-center gap-5">
-          {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className={getLinkClass(link.href)}>
-              {link.label}
-            </Link>
+        <ul className="hidden items-center gap-1 md:flex">
+          {NAV.map((l) => (
+            <li key={l.href}>
+              <Link
+                href={l.href}
+                aria-current={isActive(l.href) ? 'page' : undefined}
+                className={`relative rounded-full px-4 py-2 text-sm font-medium ${
+                  isActive(l.href)
+                    ? 'text-lm-text dark:text-[#FFF4E8]'
+                    : 'text-lm-muted hover:text-lm-text dark:text-[#BFAEA3] dark:hover:text-[#FFF4E8]'
+                }`}
+              >
+                {l.label}
+                {isActive(l.href) && (
+                  <span className="absolute inset-x-4 -bottom-[1px] h-[2px] rounded-full bg-ember shadow-[0_0_10px_rgba(255,122,41,0.8)]" />
+                )}
+              </Link>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        {/* Right side */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="flex items-center gap-1.5">
           <button
             type="button"
             onClick={toggle}
-            aria-label="Toggle theme"
-            className="p-2 rounded-lg transition-colors duration-200 text-[#2A140A] hover:text-black hover:bg-black/8 dark:text-[#BFAEA3] dark:hover:text-ember dark:hover:bg-ember/8"
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="rounded-full p-2 text-lm-muted hover:bg-lm-highlight/60 hover:text-lm-text dark:text-[#BFAEA3] dark:hover:bg-white/5 dark:hover:text-[#FFF4E8]"
           >
-            {theme === 'dark' ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 110 10A5 5 0 0112 7z" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
-            )}
+            <ThemeIcon dark={theme === 'dark'} />
           </button>
 
           {session ? (
-            <div className="relative">
+            <div className="relative hidden md:block">
               <button
                 type="button"
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center gap-2 rounded-full focus:outline-none focus:ring-2 focus:ring-ember"
+                onClick={() => setMenu((v) => !v)}
+                aria-expanded={menu}
+                aria-label="Your account"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-ember text-sm font-bold text-white ring-2 ring-ember/20 focus:outline-none focus-visible:ring-ember"
               >
-                {session.user.image ? (
-                  <Image src={session.user.image} alt={session.user.name ?? ''} width={32} height={32} className="rounded-full ring-2 ring-ember/30" />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-ember text-white flex items-center justify-center text-sm font-bold">
-                    {initial}
-                  </div>
-                )}
+                {initial}
               </button>
-
-              {userMenuOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-[#FFF8F0] dark:bg-[#161111] rounded-xl shadow-xl border border-[#F1D3B3] dark:border-ember/15 overflow-hidden animate-fade-in">
-                  <div className="px-4 py-3 border-b border-[#F1D3B3] dark:border-ember/10">
-                    <p className="text-sm font-semibold text-[#2A140A] dark:text-[#FFF4E8] truncate">{session.user.name}</p>
-                    <p className="text-xs text-[#2A140A]/60 dark:text-[#BFAEA3] truncate">{session.user.email}</p>
+              {menu && (
+                <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-2xl border border-lm-border bg-lm-card shadow-xl animate-fade-in dark:border-ember/15 dark:bg-[#161111]">
+                  <div className="border-b border-lm-border px-4 py-3 dark:border-ember/10">
+                    <p className="truncate text-sm font-semibold text-lm-text dark:text-[#FFF4E8]">{session.user.name ?? 'Friend'}</p>
+                    <p className="truncate text-xs text-lm-muted dark:text-[#BFAEA3]">{session.user.email}</p>
                   </div>
-                  <div className="py-1">
-                    <Link href="/profile" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] hover:text-black dark:hover:bg-ember/8 dark:hover:text-[#FFF4E8] transition-colors">Profile</Link>
-                    <Link href="/reflections" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] hover:text-black dark:hover:bg-ember/8 dark:hover:text-[#FFF4E8] transition-colors">My Reflections</Link>
-                    <Link href="/journal" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-[#2A140A] dark:text-[#FFF4E8] hover:bg-[#FFE2C2] hover:text-black dark:hover:bg-ember/8 dark:hover:text-[#FFF4E8] transition-colors">Prayer Journal</Link>
-                    {session.user.role === 'ADMIN' && (
-                      <Link href="/admin" onClick={() => setUserMenuOpen(false)} className="block px-4 py-2 text-sm text-ember font-semibold hover:bg-[#FFE2C2] transition-colors">Admin Panel</Link>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => { setUserMenuOpen(false); signOut({ callbackUrl: '/' }) }}
-                      className="w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-                    >
-                      Sign out
-                    </button>
-                  </div>
+                  <Link href="/profile" className="block px-4 py-2.5 text-sm text-lm-text hover:bg-lm-highlight/60 dark:text-[#FFF4E8] dark:hover:bg-white/5">
+                    My bookmarks &amp; notes
+                  </Link>
+                  {session.user.role === 'ADMIN' && (
+                    <Link href="/admin" className="block px-4 py-2.5 text-sm font-semibold text-ember hover:bg-lm-highlight/60 dark:hover:bg-white/5">
+                      Admin
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                    className="block w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+                  >
+                    Sign out
+                  </button>
                 </div>
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/login"
-                className="py-1.5 px-4 text-xs font-semibold rounded-lg border transition-all duration-200 border-[#2A140A]/30 text-[#2A140A] hover:bg-[#2A140A] hover:text-white hover:border-[#2A140A] dark:bg-transparent dark:border-ember/40 dark:text-ember dark:hover:bg-ember/8 dark:hover:text-ember"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/register"
-                className="py-1.5 px-4 text-xs font-semibold rounded-lg bg-ember text-white hover:bg-[#2A140A] transition-all duration-200"
-              >
-                Join
-              </Link>
-            </div>
+            <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm font-semibold text-lm-text hover:text-ember dark:text-[#FFF4E8] md:inline-flex">
+              Sign in
+            </Link>
           )}
-        </div>
 
-        {/* Mobile hamburger */}
-        <button
-          type="button"
-          className="md:hidden p-2 rounded-lg transition-colors text-[#2A140A] hover:text-black dark:text-[#BFAEA3] dark:hover:text-ember"
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle menu"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            {open
-              ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            }
-          </svg>
-        </button>
+          <button
+            type="button"
+            className="rounded-full p-2 text-lm-text dark:text-[#FFF4E8] md:hidden"
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-label="Menu"
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
+              {open ? <path strokeLinecap="round" d="M6 18 18 6M6 6l12 12" /> : <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h10" />}
+            </svg>
+          </button>
+        </div>
       </nav>
 
-      {/* Mobile menu */}
       {open && (
-        <div className="md:hidden border-t border-[#F1D3B3] dark:border-ember/10 bg-[#FFF0E0]/98 dark:bg-[#0D0A0A]/98 backdrop-blur-md animate-fade-in">
-          <div className="px-4 py-3 space-y-0.5">
-            {navLinks.map((link) => {
-              const active = isActive(link.href)
-              return (
+        <div className="border-t border-lm-border bg-cream animate-fade-in dark:border-ember/10 dark:bg-[#0D0A0A] md:hidden">
+          <ul className="mx-auto max-w-6xl space-y-1 px-4 py-4">
+            {NAV.map((l) => (
+              <li key={l.href}>
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setOpen(false)}
-                  className={`flex items-center gap-2 py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-150 ${
-                    active
-                      ? 'text-ember bg-[#FFE2C2] dark:bg-ember/8 font-semibold'
-                      : 'text-[#2A140A] dark:text-[#BFAEA3] hover:text-black hover:bg-[#FFE2C2] dark:hover:text-ember dark:hover:bg-ember/5'
+                  href={l.href}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-3 font-heading text-lg ${
+                    isActive(l.href) ? 'bg-lm-highlight/60 text-lm-text dark:bg-white/5 dark:text-[#FFF4E8]' : 'text-lm-muted dark:text-[#BFAEA3]'
                   }`}
                 >
-                  {active && <span className="w-1.5 h-1.5 rounded-full bg-ember flex-shrink-0" />}
-                  {link.label}
+                  <span className={`h-1.5 w-1.5 rounded-full ${isActive(l.href) ? 'bg-ember' : 'bg-transparent'}`} />
+                  {l.label}
                 </Link>
-              )
-            })}
-            <div className="pt-3 border-t border-[#F1D3B3] dark:border-ember/10 flex gap-2 mt-1">
+              </li>
+            ))}
+            <li className="mt-3 flex gap-2 border-t border-lm-border pt-4 dark:border-ember/10">
               {session ? (
                 <>
-                  <Link href="/profile" onClick={() => setOpen(false)} className="border border-[#2A140A]/30 text-[#2A140A] dark:border-ember/40 dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#2A140A] hover:text-white hover:border-[#2A140A] dark:hover:bg-ember/8 transition-colors">Profile</Link>
-                  <button type="button" onClick={() => signOut({ callbackUrl: '/' })} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 hover:bg-[#2A140A] transition-colors">Sign out</button>
+                  <Link href="/profile" className="btn-ghost flex-1">My bookmarks &amp; notes</Link>
+                  {session.user.role === 'ADMIN' && <Link href="/admin" className="btn-ghost">Admin</Link>}
+                  <button type="button" onClick={() => signOut({ callbackUrl: '/' })} className="btn-ghost">Sign out</button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setOpen(false)} className="border border-[#2A140A]/30 text-[#2A140A] dark:border-ember/40 dark:text-ember py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#2A140A] hover:text-white hover:border-[#2A140A] dark:hover:bg-ember/8 transition-colors">Sign in</Link>
-                  <Link href="/register" onClick={() => setOpen(false)} className="bg-ember text-white py-1.5 px-4 text-xs font-semibold rounded-lg flex-1 text-center hover:bg-[#2A140A] transition-colors">Join</Link>
+                  <Link href="/login" className="btn-ghost flex-1">Sign in</Link>
+                  <Link href="/register" className="btn-ember flex-1">Join</Link>
                 </>
               )}
-              <button type="button" onClick={toggle} aria-label="Toggle theme" className="p-2 rounded-lg border border-[#2A140A]/20 text-[#2A140A] dark:border-ember/20 dark:text-[#BFAEA3] hover:border-[#2A140A] hover:text-black dark:hover:border-ember/40 transition-colors">
-                {theme === 'dark' ? (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M17.657 17.657l-.707-.707M6.343 6.343l-.707-.707M12 7a5 5 0 110 10A5 5 0 0112 7z" /></svg>
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-                )}
-              </button>
-            </div>
-          </div>
+            </li>
+          </ul>
         </div>
       )}
     </header>

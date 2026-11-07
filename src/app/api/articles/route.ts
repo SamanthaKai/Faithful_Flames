@@ -1,30 +1,26 @@
 export const dynamic = 'force-dynamic'
-import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { fail, isResponse, json, readBody, requireAdmin, text } from '@/lib/api'
 
 export async function GET() {
   const articles = await prisma.article.findMany({
     where: { isPublished: true },
     orderBy: { publishedAt: 'desc' },
   })
-  return NextResponse.json(articles)
+  return json(articles)
 }
 
+// Admin only.
 export async function POST(req: Request) {
-  const session = await getServerSession(authOptions)
-  if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const body = await req.json()
+  const session = await requireAdmin()
+  if (isResponse(session)) return session
+  const body = await readBody(req)
+  const title = text(body.title, { min: 3, max: 160 })
+  const content = text(body.content, { min: 20, max: 50_000 })
+  const category = text(body.category, { min: 2, max: 40 })
+  if (!title || !content || !category) return fail('Title, category and content are required.')
   const article = await prisma.article.create({
-    data: {
-      title: body.title,
-      content: body.content,
-      category: body.category,
-      isPublished: true,
-      authorId: session.user.id,
-    },
+    data: { title, content, category, isPublished: body.isPublished !== false, authorId: session.user.id },
   })
-  return NextResponse.json(article, { status: 201 })
+  return json(article, 201)
 }
