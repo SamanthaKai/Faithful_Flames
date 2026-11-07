@@ -5,6 +5,7 @@
  *   npm run admin -- create <email>        create a dedicated admin login (asks for name + password)
  *   npm run admin -- password <email>      set a new password for an admin (asks for it)
  *   npm run admin -- demote <email>        turn an admin back into a normal member (account is kept)
+ *   npm run admin -- delete-members        permanently delete every non-admin account (asks first)
  *
  * Runs against whatever DATABASE_URL is in your environment / .env — normally production.
  * Passwords are typed into the terminal (hidden) and never stored in code or logs.
@@ -102,12 +103,71 @@ async function demote(email: string) {
   console.log(`✔ ${email} is now a normal member (account, notes and comments kept). Admin access ends within a minute.`)
 }
 
+// Permanently deletes every non-admin account. Shows what will go, then needs a typed confirmation.
+async function deleteMembers() {
+  await confirmTarget()
+  const admins = await prisma.user.findMany({ where: { role: 'ADMIN' }, select: { email: true } })
+  if (admins.length === 0) { console.log('Refusing: there is no admin account, so nobody could sign in afterwards.'); return }
+  const members = await prisma.user.findMany({ where: { role: { not: 'ADMIN' } }, select: { id: true, email: true } })
+  if (members.length === 0) { console.log('There are no member accounts to delete.'); return }
+  const ids = members.map((m) => m.id)
+  const mine = { userId: { in: ids } }
+
+  const [testimonies, approvedTestimonies, comments, notes, bookmarks, journal, forumPosts, prayerRequests] = await Promise.all([
+    prisma.testimony.count({ where: mine }),
+    prisma.testimony.count({ where: { ...mine, isApproved: true } }),
+    prisma.comment.count({ where: mine }),
+    prisma.reflection.count({ where: mine }),
+    prisma.bookmark.count({ where: mine }),
+    prisma.journalEntry.count({ where: mine }),
+    prisma.forumPost.count({ where: mine }),
+    prisma.prayerRequest.count({ where: mine }),
+  ])
+
+  console.log(`\nKeeping ${admins.length} admin account(s): ${admins.map((a) => a.email).join(', ')}`)
+  console.log(`\nAbout to DELETE ${members.length} member account(s) and everything they own:`)
+  console.log(`  comments ${comments} · private notes/reflections ${notes} · bookmarks ${bookmarks} · journal entries ${journal} · old forum posts ${forumPosts}`)
+  console.log(`  testimonies ${testimonies} (${approvedTestimonies} published)`)
+  console.log(`  Their ${prayerRequests} prayer request(s) are kept, just no longer linked to an account.`)
+  console.log('  Articles they wrote are kept.')
+
+  let keepTestimonies = false
+  if (testimonies > 0) {
+    keepTestimonies = (await ask('\nKeep their testimonies on the site (shown with the name they gave, or anonymous)? (yes/no): ')).toLowerCase() === 'yes'
+  }
+
+  const phrase = `delete ${members.length} members`
+  const typed = await ask(`\nThis cannot be undone. Type "${phrase}" to continue: `)
+  if (typed !== phrase) { console.log('Cancelled. Nothing was deleted.'); return }
+
+  await prisma.$transaction(async (tx) => {
+    if (keepTestimonies) {
+      // Keep the name they chose, falling back to their account name, before unlinking.
+      const ts = await tx.testimony.findMany({ where: mine, select: { id: true, displayName: true, isAnonymous: true, user: { select: { name: true } } } })
+      for (const t of ts) {
+        await tx.testimony.update({
+          where: { id: t.id },
+          data: { userId: null, displayName: t.isAnonymous ? t.displayName : (t.displayName || t.user?.name || null) },
+        })
+      }
+    }
+    // Replies (by admins) pointing at members' comments/replies would block the delete; detach them.
+    await tx.comment.updateMany({ where: { parent: { userId: { in: ids } } }, data: { parentId: null } })
+    await tx.forumReply.updateMany({ where: { parent: { userId: { in: ids } } }, data: { parentId: null } })
+    await tx.verificationToken.deleteMany({ where: { identifier: { in: members.map((m) => m.email) } } })
+    await tx.user.deleteMany({ where: { id: { in: ids } } })
+  }, { timeout: 60_000 })
+
+  console.log(`\n✔ Deleted ${members.length} member account(s).${keepTestimonies ? ' Their testimonies were kept.' : ''}`)
+}
+
 async function main() {
   const [cmd, rawEmail] = process.argv.slice(2)
   const email = rawEmail?.trim().toLowerCase()
   if (cmd === 'list') return list()
+  if (cmd === 'delete-members') return deleteMembers()
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    console.log('Usage: npm run admin -- <list | create <email> | password <email> | demote <email>>')
+    console.log('Usage: npm run admin -- <list | delete-members | create <email> | password <email> | demote <email>>')
     process.exit(1)
   }
   if (cmd === 'create') return create(email)
