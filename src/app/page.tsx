@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 import Link from 'next/link'
+import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/api'
 import { getFeaturedDevotion, excerpt } from '@/lib/devotions'
@@ -8,7 +9,6 @@ import { getPublicPrayers } from '@/lib/prayer'
 import { getPublishedTestimonies } from '@/lib/testimonies'
 import { Campfire } from '@/components/Campfire'
 import { EmberParticles } from '@/components/EmberParticles'
-import { Stars } from '@/components/Stars'
 import { EmberClock } from '@/components/EmberClock'
 import { PrayerWall } from '@/components/PrayerWall'
 
@@ -27,10 +27,21 @@ export default async function HomePage() {
   return (
     <div>
       {/* ── I. The fire ─────────────────────────────────────────────────── */}
-      <section className="night relative overflow-hidden" aria-labelledby="hero-title">
-        <Stars />
-        <div className="relative mx-auto grid max-w-6xl items-end gap-10 px-4 pb-0 pt-14 sm:px-6 md:pt-20 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="pb-12 lg:pb-24">
+      <section className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-[#0D0A0A] text-[#FFF4E8]" aria-labelledby="hero-title">
+        <Image
+          src="/faithful.png"
+          alt="Young believers gathered around a campfire at sunset"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[60%_center]"
+        />
+        {/* Darken the left for legible text, and fade the bottom into the page */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/20" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-cream to-transparent dark:from-[#0D0A0A]" aria-hidden="true" />
+        <EmberParticles />
+        <div className="relative mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+          <div className="max-w-2xl">
             <p className="mb-6 flex flex-wrap items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-gold">
               <span>Faithful Flames</span>
               <span className="h-px w-8 bg-gold/40" />
@@ -60,11 +71,6 @@ export default async function HomePage() {
               <Link href={devotionHref} className="btn-ember">{isToday ? 'Read today’s devotion' : 'Read the latest devotion'}</Link>
               <Link href="/prayer" className="btn-ghost !border-white/20 !text-[#FFF4E8] hover:!border-ember">Ask for prayer</Link>
             </div>
-          </div>
-
-          <div className="relative mx-auto w-full max-w-md self-end">
-            <EmberParticles />
-            <Campfire className="relative w-full" />
           </div>
         </div>
       </section>
