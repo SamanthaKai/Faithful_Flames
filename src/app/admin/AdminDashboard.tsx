@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
+import { useDialog } from '@/components/Dialog'
 
 type Tab = 'overview' | 'devotions' | 'prayer' | 'testimonies' | 'comments' | 'articles'
 
@@ -163,6 +164,7 @@ const emptyDevotion = (day: string) => ({ dayKey: day, title: '', scripture: '',
 
 function Devotions({ today }: { today: string }) {
   const { data, reload } = useLoad<Devotion[]>('/api/admin/devotions')
+  const dialog = useDialog()
   const [editing, setEditing] = useState<{ id: string | null; form: ReturnType<typeof emptyDevotion> } | null>(null)
   const [busy, setBusy] = useState(false)
 
@@ -207,7 +209,7 @@ function Devotions({ today }: { today: string }) {
     } catch (err) { toast.error((err as Error).message) }
   }
   const remove = async (d: Devotion) => {
-    if (!confirm(`Delete "${d.title}"? This cannot be undone.`)) return
+    if (!(await dialog.confirm({ title: 'Delete this devotion?', message: `"${d.title}" will be removed permanently. This cannot be undone.`, confirmLabel: 'Delete', danger: true }))) return
     try { await api(`/api/admin/devotions/${d.id}`, 'DELETE'); toast.success('Deleted'); reload() } catch (err) { toast.error((err as Error).message) }
   }
 
@@ -314,12 +316,13 @@ type PrayerRow = {
 
 function Prayer() {
   const { data, reload } = useLoad<PrayerRow[]>('/api/admin/prayer')
+  const dialog = useDialog()
   const [filter, setFilter] = useState<'PENDING' | 'APPROVED' | 'ARCHIVED' | 'ALL'>('PENDING')
   const setStatus = async (id: string, status: PrayerRow['status']) => {
     try { await api(`/api/admin/prayer/${id}`, 'PATCH', { status }); reload() } catch (e) { toast.error((e as Error).message) }
   }
   const remove = async (id: string) => {
-    if (!confirm('Delete this prayer request permanently?')) return
+    if (!(await dialog.confirm({ title: 'Delete this prayer request?', message: 'It will be removed permanently, along with its prayer count. To just take it off the wall, use Archive instead.', confirmLabel: 'Delete', danger: true }))) return
     try { await api(`/api/admin/prayer/${id}`, 'DELETE'); reload() } catch (e) { toast.error((e as Error).message) }
   }
   const rows = (data ?? []).filter((r) => filter === 'ALL' || r.status === filter)
@@ -372,13 +375,14 @@ type TestimonyRow = {
 
 function Testimonies() {
   const { data, reload } = useLoad<TestimonyRow[]>('/api/admin/testimonies')
+  const dialog = useDialog()
   const [filter, setFilter] = useState<'PENDING' | 'PUBLISHED' | 'REJECTED' | 'ALL'>('PENDING')
   const state = (t: TestimonyRow) => (t.isApproved ? 'PUBLISHED' : t.reviewedAt ? 'REJECTED' : 'PENDING')
   const act = async (id: string, action: 'approve' | 'reject' | 'pending') => {
     try { await api(`/api/admin/testimonies/${id}`, 'PATCH', { action }); reload() } catch (e) { toast.error((e as Error).message) }
   }
   const remove = async (id: string) => {
-    if (!confirm('Delete this testimony permanently?')) return
+    if (!(await dialog.confirm({ title: 'Delete this testimony?', message: 'It will be removed permanently. To just hide it, use Reject or Unpublish instead.', confirmLabel: 'Delete', danger: true }))) return
     try { await api(`/api/admin/testimonies/${id}`, 'DELETE'); reload() } catch (e) { toast.error((e as Error).message) }
   }
   const rows = (data ?? []).filter((t) => filter === 'ALL' || state(t) === filter)
@@ -473,6 +477,7 @@ const emptyArticle = { title: '', category: '', content: '', isPublished: true }
 
 function Articles() {
   const { data, reload } = useLoad<ArticleRow[]>('/api/admin/articles')
+  const dialog = useDialog()
   const [editing, setEditing] = useState<{ id: string | null; form: typeof emptyArticle } | null>(null)
 
   const save = async (e: React.FormEvent) => {
@@ -490,7 +495,7 @@ function Articles() {
     try { await api(`/api/articles/${a.id}`, 'PATCH', { isPublished: !a.isPublished }); reload() } catch (err) { toast.error((err as Error).message) }
   }
   const remove = async (a: ArticleRow) => {
-    if (!confirm(`Delete "${a.title}"?`)) return
+    if (!(await dialog.confirm({ title: 'Delete this article?', message: `"${a.title}" will be removed permanently, including from members' bookmarks.`, confirmLabel: 'Delete', danger: true }))) return
     try { await api(`/api/articles/${a.id}`, 'DELETE'); reload() } catch (err) { toast.error((err as Error).message) }
   }
 

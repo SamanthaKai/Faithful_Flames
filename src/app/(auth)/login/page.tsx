@@ -3,6 +3,7 @@
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
+import { GOOGLE_SIGNIN_ENABLED } from '@/lib/features'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Logo } from '@/components/Logo'
@@ -87,6 +88,8 @@ function LoginForm() {
             </div>
           )}
 
+          {GOOGLE_SIGNIN_ENABLED && (
+          <>
           <button
             type="button"
             onClick={handleGoogle}
@@ -113,6 +116,8 @@ function LoginForm() {
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-[#3A3030]" /></div>
             <div className="relative flex justify-center"><span className="bg-white dark:bg-[#231E1E] px-3 text-xs text-warm-gray">or sign in with email</span></div>
           </div>
+          </>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

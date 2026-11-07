@@ -3,9 +3,11 @@
 import { useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
+import { useDialog } from './Dialog'
 
 export function AccountSettings({ name, email }: { name: string; email: string }) {
   const { update } = useSession()
+  const dialog = useDialog()
   const [value, setValue] = useState(name)
   const [busy, setBusy] = useState(false)
 
@@ -21,7 +23,13 @@ export function AccountSettings({ name, email }: { name: string; email: string }
   }
 
   const remove = async () => {
-    if (!confirm('Delete your account? Your notes, bookmarks and comments will be removed. This cannot be undone.')) return
+    const ok = await dialog.confirm({
+      title: 'Delete your account?',
+      message: 'Your notes, bookmarks and comments will be removed. This cannot be undone.',
+      confirmLabel: 'Delete my account',
+      danger: true,
+    })
+    if (!ok) return
     const res = await fetch('/api/profile', { method: 'DELETE' })
     if (!res.ok) return toast.error('Could not delete your account.')
     signOut({ callbackUrl: '/' })

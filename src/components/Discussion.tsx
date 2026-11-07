@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
 import type { Discussion as DiscussionData, PublicComment } from '@/lib/comments'
 import { EmberClock } from './EmberClock'
+import { useDialog } from './Dialog'
 
 function ago(iso: string) {
   const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000)
@@ -114,13 +115,20 @@ function CommentItem({ c, open, signedIn, act, devotionId, replyTo }: {
   c: PublicComment; open: boolean; signedIn: boolean; act: Act; devotionId: string; replyTo?: string
 }) {
   const [mode, setMode] = useState<'idle' | 'reply' | 'edit'>('idle')
+  const dialog = useDialog()
 
   if (c.removed) {
     return <p className="text-sm italic text-lm-muted dark:text-[#BFAEA3]">This comment was removed.</p>
   }
 
-  const report = () => {
-    const reason = window.prompt('What is wrong with this comment? (optional)')
+  const report = async () => {
+    const reason = await dialog.prompt({
+      title: 'Report this comment?',
+      message: 'A moderator will review it. The person who wrote it will not see who reported it.',
+      label: 'What is wrong with it? (optional)',
+      placeholder: 'e.g. unkind, spam, shares someone’s private details',
+      confirmLabel: 'Send report',
+    })
     if (reason === null) return
     act(() => send(`/api/comments/${c.id}/report`, 'POST', { reason }), 'Thank you. A moderator will take a look.')
   }
@@ -159,7 +167,10 @@ function CommentItem({ c, open, signedIn, act, devotionId, replyTo }: {
               <button
                 type="button"
                 className="hover:text-red-600"
-                onClick={() => confirm('Remove your comment?') && act(() => send(`/api/comments/${c.id}`, 'DELETE'), 'Comment removed')}
+                onClick={async () => {
+                  if (await dialog.confirm({ title: 'Delete your comment?', message: 'Replies from others will stay in the conversation.', confirmLabel: 'Delete', danger: true }))
+                    act(() => send(`/api/comments/${c.id}`, 'DELETE'), 'Comment removed')
+                }}
               >
                 Delete
               </button>

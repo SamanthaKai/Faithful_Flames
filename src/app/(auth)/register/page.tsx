@@ -6,6 +6,7 @@ import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Logo } from '@/components/Logo'
+import { GOOGLE_SIGNIN_ENABLED } from '@/lib/features'
 
 export default function RegisterPage() {
   const router = useRouter()
@@ -48,6 +49,8 @@ export default function RegisterPage() {
         </div>
 
         <div className="card p-6 md:p-8">
+          {GOOGLE_SIGNIN_ENABLED && (
+          <>
           <button
             type="button"
             onClick={() => signIn('google', { callbackUrl: '/', prompt: 'select_account' } as Parameters<typeof signIn>[1])}
@@ -66,6 +69,8 @@ export default function RegisterPage() {
             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-[#3A3030]" /></div>
             <div className="relative flex justify-center"><span className="bg-white dark:bg-[#231E1E] px-3 text-xs text-warm-gray">or sign up with email</span></div>
           </div>
+          </>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>

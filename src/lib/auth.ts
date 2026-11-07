@@ -4,6 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import bcrypt from 'bcryptjs'
 import { prisma } from './prisma'
+import { GOOGLE_SIGNIN_ENABLED } from './features'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as NextAuthOptions['adapter'],
@@ -13,7 +14,8 @@ export const authOptions: NextAuthOptions = {
     error: '/login',
   },
   providers: [
-    ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
+    // Off unless NEXT_PUBLIC_GOOGLE_SIGNIN=true (see src/lib/features.ts).
+    ...(GOOGLE_SIGNIN_ENABLED && process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [
           GoogleProvider({
             clientId: process.env.GOOGLE_CLIENT_ID,
