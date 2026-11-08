@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react'
 export function PrayerForm() {
   const { data: session } = useSession()
   const [form, setForm] = useState({ name: '', content: '', isAnonymous: false, isPrivate: false, shareConsent: false, website: '' })
+  const [startedAt] = useState(() => Date.now())
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [sent, setSent] = useState<null | 'public' | 'private'>(null)
@@ -19,7 +20,7 @@ export function PrayerForm() {
     const res = await fetch('/api/prayer', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, startedAt }),
     })
     setBusy(false)
     if (!res.ok) {

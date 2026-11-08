@@ -50,22 +50,38 @@ export function text(value: unknown, { min = 0, max }: { min?: number; max: numb
 
 export const bool = (v: unknown) => v === true
 
-// Best-effort, per-instance rate limiting for public forms. On serverless this
-// resets between cold starts, so it slows down abuse rather than preventing it.
-const hits = new Map<string, number[]>()
-export function rateLimited(key: string, limit: number, windowMs: number): boolean {
-  const now = Date.now()
-  const recent = (hits.get(key) ?? []).filter((t) => now - t < windowMs)
-  if (recent.length >= limit) {
-    hits.set(key, recent)
-    return true
-  }
-  recent.push(now)
-  hits.set(key, recent)
-  if (hits.size > 5000) hits.clear()
-  return false
-}
+export { rateLimited } from './rate-limit'
 
 export function clientIp(req: Request): string {
   return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || 'unknown'
+}
+
+// Crawlers, headless browsers and scripted HTTP clients. Real browsers never send these.
+const BOT_UA =
+  /bot\b|bot\/|crawl|spider|slurp|headless|phantom|puppeteer|playwright|selenium|lighthouse|curl\/|wget|python-|httpclient|axios|node-fetch|undici|go-http|java\/|okhttp|libwww|scrapy|facebookexternalhit|preview/i
+
+export function looksLikeBot(req: Request): boolean {
+  const ua = req.headers.get('user-agent') ?? ''
+  return ua.length < 10 || BOT_UA.test(ua)
+}
+
+// Forms send `startedAt` (ms timestamp of when the form appeared). People take a few
+// seconds to fill a form in; scripts post instantly or without the field at all.
+const MIN_FILL_MS = 2500
+export function filledTooFast(startedAt: unknown): boolean {
+  if (typeof startedAt !== 'number' || !Number.isFinite(startedAt)) return true
+  const elapsed = Date.now() - startedAt
+  return elapsed < MIN_FILL_MS || elapsed > 24 * 60 * 60_000
+}
+
+/**
+ * Shared checks for public form posts. Returns a response to send back when the
+ * request looks automated, or null when it may proceed. Honeypot hits get a fake
+ * success so bots don't learn they were caught.
+ */
+export function botCheck(req: Request, body: Record<string, unknown>, fakeOk: unknown = { ok: true }): NextResponse | null {
+  if (typeof body.website === 'string' && body.website) return json(fakeOk, 201)
+  if (looksLikeBot(req)) return fail('Automated requests are not allowed.', 403)
+  if (filledTooFast(body.startedAt)) return fail('That was quick! Please wait a moment and try again.', 400)
+  return null
 }

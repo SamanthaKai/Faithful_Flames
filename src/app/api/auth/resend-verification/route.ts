@@ -3,10 +3,14 @@ import { NextResponse } from 'next/server'
 import { randomBytes } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { sendVerificationEmail } from '@/lib/email'
-import { readBody } from '@/lib/api'
+import { clientIp, looksLikeBot, rateLimited, readBody } from '@/lib/api'
 import { findUserByEmail, normalizeEmail } from '@/lib/email-address'
 
 export async function POST(req: Request) {
+  if (looksLikeBot(req)) return NextResponse.json({ error: 'Automated requests are not allowed.' }, { status: 403 })
+  if (rateLimited(`resend:${clientIp(req)}`, 5, 15 * 60_000)) {
+    return NextResponse.json({ error: 'Please wait a few minutes before requesting another email.' }, { status: 429 })
+  }
   const input = normalizeEmail((await readBody(req)).email)
   if (!input) return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })
 

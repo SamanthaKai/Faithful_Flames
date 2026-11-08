@@ -4,11 +4,16 @@ import bcrypt from 'bcryptjs'
 import { randomBytes } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { sendVerificationEmail } from '@/lib/email'
-import { readBody, text } from '@/lib/api'
+import { botCheck, clientIp, rateLimited, readBody, text } from '@/lib/api'
 import { findUserByEmail, normalizeEmail } from '@/lib/email-address'
 
 export async function POST(req: Request) {
   const body = await readBody(req)
+  const blocked = botCheck(req, body)
+  if (blocked) return blocked
+  if (rateLimited(`register:${clientIp(req)}`, 5, 60 * 60_000)) {
+    return NextResponse.json({ error: 'Too many sign-ups from this network. Please try again later.' }, { status: 429 })
+  }
   const email = normalizeEmail(body.email)
   const name = text(body.name, { max: 40 })
   const password = typeof body.password === 'string' ? body.password : ''

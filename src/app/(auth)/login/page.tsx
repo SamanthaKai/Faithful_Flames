@@ -13,6 +13,7 @@ const AUTH_ERRORS: Record<string, string> = {
   Callback: 'Something went wrong during sign-in. Please try again.',
   AccessDenied: 'Access denied.',
   EmailNotVerified: 'Please verify your email before signing in.',
+  TooManyAttempts: 'Too many sign-in attempts. Please wait 15 minutes and try again.',
   Default: 'Sign-in failed. Please try again.',
 }
 

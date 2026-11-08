@@ -9,6 +9,8 @@ export function VisitTracker() {
 
   useEffect(() => {
     if (pathname?.startsWith('/admin')) return
+    // Automated browsers (Selenium, Puppeteer, Playwright) set navigator.webdriver.
+    if (navigator.webdriver) return
     let id: string | null = null
     try {
       id = localStorage.getItem('ff-visitor')

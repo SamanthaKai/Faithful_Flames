@@ -10,7 +10,8 @@ import { GOOGLE_SIGNIN_ENABLED } from '@/lib/features'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const [form, setForm] = useState({ name: '', email: '', password: '' })
+  const [form, setForm] = useState({ name: '', email: '', password: '', website: '' })
+  const [startedAt] = useState(() => Date.now())
   const [loading, setLoading] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -26,7 +27,7 @@ export default function RegisterPage() {
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, startedAt }),
     })
     if (!res.ok) {
       const { error } = await res.json()
@@ -85,6 +86,8 @@ export default function RegisterPage() {
               <label className="block text-sm font-medium text-charcoal dark:text-cream mb-1">Password</label>
               <input name="password" type="password" autoComplete="new-password" value={form.password} onChange={handleChange} required className="input" placeholder="Min. 8 characters" />
             </div>
+            {/* Honeypot: hidden from people, tempting to bots */}
+            <input name="website" type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" value={form.website} onChange={handleChange} />
             <button type="submit" disabled={loading} className="btn-primary w-full py-3">
               {loading ? 'Creating account…' : 'Create account'}
             </button>

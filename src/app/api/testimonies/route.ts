@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
-import { bool, clientIp, fail, getSession, json, rateLimited, readBody, text } from '@/lib/api'
+import { bool, botCheck, clientIp, fail, getSession, json, rateLimited, readBody, text } from '@/lib/api'
 import { getPublishedTestimonies } from '@/lib/testimonies'
 import { containsProfanity } from '@/lib/profanity'
 
@@ -13,7 +13,8 @@ export async function GET() {
 // Open to visitors. Nothing is published until an admin approves it.
 export async function POST(req: Request) {
   const body = await readBody(req)
-  if (typeof body.website === 'string' && body.website) return json({ ok: true }, 201) // honeypot
+  const blocked = botCheck(req, body)
+  if (blocked) return blocked
   if (rateLimited(`testimony:${clientIp(req)}`, 3, 60 * 60_000)) {
     return fail('Thank you for sharing! Please try again a little later.', 429)
   }

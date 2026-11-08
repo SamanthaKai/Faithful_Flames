@@ -1,11 +1,13 @@
 export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
-import { json, readBody } from '@/lib/api'
+import { clientIp, json, looksLikeBot, rateLimited, readBody } from '@/lib/api'
 import { todayKey } from '@/lib/day'
 
 // POST { visitorId } — counts one visitor per Kampala day (random id stored in the
 // visitor's browser; no personal data).
 export async function POST(req: Request) {
+  // Bots and floods are dropped quietly so they never show up in the admin numbers.
+  if (looksLikeBot(req) || rateLimited(`visit:${clientIp(req)}`, 120, 10 * 60_000)) return json({ ok: true })
   const { visitorId } = await readBody(req)
   if (typeof visitorId !== 'string' || !/^[a-zA-Z0-9-]{8,64}$/.test(visitorId)) return json({ ok: false }, 400)
   const day = todayKey()

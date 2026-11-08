@@ -7,6 +7,7 @@ export function TestimonyForm() {
   const { data: session } = useSession()
   const empty = { title: '', content: '', displayName: '', isAnonymous: false, website: '' }
   const [form, setForm] = useState(empty)
+  const [startedAt] = useState(() => Date.now())
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [sent, setSent] = useState(false)
@@ -18,7 +19,7 @@ export function TestimonyForm() {
     const res = await fetch('/api/testimonies', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, startedAt }),
     })
     setBusy(false)
     if (!res.ok) {

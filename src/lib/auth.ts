@@ -6,6 +6,7 @@ import bcrypt from 'bcryptjs'
 import { prisma } from './prisma'
 import { GOOGLE_SIGNIN_ENABLED } from './features'
 import { findUserByEmail, normalizeEmail } from './email-address'
+import { rateLimited } from './rate-limit'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as NextAuthOptions['adapter'],
@@ -31,9 +32,16 @@ export const authOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         const email = normalizeEmail(credentials?.email)
         if (!email || !credentials?.password) return null
+
+        // Slow down password guessing: per network and per account.
+        const fwd = req?.headers?.['x-forwarded-for']
+        const ip = (typeof fwd === 'string' ? fwd.split(',')[0]?.trim() : '') || 'unknown'
+        if (rateLimited(`login-ip:${ip}`, 20, 15 * 60_000) || rateLimited(`login:${email}`, 8, 15 * 60_000)) {
+          throw new Error('TooManyAttempts')
+        }
 
         const user = await findUserByEmail(email)
 

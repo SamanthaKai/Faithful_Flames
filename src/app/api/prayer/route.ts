@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
-import { bool, clientIp, fail, getSession, json, rateLimited, readBody, text } from '@/lib/api'
+import { bool, botCheck, clientIp, fail, getSession, json, rateLimited, readBody, text } from '@/lib/api'
 import { getPublicPrayers } from '@/lib/prayer'
 
 // GET — public prayer wall (approved + not private + consented only)
@@ -13,7 +13,8 @@ export async function GET() {
 // Open to visitors; signed-in members are linked to their request.
 export async function POST(req: Request) {
   const body = await readBody(req)
-  if (typeof body.website === 'string' && body.website) return json({ ok: true }, 201) // honeypot
+  const blocked = botCheck(req, body)
+  if (blocked) return blocked
   if (rateLimited(`prayer:${clientIp(req)}`, 5, 60 * 60_000)) {
     return fail('Thank you. You have sent several requests already. Please try again a little later.', 429)
   }
