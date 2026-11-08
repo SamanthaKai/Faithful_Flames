@@ -128,7 +128,7 @@ export default async function HomePage() {
           <div>
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
-                <p className="kicker mb-3">Testimonies. See what the Lord has done</p>
+                <p className="kicker mb-3">See what the Lord has done</p>
                 <h2 className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">Recent testimonies</h2>
               </div>
               <Link href="/testimonies" className="shrink-0 text-sm font-semibold text-ember hover:underline">All stories →</Link>
