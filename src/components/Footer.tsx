@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { Logo } from './Logo'
+import { WhatsAppContact } from './WhatsAppContact'
 
 export function Footer() {
   return (
@@ -11,6 +12,7 @@ export function Footer() {
             A digital campfire for young believers. Gather around the Word each day, carry one another in prayer, and
             tell of what God has done.
           </p>
+          <WhatsAppContact />
         </div>
         <div>
           <p className="kicker mb-4">Around the fire</p>
