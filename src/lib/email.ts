@@ -11,7 +11,8 @@ const BASE_URL = (process.env.NEXTAUTH_URL ?? '').replace(/\/$/, '')
 export async function sendVerificationEmail(email: string, token: string) {
   const verifyUrl = `${BASE_URL}/api/auth/verify-email?token=${token}`
 
-  await resend.emails.send({
+  // Resend reports failures in the result rather than throwing, so surface them.
+  const { error } = await resend.emails.send({
     from: FROM,
     to: email,
     subject: 'Verify your Faithful Flames account',
@@ -85,7 +86,7 @@ export async function sendVerificationEmail(email: string, token: string) {
                 If you didn&rsquo;t create an account, you can safely ignore this email.
               </p>
               <p style="margin:10px 0 0;font-size:11px;color:#b8a898;font-style:italic;text-align:center;">
-                &ldquo;For the fire of God is a consuming fire.&rdquo; Hebrews 12:29
+                &ldquo;For our God is a consuming fire.&rdquo; Hebrews 12:29
               </p>
             </td>
           </tr>
@@ -97,4 +98,5 @@ export async function sendVerificationEmail(email: string, token: string) {
 </body>
 </html>`,
   })
+  if (error) throw new Error(`Resend: ${error.message}`)
 }

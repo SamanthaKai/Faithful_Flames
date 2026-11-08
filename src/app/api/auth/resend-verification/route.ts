@@ -3,12 +3,14 @@ import { NextResponse } from 'next/server'
 import { randomBytes } from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { sendVerificationEmail } from '@/lib/email'
+import { readBody } from '@/lib/api'
+import { findUserByEmail, normalizeEmail } from '@/lib/email-address'
 
 export async function POST(req: Request) {
-  const { email } = await req.json()
-  if (!email) return NextResponse.json({ error: 'Email required.' }, { status: 400 })
+  const input = normalizeEmail((await readBody(req)).email)
+  if (!input) return NextResponse.json({ error: 'Please enter a valid email address.' }, { status: 400 })
 
-  const user = await prisma.user.findUnique({ where: { email } })
+  const user = await findUserByEmail(input)
 
   // Always return 200 for unknown emails — don't reveal whether an account exists.
   if (!user) return NextResponse.json({ ok: true }, { status: 200 })
@@ -16,6 +18,9 @@ export async function POST(req: Request) {
   if (user.emailVerified) {
     return NextResponse.json({ error: 'Email already verified.' }, { status: 400 })
   }
+
+  // Tokens are keyed by the email exactly as stored on the account.
+  const email = user.email
 
   // Rate limit: if a token was issued in the last 60 seconds, reject.
   // The token's expiry is set to now+24h, so if expires > now+24h-60s the send was recent.
@@ -36,8 +41,8 @@ export async function POST(req: Request) {
 
   try {
     await sendVerificationEmail(email, token)
-  } catch {
-    // swallow — client sees 200 either way
+  } catch (err) {
+    console.error('Verification email failed (resend):', err)
   }
 
   return NextResponse.json({ ok: true }, { status: 200 })

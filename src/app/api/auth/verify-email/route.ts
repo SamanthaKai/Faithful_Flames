@@ -143,16 +143,28 @@ export async function GET(req: Request) {
     })
   }
 
-  // Case 5 — success: mark verified, delete token (single-use)
-  if (user) {
-    await prisma.$transaction([
-      prisma.user.update({
-        where: { id: user.id },
-        data: { emailVerified: new Date() },
-      }),
-      prisma.verificationToken.delete({ where: { token } }),
-    ])
+  // Case 5 — the account was deleted after the link was sent
+  if (!user) {
+    await prisma.verificationToken.delete({ where: { token } }).catch(() => {})
+    return page(400, {
+      title: 'Account Not Found',
+      icon: '🚫',
+      heading: 'Account Not Found',
+      body: 'We could not find an account for this link. You can create a new account from the sign-up page.',
+      linkHref: '/register',
+      linkLabel: 'Create an account',
+      accentColor: '#6B6258',
+    })
   }
+
+  // Case 6 — success: mark verified. The token is kept until it expires so that
+  // a second open of the link (e.g. an email app's link scanner opened it first)
+  // shows "Already Verified" instead of "Link Not Found". It can only ever
+  // verify this same email, so leaving it is harmless.
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { emailVerified: new Date() },
+  })
 
   return page(200, {
     title: 'Email Verified!',

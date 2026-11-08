@@ -5,6 +5,7 @@ import GoogleProvider from 'next-auth/providers/google'
 import bcrypt from 'bcryptjs'
 import { prisma } from './prisma'
 import { GOOGLE_SIGNIN_ENABLED } from './features'
+import { findUserByEmail, normalizeEmail } from './email-address'
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma) as NextAuthOptions['adapter'],
@@ -31,11 +32,10 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null
+        const email = normalizeEmail(credentials?.email)
+        if (!email || !credentials?.password) return null
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        })
+        const user = await findUserByEmail(email)
 
         if (!user?.password) return null
 
