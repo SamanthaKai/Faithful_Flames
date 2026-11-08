@@ -1,25 +1,42 @@
 import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// Two ways to send:
+//  1. Gmail (free, no domain needed): set GMAIL_USER and GMAIL_APP_PASSWORD.
+//     Used whenever both are set. Gmail allows about 500 emails a day.
+//  2. Resend: needs RESEND_API_KEY and a verified domain in RESEND_FROM_EMAIL.
+//     Without a verified domain it only delivers to the Resend account's own email.
+const GMAIL_USER = process.env.GMAIL_USER
+const GMAIL_APP_PASSWORD = process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, '')
+const useGmail = !!(GMAIL_USER && GMAIL_APP_PASSWORD)
 
-// Set RESEND_FROM_EMAIL in Vercel to your verified sending domain, e.g.:
-//   "Faithful Flames <noreply@faithfulflames.com>"
-// Until then, onboarding@resend.dev only reliably delivers to your Resend account email.
-const FROM = process.env.RESEND_FROM_EMAIL ?? 'Faithful Flames <onboarding@resend.dev>'
+const FROM = useGmail
+  ? `Faithful Flames <${GMAIL_USER}>`
+  : process.env.RESEND_FROM_EMAIL ?? 'Faithful Flames <onboarding@resend.dev>'
+
+async function send(to: string, subject: string, html: string) {
+  if (useGmail) {
+    const transport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: { user: GMAIL_USER, pass: GMAIL_APP_PASSWORD },
+    })
+    await transport.sendMail({ from: FROM, to, subject, html })
+    return
+  }
+  // Resend reports failures in the result rather than throwing, so surface them.
+  const { error } = await new Resend(process.env.RESEND_API_KEY).emails.send({ from: FROM, to, subject, html })
+  if (error) throw new Error(`Resend: ${error.message}`)
+}
+
 const BASE_URL = (process.env.NEXTAUTH_URL ?? '').replace(/\/$/, '')
 
 export async function sendVerificationEmail(email: string, token: string) {
   const verifyUrl = `${BASE_URL}/api/auth/verify-email?token=${token}`
 
-  // Resend reports failures in the result rather than throwing, so surface them.
-  const { error } = await resend.emails.send({
-    from: FROM,
-    to: email,
-    subject: 'Verify your Faithful Flames account',
-    headers: {
-      'X-Entity-Ref-ID': token,
-    },
-    html: `<!DOCTYPE html>
+  await send(
+    email,
+    'Verify your Faithful Flames account',
+    `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -97,6 +114,5 @@ export async function sendVerificationEmail(email: string, token: string) {
   </table>
 </body>
 </html>`,
-  })
-  if (error) throw new Error(`Resend: ${error.message}`)
+  )
 }
