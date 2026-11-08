@@ -31,6 +31,8 @@ function CheckEmailContent() {
   }
 
   const prefilled = !!searchParams.get('email')
+  // Only the register page has actually sent an email before arriving here.
+  const justSent = prefilled && searchParams.get('sent') === '1'
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
@@ -47,10 +49,15 @@ function CheckEmailContent() {
             Check your inbox
           </h1>
 
-          {prefilled ? (
+          {justSent ? (
             <p className="text-warm-gray text-sm leading-relaxed mb-2">
               We sent a verification link to{' '}
               <span className="font-semibold text-charcoal dark:text-cream">{email}</span>.
+            </p>
+          ) : prefilled ? (
+            <p className="text-warm-gray text-sm leading-relaxed mb-2">
+              <span className="font-semibold text-charcoal dark:text-cream">{email}</span> isn&apos;t verified yet.
+              Tap the button below and we&apos;ll send you a new link.
             </p>
           ) : (
             <p className="text-warm-gray text-sm leading-relaxed mb-2">
@@ -83,7 +90,7 @@ function CheckEmailContent() {
               disabled={resending || !email}
               className="btn-outline w-full mb-4"
             >
-              {resending ? 'Sending…' : prefilled ? 'Resend verification email' : 'Send verification email'}
+              {resending ? 'Sending…' : justSent ? 'Resend verification email' : 'Send verification email'}
             </button>
           )}
 
