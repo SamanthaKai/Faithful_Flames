@@ -28,7 +28,13 @@ async function send(to: string, subject: string, html: string) {
   if (error) throw new Error(`Resend: ${error.message}`)
 }
 
-const BASE_URL = (process.env.NEXTAUTH_URL ?? '').replace(/\/$/, '')
+// On the live site, always link to the main production address. Preview URLs
+// (e.g. ...-git-main-...vercel.app) sit behind Vercel login, so links there fail.
+const BASE_URL = (
+  process.env.VERCEL_ENV === 'production' && process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : process.env.NEXTAUTH_URL ?? ''
+).replace(/\/$/, '')
 
 export async function sendVerificationEmail(email: string, token: string) {
   const verifyUrl = `${BASE_URL}/api/auth/verify-email?token=${token}`
