@@ -49,10 +49,10 @@ export default async function HomePage() {
             </p>
             <h1 id="hero-title" className="font-heading text-[2.6rem] font-bold leading-[1.05] text-[#FFF4E8] sm:text-6xl md:text-7xl">
               Pull up a seat<br />
-              <span className="italic text-gold">by the fire.</span>
+              <span className="italic text-gold">by the Throne of grace.</span>
             </h1>
             <p className="mt-6 max-w-lg text-base leading-relaxed text-[#BFAEA3] md:text-lg">
-              A digital campfire for young believers. Each day we gather around one passage of Scripture, talk about it
+              A digital campfire for young believers. Every day we share about the Lord from the Scriptures, talk about it
               together, pray for one another, and tell of what God has done.
             </p>
 
@@ -128,7 +128,7 @@ export default async function HomePage() {
           <div>
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
-                <p className="kicker mb-3">Told around the fire</p>
+                <p className="kicker mb-3">Testimonies. See what the Lord has done</p>
                 <h2 className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">Recent testimonies</h2>
               </div>
               <Link href="/testimonies" className="shrink-0 text-sm font-semibold text-ember hover:underline">All stories →</Link>
