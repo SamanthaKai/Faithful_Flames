@@ -5,7 +5,8 @@
  *   npm run admin -- create <email>        create a dedicated admin login (asks for name + password)
  *   npm run admin -- password <email>      set a new password for an admin (asks for it)
  *   npm run admin -- demote <email>        turn an admin back into a normal member (account is kept)
- *   npm run admin -- delete-members        permanently delete every non-admin account (asks first)
+ *   npm run admin -- delete-member <email> permanently delete one non-admin account (asks first)
+ *   npm run admin -- delete-members       permanently delete every non-admin account (asks first)
  *
  * Runs against whatever DATABASE_URL is in your environment / .env — normally production.
  * Passwords are typed into the terminal (hidden) and never stored in code or logs.
@@ -140,6 +141,14 @@ async function deleteMembers() {
   const typed = await ask(`\nThis cannot be undone. Type "${phrase}" to continue: `)
   if (typed !== phrase) { console.log('Cancelled. Nothing was deleted.'); return }
 
+  await removeAccounts(ids, members.map((m) => m.email), keepTestimonies)
+
+  console.log(`\n✔ Deleted ${members.length} member account(s).${keepTestimonies ? ' Their testimonies were kept.' : ''}`)
+}
+
+// Deletes the given member accounts and what they own (shared by delete-member and delete-members).
+async function removeAccounts(ids: string[], emails: string[], keepTestimonies: boolean) {
+  const mine = { userId: { in: ids } }
   await prisma.$transaction(async (tx) => {
     if (keepTestimonies) {
       // Keep the name they chose, falling back to their account name, before unlinking.
@@ -154,11 +163,36 @@ async function deleteMembers() {
     // Replies (by admins) pointing at members' comments/replies would block the delete; detach them.
     await tx.comment.updateMany({ where: { parent: { userId: { in: ids } } }, data: { parentId: null } })
     await tx.forumReply.updateMany({ where: { parent: { userId: { in: ids } } }, data: { parentId: null } })
-    await tx.verificationToken.deleteMany({ where: { identifier: { in: members.map((m) => m.email) } } })
+    await tx.verificationToken.deleteMany({ where: { identifier: { in: emails } } })
     await tx.user.deleteMany({ where: { id: { in: ids } } })
   }, { timeout: 60_000 })
+}
 
-  console.log(`\n✔ Deleted ${members.length} member account(s).${keepTestimonies ? ' Their testimonies were kept.' : ''}`)
+// Permanently deletes one non-admin account. Shows what will go, then needs a typed confirmation.
+async function deleteMember(email: string) {
+  await confirmTarget()
+  const user = await prisma.user.findFirst({ where: { email: { equals: email, mode: 'insensitive' } } })
+  if (!user) { console.log(`No account for ${email}.`); return }
+  if (user.role === 'ADMIN') { console.log(`Refusing: ${user.email} is an admin. Demote it first if you really mean to delete it.`); return }
+  const mine = { userId: user.id }
+  const [testimonies, comments, notes, bookmarks] = await Promise.all([
+    prisma.testimony.count({ where: mine }),
+    prisma.comment.count({ where: mine }),
+    prisma.reflection.count({ where: mine }),
+    prisma.bookmark.count({ where: mine }),
+  ])
+  console.log(`\nAbout to DELETE ${user.email} (${user.name ?? 'no name'}, joined ${user.createdAt.toISOString().slice(0, 10)})`)
+  console.log(`  comments ${comments} · private notes ${notes} · bookmarks ${bookmarks} · testimonies ${testimonies}`)
+
+  let keepTestimonies = false
+  if (testimonies > 0) {
+    keepTestimonies = (await ask('\nKeep their testimonies on the site? (yes/no): ')).toLowerCase() === 'yes'
+  }
+  const typed = await ask('\nThis cannot be undone. Type "delete" to continue: ')
+  if (typed !== 'delete') { console.log('Cancelled. Nothing was deleted.'); return }
+
+  await removeAccounts([user.id], [user.email], keepTestimonies)
+  console.log(`\n✔ Deleted ${user.email}.`)
 }
 
 async function main() {
@@ -167,12 +201,13 @@ async function main() {
   if (cmd === 'list') return list()
   if (cmd === 'delete-members') return deleteMembers()
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    console.log('Usage: npm run admin -- <list | delete-members | create <email> | password <email> | demote <email>>')
+    console.log('Usage: npm run admin -- <list | delete-members | create <email> | password <email> | demote <email> | delete-member <email>>')
     process.exit(1)
   }
   if (cmd === 'create') return create(email)
   if (cmd === 'password') return setPassword(email)
   if (cmd === 'demote') return demote(email)
+  if (cmd === 'delete-member') return deleteMember(email)
   console.log(`Unknown command "${cmd}".`)
   process.exit(1)
 }
