@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
-import { clientIp, json, looksLikeBot, rateLimited, readBody } from '@/lib/api'
+import { clientIp, getSession, json, looksLikeBot, rateLimited, readBody } from '@/lib/api'
 import { todayKey } from '@/lib/day'
 
 // POST { visitorId } — counts one visitor per Kampala day (random id stored in the
@@ -17,6 +17,15 @@ export async function POST(req: Request) {
       create: { day, visitorId },
       update: { views: { increment: 1 } },
     })
+    // Signed-in members: remember when they were last active (for the admin's Members view).
+    const session = await getSession()
+    if (session?.user?.id) {
+      const now = new Date()
+      await prisma.user.updateMany({
+        where: { id: session.user.id, OR: [{ lastSeenAt: null }, { lastSeenAt: { lt: new Date(now.getTime() - 5 * 60_000) } }] },
+        data: { lastSeenAt: now },
+      })
+    }
   } catch {
     // Analytics must never break the page.
   }

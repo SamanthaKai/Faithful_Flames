@@ -323,3 +323,11 @@ Everything above marked ✅ is built **and tested**: 132 end-to-end API/page che
 - ❎ Existing members will also see the pop-up once (they haven't chosen yet). Admin accounts don't.
 - ❎ The pop-up only appears once there are at least 2 published devotions.
 - ❎ "Read" means the member opened the devotion page. There is no separate "mark as read" button.
+
+## Follow-up — 10 November 2026 (later)
+- ✅ Pop-up didn't show on the live site because it waited for at least 2 published devotions (production has 1). It now shows as soon as there is 1. Admin accounts still don't see it.
+- ✅ Admin-only "Members & engagement" tab in /admin: every registered member with last active time ("Active now" = last 15 minutes), join date, verified status, reading path, and counts of devotions read, comments, likes, prayers for others, prayer requests, testimonies and bookmarks. Search by name/email. Totals for members, active now/today/7 days, comments, likes and devotions opened in the last 7 days. Engagement per devotion (readers, likes, comments).
+- ✅ API /api/admin/members returns 401 when signed out and 403 for normal members. No passwords and no private notes (not even counts).
+- ✅ Database: User + lastSeenAt (additive). It's set at sign-in and on page visits (at most every 5 minutes).
+- ✅ Tested: 12 checks plus screenshots (desktop, and 375px dark with no page overflow).
+- ❎ "Last active" and "devotions read" only start counting from this release, so older members show "Not yet" until they next visit.

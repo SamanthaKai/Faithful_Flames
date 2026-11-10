@@ -21,6 +21,8 @@ model User {
   /// How the member chose to read devotions when they joined: "BEGINNING"
   /// (from the first devotion, at their own pace) or "LATEST". Null = not chosen yet.
   readingPath   String?
+  /// Last time the member signed in or opened a page (updated at most every few minutes).
+  lastSeenAt    DateTime?
 
   accounts                 Account[]
   sessions                 Session[]

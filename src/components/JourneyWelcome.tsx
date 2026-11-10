@@ -37,7 +37,7 @@ export function JourneyWelcome() {
     fetch('/api/journey', { cache: 'no-store' })
       .then((r) => (r.ok ? r.json() : null))
       .then((d: JourneyInfo | null) => {
-        if (cancelled || !d || d.path || d.total < 2) return
+        if (cancelled || !d || d.path || d.total < 1) return
         setInfo(d)
         setStep('choose')
       })
@@ -96,7 +96,8 @@ export function JourneyWelcome() {
             <p className="kicker mb-2">Welcome to the fire</p>
             <h2 id="journey-title" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Where would you like to begin?</h2>
             <p className="mt-2 text-sm leading-relaxed text-lm-muted dark:text-[#BFAEA3]">
-              There are already {info.total} devotions here. You can change this choice any time from your bookmarks &amp; notes page.
+              {info.total === 1 ? 'The first devotion is already here.' : `There are already ${info.total} devotions here.`}{' '}
+              You can change this choice any time from your bookmarks &amp; notes page.
             </p>
             <div className="mt-6 grid gap-3">
               <button

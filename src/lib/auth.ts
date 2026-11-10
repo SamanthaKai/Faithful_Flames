@@ -64,7 +64,10 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, trigger, session: sessionData }) {
-      if (user) token.id = user.id
+      if (user) {
+        token.id = user.id
+        await prisma.user.update({ where: { id: user.id }, data: { lastSeenAt: new Date() } }).catch(() => {})
+      }
 
       // The database role is the only source of admin access (managed with
       // `npm run admin`). Re-read it at sign-in and at most once a minute after,

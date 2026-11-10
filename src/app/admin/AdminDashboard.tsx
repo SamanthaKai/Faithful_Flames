@@ -5,10 +5,11 @@ import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { useDialog } from '@/components/Dialog'
 
-type Tab = 'overview' | 'devotions' | 'prayer' | 'testimonies' | 'comments' | 'articles'
+type Tab = 'overview' | 'members' | 'devotions' | 'prayer' | 'testimonies' | 'comments' | 'articles'
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'overview', label: 'Overview' },
+  { id: 'members', label: 'Members & engagement' },
   { id: 'devotions', label: 'Devotions' },
   { id: 'prayer', label: 'Prayer requests' },
   { id: 'testimonies', label: 'Testimonies' },
@@ -73,6 +74,7 @@ export function AdminDashboard({ today }: { today: string }) {
       </div>
       <div className="py-8">
         {tab === 'overview' && <Overview go={setTab} />}
+        {tab === 'members' && <Members />}
         {tab === 'devotions' && <Devotions today={today} />}
         {tab === 'prayer' && <Prayer />}
         {tab === 'testimonies' && <Testimonies />}
@@ -151,6 +153,123 @@ function Stat({ label, value, sub, onClick, alert }: { label: string; value: num
       <p className={`mt-1 font-heading text-4xl font-bold tabular-nums ${alert ? 'text-red-600' : 'text-lm-text dark:text-[#FFF4E8]'}`}>{value}</p>
       <p className="mt-1 text-xs text-lm-muted dark:text-[#BFAEA3]">{sub}</p>
     </Comp>
+  )
+}
+
+// ── Members & engagement ──────────────────────────────────────────────────
+type MembersData = {
+  summary: {
+    members: number; verified: number; activeNow: number; activeToday: number; active7: number; new7: number
+    comments7: number; likes7: number; reads7: number; fromBeginning: number; fromLatest: number
+  }
+  members: {
+    id: string; name: string | null; email: string; role: 'USER' | 'ADMIN'; verified: boolean; createdAt: string
+    lastSeenAt: string | null; readingPath: string | null; activeNow: boolean
+    counts: { comments: number; likes: number; devotionReads: number; prayerRequests: number; prayedFor: number; testimonies: number; bookmarks: number }
+  }[]
+  devotions: { id: string; title: string; day: string; readers: number; likes: number; comments: number }[]
+}
+
+function lastSeen(iso: string | null) {
+  if (!iso) return 'Not yet'
+  const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000)
+  if (mins < 15) return 'Active now'
+  if (mins < 60) return `${mins}m ago`
+  if (mins < 24 * 60) return `${Math.floor(mins / 60)}h ago`
+  return fmtDate(iso)
+}
+
+function Members() {
+  const { data, reload } = useLoad<MembersData>('/api/admin/members')
+  const [q, setQ] = useState('')
+  if (!data) return <p className="text-sm text-lm-muted">Loading…</p>
+  const s = data.summary
+  const needle = q.trim().toLowerCase()
+  const rows = needle ? data.members.filter((m) => `${m.name ?? ''} ${m.email}`.toLowerCase().includes(needle)) : data.members
+
+  return (
+    <div className="space-y-8">
+      <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">
+        Only admins can see this page. Private notes are never shown here.{' '}
+        <button type="button" onClick={reload} className="font-semibold text-ember hover:underline">Refresh</button>
+      </p>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat label="Members" value={s.members} sub={`${s.verified} verified · ${s.new7} new this week`} />
+        <Stat label="Active now" value={s.activeNow} sub={`${s.activeToday} today · ${s.active7} in the last 7 days`} />
+        <Stat label="Comments & likes, 7 days" value={s.comments7 + s.likes7} sub={`${s.comments7} comments · ${s.likes7} likes`} />
+        <Stat label="Devotions opened, 7 days" value={s.reads7} sub={`${s.fromBeginning} reading from the start · ${s.fromLatest} from latest`} />
+      </div>
+
+      <div className="panel p-5">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="kicker">Members ({data.members.length})</p>
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name or email" aria-label="Search members" className="input !w-full !py-2 text-sm sm:!w-64" />
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[860px] text-sm">
+            <thead className="text-left text-xs uppercase tracking-wider text-lm-muted dark:text-[#BFAEA3]">
+              <tr>
+                <th className="py-2 pr-4">Member</th><th className="py-2 pr-4">Last active</th><th className="py-2 pr-4">Joined</th>
+                <th className="py-2 pr-3 text-right" title="Devotions opened">Read</th>
+                <th className="py-2 pr-3 text-right">Comments</th><th className="py-2 pr-3 text-right" title="Likes given">Likes</th>
+                <th className="py-2 pr-3 text-right" title="Prayed for others">Prayed</th>
+                <th className="py-2 pr-3 text-right" title="Prayer requests submitted">Requests</th>
+                <th className="py-2 pr-3 text-right">Testimonies</th><th className="py-2 text-right">Saved</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-lm-border dark:divide-ember/10">
+              {rows.map((m) => (
+                <tr key={m.id} className="align-top">
+                  <td className="py-3 pr-4">
+                    <p className="font-semibold text-lm-text dark:text-[#FFF4E8]">
+                      {m.name || '(no name)'}{' '}
+                      {m.role === 'ADMIN' && <Badge tone="ember">Admin</Badge>}{' '}
+                      {!m.verified && <Badge tone="gray">Unverified</Badge>}
+                    </p>
+                    <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{m.email}</p>
+                    {m.readingPath && <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">Reading {m.readingPath === 'BEGINNING' ? 'from the first devotion' : 'from the latest'}</p>}
+                  </td>
+                  <td className="whitespace-nowrap py-3 pr-4">
+                    {m.activeNow ? <Badge tone="green">Active now</Badge> : <span className="text-lm-muted dark:text-[#BFAEA3]">{lastSeen(m.lastSeenAt)}</span>}
+                  </td>
+                  <td className="whitespace-nowrap py-3 pr-4 text-lm-muted dark:text-[#BFAEA3]">{new Date(m.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                  {[m.counts.devotionReads, m.counts.comments, m.counts.likes, m.counts.prayedFor, m.counts.prayerRequests, m.counts.testimonies, m.counts.bookmarks].map((n, i) => (
+                    <td key={i} className={`py-3 pr-3 text-right tabular-nums ${n ? 'text-lm-text dark:text-[#FFF4E8]' : 'text-lm-muted/60 dark:text-[#BFAEA3]/50'}`}>{n}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {rows.length === 0 && <p className="py-6 text-sm text-lm-muted">No members match.</p>}
+        </div>
+        <p className="mt-3 text-xs text-lm-muted dark:text-[#BFAEA3]">&ldquo;Last active&rdquo; is recorded from 10 Nov 2026 onward, so members who haven&rsquo;t visited since show &ldquo;Not yet&rdquo;.</p>
+      </div>
+
+      <div className="panel p-5">
+        <p className="kicker mb-4">Engagement by devotion</p>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[560px] text-sm">
+            <thead className="text-left text-xs uppercase tracking-wider text-lm-muted dark:text-[#BFAEA3]">
+              <tr><th className="py-2 pr-4">Date</th><th className="py-2 pr-4">Devotion</th><th className="py-2 pr-3 text-right">Readers</th><th className="py-2 pr-3 text-right">Likes</th><th className="py-2 text-right">Comments</th></tr>
+            </thead>
+            <tbody className="divide-y divide-lm-border dark:divide-ember/10">
+              {data.devotions.map((d) => (
+                <tr key={d.id}>
+                  <td className="whitespace-nowrap py-3 pr-4 text-lm-muted dark:text-[#BFAEA3]">{fmtDay(d.day)}</td>
+                  <td className="py-3 pr-4 font-semibold text-lm-text dark:text-[#FFF4E8]">{d.title}</td>
+                  <td className="py-3 pr-3 text-right tabular-nums">{d.readers}</td>
+                  <td className="py-3 pr-3 text-right tabular-nums">{d.likes}</td>
+                  <td className="py-3 text-right tabular-nums">{d.comments}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {data.devotions.length === 0 && <p className="py-6 text-sm text-lm-muted">No published devotions yet.</p>}
+          <p className="mt-3 text-xs text-lm-muted dark:text-[#BFAEA3]">Readers are signed-in members who opened the devotion (counted from 10 Nov 2026 onward).</p>
+        </div>
+      </div>
+    </div>
   )
 }
 
@@ -265,7 +384,7 @@ function Devotions({ today }: { today: string }) {
   return (
     <div>
       <div className="mb-5 flex items-center justify-between">
-        <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">One devotion per day. Each day&rsquo;s discussion closes at midnight, Kampala time.</p>
+        <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">One devotion per day. Discussions stay open for comments and likes.</p>
         <button type="button" onClick={startNew} className="btn-ember !py-2.5 text-xs">+ New devotion</button>
       </div>
       {!data ? <p className="text-sm text-lm-muted">Loading…</p> : (
