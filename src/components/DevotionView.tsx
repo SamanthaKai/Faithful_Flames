@@ -3,7 +3,9 @@ import type { Devotion } from '@prisma/client'
 import { getSession } from '@/lib/api'
 import { devotionDay, formatDay, todayKey } from '@/lib/day'
 import { getDiscussion } from '@/lib/comments'
+import { getDevotionsInOrder, getJourney, markRead } from '@/lib/journey'
 import { BookmarkButton } from './BookmarkButton'
+import { LikeButton } from './LikeButton'
 import { DevotionNote } from './DevotionNote'
 import { Discussion } from './Discussion'
 
@@ -26,9 +28,16 @@ function Section({ numeral, label, children }: { numeral: string; label: string;
 export async function DevotionView({ devotion }: { devotion: Devotion }) {
   const session = await getSession()
   const viewer = session?.user?.id ? { id: session.user.id, role: session.user.role } : null
-  const discussion = await getDiscussion(devotion, viewer)
+  if (viewer) await markRead(viewer.id, devotion.id)
+  const [discussion, ordered] = await Promise.all([getDiscussion(devotion, viewer), getDevotionsInOrder()])
+  const journey = viewer ? await getJourney(viewer.id, ordered) : null
   const day = devotionDay(devotion)
   const isToday = day === todayKey()
+  const position = ordered.findIndex((d) => d.id === devotion.id)
+  const earlier = position > 0 ? ordered[position - 1] : null
+  const later = position >= 0 && position < ordered.length - 1 ? ordered[position + 1] : null
+  const hrefOf = (d: { id: string; day: string }) => (d.day === todayKey() ? '/devotions' : `/devotions/${d.id}`)
+  const showNext = journey?.path === 'BEGINNING' && journey.next && journey.next.id !== devotion.id
 
   // Older devotions stored a reflection question; fold it into application if needed.
   const application = devotion.application ?? (devotion.reflectionQuestion ? `Reflect: ${devotion.reflectionQuestion}` : null)
@@ -42,21 +51,43 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
             <span>{isToday ? 'Today' : 'From the archive'}</span>
             <span className="h-px w-8 bg-gold/40" />
             <time dateTime={day}>{formatDay(day)}</time>
+            {position >= 0 && (
+              <>
+                <span className="h-px w-8 bg-gold/40" />
+                <span>Day {position + 1} of {ordered.length}</span>
+              </>
+            )}
           </div>
           <h1 className="max-w-3xl font-heading text-4xl font-bold leading-[1.1] text-[#FFF4E8] sm:text-5xl md:text-6xl">
             {devotion.title}
           </h1>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <a href="#discussion" className="btn-ember !py-2.5 text-xs">
-              {discussion.open ? 'Join today’s conversation' : 'Read the conversation'}
+              {isToday ? 'Join today’s conversation' : 'Join the conversation'}
               {discussion.count > 0 && <span className="rounded-full bg-white/20 px-2 py-0.5">{discussion.count}</span>}
             </a>
             <div className="[&_.btn-ghost]:!border-white/20 [&_.btn-ghost]:!text-[#FFF4E8]">
               <BookmarkButton contentType="DEVOTION" contentId={devotion.id} />
             </div>
+            <div className="[&_.btn-ghost]:!border-white/20 [&_.btn-ghost]:!text-[#FFF4E8]">
+              <LikeButton contentType="DEVOTION" contentId={devotion.id} loginHref={`/login?callbackUrl=/devotions/${devotion.id}`} />
+            </div>
           </div>
         </div>
       </header>
+
+      {showNext && journey?.next && (
+        <div className="border-b border-lm-border bg-lm-highlight/40 dark:border-ember/10 dark:bg-ember/[0.06]">
+          <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm sm:px-6">
+            <span className="text-lm-muted dark:text-[#BFAEA3]">
+              Reading from the beginning · {journey.readCount} of {journey.total} read
+            </span>
+            <Link href={`/devotions/${journey.next.id}`} className="font-semibold text-ember hover:underline">
+              Next for you: Day {journey.next.number}, {journey.next.title} →
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="mx-auto max-w-4xl space-y-14 px-4 py-14 sm:px-6 md:py-20">
         <Section numeral="I" label="Scripture">
@@ -106,12 +137,26 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
         <div className="ember-rule" />
 
         <div className="md:pl-[120px]">
-          <Discussion devotionId={devotion.id} initial={discussion} />
+          <Discussion devotionId={devotion.id} initial={discussion} isToday={isToday} />
         </div>
 
-        <nav className="flex justify-between border-t border-lm-border pt-8 text-sm dark:border-ember/10 md:ml-[120px]">
-          <Link href="/devotions/archive" className="font-semibold text-lm-muted hover:text-ember dark:text-[#BFAEA3]">← Past devotions</Link>
-          {!isToday && <Link href="/devotions" className="font-semibold text-ember">Today’s devotion →</Link>}
+        <nav className="grid gap-4 border-t border-lm-border pt-8 text-sm dark:border-ember/10 sm:grid-cols-2 md:ml-[120px]">
+          {earlier ? (
+            <Link href={hrefOf(earlier)} className="group">
+              <span className="kicker block">← Earlier · Day {position}</span>
+              <span className="mt-1 block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">{earlier.title}</span>
+            </Link>
+          ) : (
+            <Link href="/devotions/archive" className="self-end font-semibold text-lm-muted hover:text-ember dark:text-[#BFAEA3]">← Past devotions</Link>
+          )}
+          {later ? (
+            <Link href={hrefOf(later)} className="group sm:text-right">
+              <span className="kicker block">Later · Day {position + 2} →</span>
+              <span className="mt-1 block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">{later.title}</span>
+            </Link>
+          ) : (
+            !isToday && <Link href="/devotions" className="self-end font-semibold text-ember sm:text-right">Today’s devotion →</Link>
+          )}
         </nav>
       </div>
     </div>

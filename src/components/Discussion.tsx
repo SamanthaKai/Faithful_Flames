@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
 import type { Discussion as DiscussionData, PublicComment } from '@/lib/comments'
-import { EmberClock } from './EmberClock'
+import { LikeButton } from './LikeButton'
 import { useDialog } from './Dialog'
 
 function ago(iso: string) {
@@ -28,7 +28,7 @@ async function send(url: string, method: string, body?: unknown) {
   return data
 }
 
-export function Discussion({ devotionId, initial }: { devotionId: string; initial: DiscussionData }) {
+export function Discussion({ devotionId, initial, isToday }: { devotionId: string; initial: DiscussionData; isToday: boolean }) {
   const { data: session } = useSession()
   const [data, setData] = useState(initial)
 
@@ -45,12 +45,12 @@ export function Discussion({ devotionId, initial }: { devotionId: string; initia
       return true
     } catch (e) {
       toast.error((e as Error).message)
-      await reload() // e.g. the discussion just closed at midnight
+      await reload()
       return false
     }
   }
 
-  const canPost = data.open && !!session
+  const canPost = !!session
 
   return (
     <section id="discussion" aria-labelledby="discussion-title" className="scroll-mt-24">
@@ -58,17 +58,13 @@ export function Discussion({ devotionId, initial }: { devotionId: string; initia
         <div>
           <p className="kicker mb-2">Around the fire</p>
           <h2 id="discussion-title" className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">
-            {data.open ? <>Today&rsquo;s conversation</> : 'The conversation that day'}
+            {isToday ? <>Today&rsquo;s conversation</> : 'The conversation'}
             {data.count > 0 && <span className="ml-3 align-middle font-body text-base font-normal text-lm-muted dark:text-[#BFAEA3]">{data.count}</span>}
           </h2>
         </div>
       </div>
 
-      <div className="mb-8">
-        <EmberClock closesAt={data.closesAt} open={data.open} />
-      </div>
-
-      {data.open && !session && (
+      {!session && (
         <p className="panel mb-8 p-5 text-sm text-lm-muted dark:text-[#BFAEA3]">
           <Link href={`/login?callbackUrl=/devotions/${devotionId}%23discussion`} className="font-semibold text-ember hover:underline">Sign in</Link>{' '}
           to add your voice. Anyone can read along.
@@ -77,7 +73,7 @@ export function Discussion({ devotionId, initial }: { devotionId: string; initia
 
       {canPost && (
         <Composer
-          placeholder="What stood out to you in today’s reading?"
+          placeholder={isToday ? 'What stood out to you in today’s reading?' : 'What stood out to you in this reading?'}
           submitLabel="Share"
           onSubmit={(content) => act(() => send('/api/comments', 'POST', { devotionId, content }))}
         />
@@ -85,18 +81,18 @@ export function Discussion({ devotionId, initial }: { devotionId: string; initia
 
       {data.comments.length === 0 ? (
         <p className="py-6 text-sm text-lm-muted dark:text-[#BFAEA3]">
-          {data.open ? 'No one has spoken yet. Be the first to add a log to the fire.' : 'No one joined this conversation.'}
+          No one has spoken yet. Be the first to share what God showed you.
         </p>
       ) : (
         <ol className="mt-8 space-y-7">
           {data.comments.map((c) => (
             <li key={c.id}>
-              <CommentItem c={c} open={data.open} signedIn={!!session} act={act} devotionId={devotionId} />
+              <CommentItem c={c} signedIn={!!session} act={act} devotionId={devotionId} />
               {c.replies.length > 0 && (
                 <ol className="ml-5 mt-5 space-y-5 border-l border-lm-border pl-5 dark:border-ember/15 sm:ml-10">
                   {c.replies.map((r) => (
                     <li key={r.id}>
-                      <CommentItem c={r} open={data.open} signedIn={!!session} act={act} devotionId={devotionId} replyTo={c.id} />
+                      <CommentItem c={r} signedIn={!!session} act={act} devotionId={devotionId} replyTo={c.id} />
                     </li>
                   ))}
                 </ol>
@@ -111,8 +107,8 @@ export function Discussion({ devotionId, initial }: { devotionId: string; initia
 
 type Act = (fn: () => Promise<unknown>, ok?: string) => Promise<boolean>
 
-function CommentItem({ c, open, signedIn, act, devotionId, replyTo }: {
-  c: PublicComment; open: boolean; signedIn: boolean; act: Act; devotionId: string; replyTo?: string
+function CommentItem({ c, signedIn, act, devotionId, replyTo }: {
+  c: PublicComment; signedIn: boolean; act: Act; devotionId: string; replyTo?: string
 }) {
   const [mode, setMode] = useState<'idle' | 'reply' | 'edit'>('idle')
   const dialog = useDialog()
@@ -158,10 +154,17 @@ function CommentItem({ c, open, signedIn, act, devotionId, replyTo }: {
 
       {mode !== 'edit' && (
         <div className="mt-2 flex flex-wrap gap-4 text-xs font-semibold text-lm-muted dark:text-[#BFAEA3]">
-          {open && signedIn && (
+          <LikeButton
+            contentType="COMMENT"
+            contentId={c.id}
+            initial={{ count: c.likes, liked: c.likedByMe }}
+            variant="inline"
+            loginHref={`/login?callbackUrl=/devotions/${devotionId}%23discussion`}
+          />
+          {signedIn && (
             <button type="button" className="hover:text-ember" onClick={() => setMode(mode === 'reply' ? 'idle' : 'reply')}>Reply</button>
           )}
-          {open && c.isMine && (
+          {c.isMine && (
             <>
               <button type="button" className="hover:text-ember" onClick={() => setMode('edit')}>Edit</button>
               <button

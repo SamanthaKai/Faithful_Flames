@@ -22,7 +22,7 @@ export default async function ArchivePage() {
       <p className="kicker mb-3">The logbook</p>
       <h1 className="font-heading text-4xl font-bold text-lm-text dark:text-[#FFF4E8] md:text-5xl">Past devotions</h1>
       <p className="mt-4 max-w-xl text-lm-muted dark:text-[#BFAEA3]">
-        Every fire we have gathered around. Each devotion and its conversation stays here to read.
+        Every fire we have gathered around, from the very first. Each conversation is still open, so you can add your voice to any of them.
       </p>
 
       {devotions.length === 0 && <p className="mt-12 text-lm-muted dark:text-[#BFAEA3]">No devotions yet. The first fire is coming soon.</p>}

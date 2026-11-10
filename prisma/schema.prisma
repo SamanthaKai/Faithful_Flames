@@ -18,6 +18,9 @@ model User {
   bio           String?
   role          Role         @default(USER)
   createdAt     DateTime     @default(now())
+  /// How the member chose to read devotions when they joined: "BEGINNING"
+  /// (from the first devotion, at their own pace) or "LATEST". Null = not chosen yet.
+  readingPath   String?
 
   accounts                 Account[]
   sessions                 Session[]
@@ -36,6 +39,7 @@ model User {
   commentReports           CommentReport[]
   prayerRequests           PrayerRequest[]
   prayedFor                PrayerRequestPrayer[]
+  devotionReads            DevotionRead[]
 }
 
 enum Role {
@@ -126,6 +130,7 @@ model Devotion {
   updatedAt          DateTime @default(now()) @updatedAt
 
   notes Reflection[]
+  reads DevotionRead[]
 
   @@index([dayKey])
 }
@@ -282,6 +287,7 @@ enum ContentType {
   DEVOTION
   TESTIMONY
   FORUM_POST
+  COMMENT
 }
 
 // Devotion discussions use contentType = DEVOTION and contentId = devotion id.
@@ -329,6 +335,7 @@ model Bookmark {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, contentType, contentId])
+  @@index([contentType, contentId])
 }
 
 enum PrayerStatus {
@@ -379,6 +386,21 @@ model DailyVisit {
   @@id([day, visitorId])
 }
 
+// Which devotions a member has opened, so "from the beginning" readers can
+// pick up where they left off.
+model DevotionRead {
+  id         String   @id @default(cuid())
+  userId     String
+  devotionId String
+  createdAt  DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  devotion Devotion @relation(fields: [devotionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, devotionId])
+}
+
+// Likes on devotions (contentType DEVOTION) and on discussion comments (COMMENT).
 model Like {
   id          String      @id @default(cuid())
   userId      String
@@ -389,4 +411,5 @@ model Like {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, contentType, contentId])
+  @@index([contentType, contentId])
 }

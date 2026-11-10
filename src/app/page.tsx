@@ -4,12 +4,12 @@ import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/api'
 import { getFeaturedDevotion, excerpt } from '@/lib/devotions'
-import { endOfDay, formatDay } from '@/lib/day'
+import { formatDay } from '@/lib/day'
 import { getPublicPrayers } from '@/lib/prayer'
 import { getPublishedTestimonies } from '@/lib/testimonies'
+import { getJourney } from '@/lib/journey'
 import { Campfire } from '@/components/Campfire'
 import { EmberParticles } from '@/components/EmberParticles'
-import { EmberClock } from '@/components/EmberClock'
 import { PrayerWall } from '@/components/PrayerWall'
 
 export default async function HomePage() {
@@ -19,6 +19,8 @@ export default async function HomePage() {
     getPublicPrayers(session?.user?.id ?? null, 3),
     getPublishedTestimonies(3),
   ])
+  const journey = session?.user?.id ? await getJourney(session.user.id) : null
+  const continueTo = journey?.path === 'BEGINNING' ? journey.next : null
   const commentCount = devotion
     ? await prisma.comment.count({ where: { contentType: 'DEVOTION', contentId: devotion.id, deletedAt: null, isHidden: false } })
     : 0
@@ -68,7 +70,12 @@ export default async function HomePage() {
             )}
 
             <div className="mt-10 flex flex-wrap gap-3">
-              <Link href={devotionHref} className="btn-ember">{isToday ? 'Read today’s devotion' : 'Read the latest devotion'}</Link>
+              {continueTo && (
+                <Link href={`/devotions/${continueTo.id}`} className="btn-ember">Continue: Day {continueTo.number}</Link>
+              )}
+              <Link href={devotionHref} className={continueTo ? 'btn-ghost !border-white/20 !text-[#FFF4E8] hover:!border-ember' : 'btn-ember'}>
+                {isToday ? 'Read today’s devotion' : 'Read the latest devotion'}
+              </Link>
               <Link href="/prayer" className="btn-ghost !border-white/20 !text-[#FFF4E8] hover:!border-ember">Ask for prayer</Link>
             </div>
           </div>
@@ -94,7 +101,7 @@ export default async function HomePage() {
                 {excerpt(devotion.teaching, 420)}
               </p>
               <div className="mt-8 flex flex-col gap-5 border-t border-lm-border pt-6 dark:border-ember/10 sm:flex-row sm:items-center sm:justify-between">
-                <EmberClock closesAt={endOfDay(devotion.day).toISOString()} open={isToday} compact />
+                <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">Comment and like whenever you read. Every devotion&rsquo;s conversation stays open.</p>
                 <Link href={`${devotionHref}#discussion`} className="btn-ghost shrink-0">
                   Read &amp; discuss{commentCount > 0 && ` · ${commentCount}`}
                 </Link>
@@ -158,8 +165,8 @@ export default async function HomePage() {
         <Campfire className="mx-auto mb-6 h-20 w-auto" />
         <h2 className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8] md:text-4xl">There&rsquo;s room by the fire.</h2>
         <p className="mx-auto mt-4 max-w-lg leading-relaxed text-lm-muted dark:text-[#BFAEA3]">
-          Anyone can read, pray and share. Members can also save devotions, keep private notes, and join each
-          day&rsquo;s conversation.
+          Anyone can read, pray and share. Members can also save devotions, keep private notes, and comment on and like
+          any devotion, new or old.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
           {session ? (

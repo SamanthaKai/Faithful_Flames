@@ -1,12 +1,11 @@
 export const dynamic = 'force-dynamic'
 import { prisma } from '@/lib/prisma'
 import { fail, getSession, isResponse, json, rateLimited, readBody, requireUser, text } from '@/lib/api'
-import { isDiscussionOpen } from '@/lib/day'
 import { getVisibleDevotion } from '@/lib/devotions'
 import { getDiscussion } from '@/lib/comments'
 import { containsProfanity } from '@/lib/profanity'
 
-// GET ?devotionId=  → the devotion's discussion (readable forever)
+// GET ?devotionId=  → the devotion's discussion
 export async function GET(req: Request) {
   const devotionId = new URL(req.url).searchParams.get('devotionId')
   if (!devotionId) return fail('devotionId is required.')
@@ -27,11 +26,7 @@ export async function POST(req: Request) {
   const devotion = await getVisibleDevotion(body.devotionId)
   if (!devotion) return fail('Devotion not found.', 404)
 
-  // Server-side expiry: a discussion only accepts comments on its own Kampala day.
-  if (!isDiscussionOpen(devotion)) {
-    return fail('This discussion has closed. It stays readable, but no new comments can be added.', 403)
-  }
-
+  // Discussions never close: members can comment on any published devotion, old or new.
   const content = text(body.content, { min: 1, max: 2000 })
   if (content === null) return fail('Comments must be between 1 and 2,000 characters.')
   if (containsProfanity(content)) return fail('Please keep the language kind and clean.')

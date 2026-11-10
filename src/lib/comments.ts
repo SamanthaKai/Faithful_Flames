@@ -1,5 +1,5 @@
 import { prisma } from './prisma'
-import { endOfDay, devotionDay, isDiscussionOpen } from './day'
+import { devotionDay } from './day'
 
 export const DISPLAY_FALLBACK = 'A friend by the fire'
 
@@ -13,13 +13,13 @@ export type PublicComment = {
   edited: boolean
   author: { id: string | null; name: string }
   isMine: boolean
+  likes: number
+  likedByMe: boolean
   replies: PublicComment[]
 }
 
 export type Discussion = {
-  open: boolean
   day: string
-  closesAt: string
   count: number
   comments: PublicComment[]
 }
@@ -36,6 +36,18 @@ export async function getDiscussion(
     include: { user: { select: { id: true, name: true } } },
   })
 
+  const ids = rows.map((r) => r.id)
+  const [likeCounts, myLikes] = ids.length
+    ? await Promise.all([
+        prisma.like.groupBy({ by: ['contentId'], where: { contentType: 'COMMENT', contentId: { in: ids } }, _count: { _all: true } }),
+        viewer
+          ? prisma.like.findMany({ where: { userId: viewer.id, contentType: 'COMMENT', contentId: { in: ids } }, select: { contentId: true } })
+          : Promise.resolve([]),
+      ])
+    : [[], []]
+  const likeMap = new Map(likeCounts.map((l) => [l.contentId, l._count._all]))
+  const mine = new Set(myLikes.map((l) => l.contentId))
+
   const toPublic = (c: (typeof rows)[number]): PublicComment => {
     // Hidden comments are visible (marked) to admins only; deleted ones to no one.
     const removed = !!c.deletedAt || (c.isHidden && !isAdmin)
@@ -49,6 +61,8 @@ export async function getDiscussion(
       edited: c.updatedAt.getTime() - c.createdAt.getTime() > 5000 && !c.deletedAt,
       author: removed ? { id: null, name: '' } : { id: c.user.id, name: c.user.name?.trim() || DISPLAY_FALLBACK },
       isMine: !!viewer && viewer.id === c.userId,
+      likes: removed ? 0 : likeMap.get(c.id) ?? 0,
+      likedByMe: mine.has(c.id),
       replies: [],
     }
   }
@@ -66,11 +80,8 @@ export async function getDiscussion(
     .map((r) => ({ ...r, replies: r.replies.filter((x) => !x.removed) }))
     .filter((r) => !r.removed || r.replies.length > 0)
 
-  const day = devotionDay(devotion)
   return {
-    open: isDiscussionOpen(devotion),
-    day,
-    closesAt: endOfDay(day).toISOString(),
+    day: devotionDay(devotion),
     count: rows.filter((r) => !r.deletedAt && !r.isHidden).length,
     comments,
   }

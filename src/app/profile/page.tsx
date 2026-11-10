@@ -7,6 +7,8 @@ import { getSession } from '@/lib/api'
 import { devotionDay, formatDay } from '@/lib/day'
 import { excerpt } from '@/lib/devotions'
 import { AccountSettings } from '@/components/AccountSettings'
+import { ReadingPathSetting } from '@/components/ReadingPathSetting'
+import { getJourney } from '@/lib/journey'
 
 export const metadata: Metadata = { title: 'My bookmarks & notes' }
 
@@ -15,7 +17,7 @@ export default async function MySpacePage() {
   if (!session?.user?.id) redirect('/login?callbackUrl=/profile')
   const userId = session.user.id
 
-  const [user, bookmarks, notes, legacyReflections, journal] = await Promise.all([
+  const [user, bookmarks, notes, legacyReflections, journal, journey] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } }),
     prisma.bookmark.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } }),
     prisma.reflection.findMany({
@@ -25,6 +27,7 @@ export default async function MySpacePage() {
     }),
     prisma.reflection.findMany({ where: { userId, devotionId: null }, orderBy: { createdAt: 'desc' } }),
     prisma.journalEntry.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } }),
+    getJourney(userId),
   ])
 
   const devotionIds = bookmarks.filter((b) => b.contentType === 'DEVOTION').map((b) => b.contentId)
@@ -40,6 +43,19 @@ export default async function MySpacePage() {
     <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6 md:py-20">
       <p className="kicker mb-3">Only you can see this page</p>
       <h1 className="font-heading text-4xl font-bold text-lm-text dark:text-[#FFF4E8] md:text-5xl">Your bookmarks &amp; notes</h1>
+
+      <section className="mt-14" aria-labelledby="path">
+        <h2 id="path" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Your reading</h2>
+        <p className="mt-2 text-sm text-lm-muted dark:text-[#BFAEA3]">
+          You&rsquo;ve opened {journey.readCount} of {journey.total} devotions.{' '}
+          {journey.next && (
+            <Link href={`/devotions/${journey.next.id}`} className="font-semibold text-ember hover:underline">
+              {journey.path === 'BEGINNING' ? 'Continue' : 'First unread'}: Day {journey.next.number}, {journey.next.title} →
+            </Link>
+          )}
+        </p>
+        <ReadingPathSetting path={journey.path} />
+      </section>
 
       <section className="mt-14" aria-labelledby="bm">
         <h2 id="bm" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Saved</h2>

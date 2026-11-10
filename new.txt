@@ -95,7 +95,7 @@ Requirements:
 - ✅ Include basic comment moderation and reporting.
 - ✅ Do not introduce private messaging or unrelated forum categories.
 
-**Important: Daily discussion expiry**
+**Important: Daily discussion expiry**  _(Replaced on 10 Nov 2026: discussions no longer close. See "Update — 10 November 2026" at the end.)_
 
 Discussions must automatically close when the next calendar day begins.
 
@@ -293,3 +293,33 @@ Everything above marked ✅ is built **and tested**: 132 end-to-end API/page che
 3. Admin login: `npm run admin -- create <admin-email>` (asks for name + password), sign in as that account, then `npm run admin -- demote kissasamantha123@gmail.com`. Remove the ADMIN_EMAIL variable from Vercel.
 4. Sign in as the admin → /admin → Devotions → create today's devotion.
 5. Spot-check: /, /devotions, /prayer, /testimonies, submit a test prayer request, approve it in admin.
+
+
+---
+
+# Update — 10 November 2026
+
+## Requested changes
+- ✅ People can comment and like whenever they like. Discussions on every devotion stay open (no midnight close), and the API no longer blocks posting, replying, editing or deleting on older devotions.
+- ✅ Likes on devotions (a Like button next to Save) and on each discussion comment. Signed-in members only; anyone can see the counts.
+- ✅ When a member is signed in for the first time (and hasn't chosen yet), a pop-up asks where to begin:
+  - **Start from the first devotion**: read in order, at their own pace. The site remembers their place, with "Next for you: Day N" on devotion pages, "Continue: Day N" on the homepage, and progress on their bookmarks & notes page.
+  - **Join at the latest devotion**: a second pop-up gently recommends skimming *some* of the first devotions and lists the first 5 titles (each a link), plus a link to all past devotions.
+  - "Decide later" closes it for that visit; it asks again next visit. The choice can be changed on the bookmarks & notes page.
+- ✅ Every devotion page now shows "Day N of total" and Earlier / Later links, so reading in order is easy.
+- ✅ Countdown ("closes in …h", "this fire has burned down") removed.
+
+## Database changes (additive only)
+- User: + readingPath (null until chosen).
+- New table DevotionRead (which devotions a member has opened).
+- ContentType enum: + COMMENT (for comment likes). Like table: + index.
+- Tested: old schema + data → new schema with plain `prisma db push` (no --accept-data-loss), rows intact.
+
+## Tested (local production build, throwaway database)
+- ✅ 38 API/page checks: comment, reply, edit and delete on a 7-day-old devotion; like/unlike devotions and comments; signed-out users blocked from posting/liking; future devotions still hidden; deleted comments can't be liked; pop-up data (first 5 titles, oldest first); progress and "next" tracking; no countdown left.
+- ✅ Pop-up flow clicked through in a real browser at desktop (light) and 375px mobile (dark); no horizontal overflow; doesn't reappear after choosing.
+
+## Notes
+- ❎ Existing members will also see the pop-up once (they haven't chosen yet). Admin accounts don't.
+- ❎ The pop-up only appears once there are at least 2 published devotions.
+- ❎ "Read" means the member opened the devotion page. There is no separate "mark as read" button.

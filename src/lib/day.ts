@@ -1,5 +1,5 @@
 // Calendar-day helpers. Every daily boundary on Faithful Flames (which devotion
-// is "today", when a discussion closes, analytics days) uses Africa/Kampala.
+// is "today", analytics days) uses Africa/Kampala.
 // Kampala is UTC+03:00 all year (no daylight saving), which lets us build exact
 // midnight instants without a timezone library.
 
@@ -42,17 +42,6 @@ export function endOfDay(key: string): Date {
 /** Effective day of a devotion: its explicit dayKey, or its publish date for older rows. */
 export function devotionDay(d: { dayKey: string | null; publishedAt: Date | string }): string {
   return d.dayKey ?? dayKeyOf(d.publishedAt)
-}
-
-/**
- * A devotion's discussion is open only during its own Kampala calendar day.
- * Called by the comment APIs, so the rule holds even if the UI is bypassed.
- */
-export function isDiscussionOpen(
-  d: { dayKey: string | null; publishedAt: Date | string },
-  now: Date = new Date(),
-): boolean {
-  return devotionDay(d) === todayKey(now)
 }
 
 /** "Saturday, 7 November 2026" */
