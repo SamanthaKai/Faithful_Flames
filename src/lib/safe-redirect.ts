@@ -9,7 +9,7 @@ export function safeCallbackUrl(value: string | null | undefined, fallback = '/'
   if (!value.startsWith('/') || value.startsWith('//') || value.startsWith('/\\')) return fallback
   if (/[\u0000-\u001f]/.test(value)) return fallback
   // Don't send people back to the sign-in pages themselves.
-  if (/^\/(login|register|check-email|verify-email|unverified)(\/|\?|#|$)/.test(value)) return fallback
+  if (/^\/(login|register|check-email|verify-email|unverified|forgot-password|reset-password)(\/|\?|#|$)/.test(value)) return fallback
   return value
 }
 

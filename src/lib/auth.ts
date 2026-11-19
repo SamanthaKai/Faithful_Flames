@@ -66,17 +66,31 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user, trigger, session: sessionData }) {
       if (user) {
         token.id = user.id
+        token.authAt = Date.now()
         await prisma.user.update({ where: { id: user.id }, data: { lastSeenAt: new Date() } }).catch(() => {})
       }
 
       // The database role is the only source of admin access (managed with
       // `npm run admin`). Re-read it at sign-in and at most once a minute after,
       // so a demotion takes effect on the server without waiting for the
-      // session to expire.
+      // session to expire. The same check signs out sessions of deleted
+      // accounts, and sessions that began before the password was reset.
       const now = Date.now()
       if (token.id && (user || !token.roleCheckedAt || now - token.roleCheckedAt > 60_000)) {
-        const dbUser = await prisma.user.findUnique({ where: { id: token.id }, select: { role: true } })
-        token.role = dbUser?.role ?? 'USER'
+        let dbUser: { role: string; passwordChangedAt: Date | null } | null | undefined
+        try {
+          dbUser = await prisma.user.findUnique({ where: { id: token.id }, select: { role: true, passwordChangedAt: true } })
+        } catch {
+          // Database briefly unreachable: keep the session as it was rather than
+          // signing everyone out. It is checked again on the next request.
+          return token
+        }
+        // Throwing here makes next-auth clear the session cookie (signed out).
+        if (!dbUser) throw new Error('SessionRevoked: account no longer exists')
+        if (dbUser.passwordChangedAt && (token.authAt ?? 0) < dbUser.passwordChangedAt.getTime()) {
+          throw new Error('SessionRevoked: password was changed')
+        }
+        token.role = dbUser.role
         token.roleCheckedAt = now
       }
       if (trigger === 'update' && sessionData) {

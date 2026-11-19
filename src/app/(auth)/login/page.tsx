@@ -23,6 +23,7 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const errorParam = searchParams.get('error')
   const registered = searchParams.get('registered') === 'true'
+  const wasReset = searchParams.get('reset') === 'true'
   // Bring people back to the page they were on (only ever a page on this site).
   const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'))
   const errorMessage = errorParam ? (AUTH_ERRORS[errorParam] ?? AUTH_ERRORS.Default) : null
@@ -69,6 +70,12 @@ function LoginForm() {
           {registered && !unverifiedEmail && (
             <div className="mb-5 px-4 py-3 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-sm text-amber-700 dark:text-amber-400">
               Account created! Check your inbox for a verification email before signing in.
+            </div>
+          )}
+
+          {wasReset && (
+            <div role="status" className="mb-5 px-4 py-3 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-sm text-green-700 dark:text-green-400">
+              Your password has been changed and you&rsquo;ve been signed out everywhere. Sign in with your new password.
             </div>
           )}
 
@@ -136,7 +143,10 @@ function LoginForm() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-charcoal dark:text-cream mb-1">Password</label>
+              <div className="mb-1 flex items-baseline justify-between">
+                <label className="block text-sm font-medium text-charcoal dark:text-cream">Password</label>
+                <Link href="/forgot-password" className="text-xs font-semibold text-primary hover:text-secondary">Forgot password?</Link>
+              </div>
               <input
                 type="password"
                 value={password}

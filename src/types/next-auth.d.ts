@@ -17,5 +17,7 @@ declare module 'next-auth/jwt' {
     id: string
     role: string
     roleCheckedAt?: number
+    /** When this session signed in (ms). Sessions older than a password reset are ended. */
+    authAt?: number
   }
 }

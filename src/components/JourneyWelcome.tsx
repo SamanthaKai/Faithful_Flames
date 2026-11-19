@@ -13,7 +13,7 @@ type JourneyInfo = {
   earliest: { id: string; title: string; scripture: string; number: number }[]
 }
 
-const SKIP_ON = ['/admin', '/login', '/register', '/check-email', '/verify-email', '/unverified']
+const SKIP_ON = ['/admin', '/login', '/register', '/check-email', '/verify-email', '/unverified', '/forgot-password', '/reset-password']
 const DISMISS_KEY = 'ff-journey-later'
 
 // Shown once to a member who hasn't chosen a reading path yet: start from the

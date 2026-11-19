@@ -122,3 +122,58 @@ export async function sendVerificationEmail(email: string, token: string) {
 </html>`,
   )
 }
+
+const escapeHtml = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`)
+
+/** A simple branded email: heading, a few paragraphs, an optional button. */
+function simpleEmail({ heading, paragraphs, button, footnote }: {
+  heading: string
+  paragraphs: string[]
+  button?: { label: string; url: string }
+  footnote: string
+}) {
+  const btn = button
+    ? `<table cellpadding="0" cellspacing="0" style="margin:8px auto 28px;"><tr>
+         <td align="center" style="background:#9B2C1D;border-radius:10px;">
+           <a href="${button.url}" style="display:inline-block;padding:14px 36px;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;">${escapeHtml(button.label)}</a>
+         </td></tr></table>
+       <p style="margin:0 0 4px;font-size:12px;color:#9B9390;text-align:center;">Button not working? Copy and paste this link:</p>
+       <p style="margin:0;font-size:11px;color:#C85C17;text-align:center;word-break:break-all;">${button.url}</p>`
+    : ''
+  return `<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>${escapeHtml(heading)}</title></head>
+<body style="margin:0;padding:0;background:#f5ede0;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5ede0;padding:40px 16px;"><tr><td align="center">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
+      <tr><td align="center" style="padding-bottom:28px;">
+        <p style="margin:0;font-size:22px;font-weight:bold;color:#9B2C1D;letter-spacing:0.5px;">Faithful Flames</p>
+      </td></tr>
+      <tr><td style="background:#ffffff;border-radius:16px;padding:40px 36px;border:1px solid #e8ddd4;">
+        <p style="margin:0 0 12px;font-size:20px;font-weight:bold;color:#2C2A29;">${escapeHtml(heading)}</p>
+        ${paragraphs.map((p) => `<p style="margin:0 0 18px;font-size:14px;color:#6B6258;line-height:1.7;">${p}</p>`).join('')}
+        ${btn}
+      </td></tr>
+      <tr><td align="center" style="padding-top:24px;">
+        <p style="margin:0;font-size:12px;color:#9B9390;text-align:center;">${footnote}</p>
+      </td></tr>
+    </table>
+  </td></tr></table>
+</body></html>`
+}
+
+export async function sendPasswordResetEmail(email: string, token: string) {
+  const url = `${BASE_URL}/reset-password?token=${token}`
+  await send(
+    email,
+    'Reset your Faithful Flames password',
+    simpleEmail({
+      heading: 'Reset your password',
+      paragraphs: [
+        'Someone (hopefully you) asked to reset the password for your Faithful Flames account. Click the button below to choose a new one. This link works once and expires in 1&nbsp;hour.',
+        'Resetting your password signs you out on every device, so you can be sure only you have access.',
+      ],
+      button: { label: 'Choose a new password', url },
+      footnote: 'If you didn&rsquo;t ask for this, you can ignore this email. Your password stays the same.',
+    }),
+  )
+}
