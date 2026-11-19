@@ -233,7 +233,12 @@ function Composer({ initial = '', placeholder, submitLabel, onSubmit, onCancel, 
         aria-label={placeholder ?? 'Comment'}
         className="input resize-y leading-relaxed"
       />
-      <div className="flex justify-end gap-2">
+      <div className="flex items-center justify-end gap-2">
+        {text.length > 1800 && (
+          <span className={`mr-auto text-xs ${text.length >= 2000 ? 'font-semibold text-red-600 dark:text-red-400' : 'text-lm-muted dark:text-[#BFAEA3]'}`} aria-live="polite">
+            {text.length.toLocaleString()} / 2,000
+          </span>
+        )}
         {onCancel && <button type="button" onClick={onCancel} className="btn-ghost !py-2 text-xs">Cancel</button>}
         <button type="submit" disabled={busy || !text.trim()} className="btn-ember !px-5 !py-2 text-xs">{busy ? '…' : submitLabel}</button>
       </div>

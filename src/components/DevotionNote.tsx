@@ -1,41 +1,115 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import { loginHref } from '@/lib/safe-redirect'
-import toast from 'react-hot-toast'
 
 // A private note on one devotion. Only its owner can read it (enforced by the API).
+// It saves itself a moment after the member stops typing, when they click away,
+// and when they leave the page, so a reflection is never lost.
 type Initial = { signedIn: boolean; note: { content: string; updatedAt: string } | null }
+type SaveState = 'idle' | 'pending' | 'saving' | 'error'
+
+const AUTOSAVE_MS = 1200
+const MAX = 10_000
 
 export function DevotionNote({ devotionId, initial }: { devotionId: string; initial?: Initial }) {
   const { data: sessionData, status: sessionStatus } = useSession()
   const pathname = usePathname()
   const [content, setContent] = useState(initial?.note?.content ?? '')
-  const [saved, setSaved] = useState(initial?.note?.content ?? '')
   const [savedAt, setSavedAt] = useState<string | null>(initial?.note?.updatedAt ?? null)
   const [loading, setLoading] = useState(!initial)
-  const [busy, setBusy] = useState(false)
+  const [saveState, setSaveState] = useState<SaveState>('idle')
   // While the browser session loads, trust what the server already knew.
   const session = sessionStatus === 'loading' && initial ? initial.signedIn : !!sessionData
   const status = sessionStatus === 'loading' && initial ? 'ready' : sessionStatus
 
+  // Refs so the timer, unload and unmount handlers always see the latest text.
+  const latest = useRef(content)
+  const saved = useRef((initial?.note?.content ?? '').trim())
+  const inFlight = useRef(false)
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const url = `/api/devotions/${devotionId}/note`
+
   useEffect(() => {
     if (initial || !sessionData) return
-    fetch(`/api/devotions/${devotionId}/note`)
+    fetch(url)
       .then((r) => (r.ok ? r.json() : null))
       .then((n) => {
         if (n) {
           setContent(n.content)
-          setSaved(n.content)
+          latest.current = n.content
+          saved.current = n.content.trim()
           setSavedAt(n.updatedAt)
         }
       })
       .finally(() => setLoading(false))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionData?.user?.id, devotionId])
+
+  const save = useCallback(async () => {
+    if (timer.current) { clearTimeout(timer.current); timer.current = null }
+    const text = latest.current.trim()
+    if (text === saved.current) { setSaveState('idle'); return }
+    if (inFlight.current) return // the running save re-checks when it finishes
+    inFlight.current = true
+    setSaveState('saving')
+    try {
+      const res = await fetch(url, {
+        method: text ? 'PUT' : 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: text ? JSON.stringify({ content: text }) : undefined,
+      })
+      if (!res.ok) throw new Error()
+      const d = await res.json().catch(() => null)
+      saved.current = text
+      setSavedAt(text ? d?.updatedAt ?? new Date().toISOString() : null)
+      setSaveState('idle')
+    } catch {
+      setSaveState('error')
+      return
+    } finally {
+      inFlight.current = false
+    }
+    // They kept typing while that save was on its way: save the newer text too.
+    if (latest.current.trim() !== saved.current) save()
+  }, [url])
+
+  const onChange = (value: string) => {
+    setContent(value)
+    latest.current = value
+    if (timer.current) clearTimeout(timer.current)
+    if (value.trim() === saved.current) { setSaveState('idle'); return }
+    setSaveState('pending')
+    timer.current = setTimeout(save, AUTOSAVE_MS)
+  }
+
+  // Leaving the page: warn on a full reload/close while unsaved, and on in-site
+  // navigation (which unmounts this) send the last text with keepalive.
+  useEffect(() => {
+    const unsaved = () => latest.current.trim() !== saved.current
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!unsaved()) return
+      save()
+      e.preventDefault()
+      e.returnValue = ''
+    }
+    window.addEventListener('beforeunload', onBeforeUnload)
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload)
+      if (timer.current) clearTimeout(timer.current)
+      if (!unsaved()) return
+      const text = latest.current.trim()
+      fetch(url, {
+        method: text ? 'PUT' : 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: text ? JSON.stringify({ content: text }) : undefined,
+        keepalive: true,
+      }).catch(() => {})
+    }
+  }, [save, url])
 
   if (status === 'loading') return null
 
@@ -51,25 +125,12 @@ export function DevotionNote({ devotionId, initial }: { devotionId: string; init
     )
   }
 
-  const save = async () => {
-    setBusy(true)
-    const res = await fetch(`/api/devotions/${devotionId}/note`, {
-      method: content.trim() ? 'PUT' : 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: content.trim() ? JSON.stringify({ content }) : undefined,
-    })
-    setBusy(false)
-    if (!res.ok) {
-      const d = await res.json().catch(() => ({}))
-      return toast.error(d.error ?? 'Could not save your note.')
-    }
-    const d = await res.json()
-    setSaved(content.trim())
-    setSavedAt(d?.updatedAt ?? null)
-    toast.success(content.trim() ? 'Note saved' : 'Note removed')
-  }
-
-  const dirty = content.trim() !== saved
+  const statusText =
+    saveState === 'saving' ? 'Saving…'
+    : saveState === 'pending' ? 'Typing…'
+    : saveState === 'error' ? null
+    : savedAt ? `Saved ${new Date(savedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}`
+    : content.trim() ? '' : 'Saves automatically as you write'
 
   return (
     <div className="panel p-6">
@@ -82,21 +143,26 @@ export function DevotionNote({ devotionId, initial }: { devotionId: string; init
       </div>
       <textarea
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={() => { if (saveState === 'pending') save() }}
         disabled={loading}
         rows={5}
-        maxLength={10000}
+        maxLength={MAX}
         aria-label="Your private note on this devotion"
+        aria-describedby={`note-status-${devotionId}`}
         placeholder={loading ? 'Loading…' : 'What is God saying to you through this? What will you carry into today?'}
         className="input resize-y font-body leading-relaxed"
       />
-      <div className="mt-3 flex items-center justify-between gap-3">
-        <span className="text-xs text-lm-muted dark:text-[#BFAEA3]">
-          {savedAt && !dirty ? `Saved ${new Date(savedAt).toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}` : dirty ? 'Unsaved changes' : ''}
+      <div className="mt-2 flex min-h-[1.5rem] items-center justify-between gap-3 text-xs text-lm-muted dark:text-[#BFAEA3]">
+        <span id={`note-status-${devotionId}`} role="status" aria-live="polite">
+          {saveState === 'error' ? (
+            <span className="text-red-600 dark:text-red-400">
+              Couldn&rsquo;t save. Check your connection.{' '}
+              <button type="button" onClick={save} className="font-semibold underline underline-offset-2">Try again</button>
+            </span>
+          ) : statusText}
         </span>
-        <button type="button" onClick={save} disabled={busy || !dirty} className="btn-ghost !py-2 text-xs">
-          {busy ? 'Saving…' : 'Save note'}
-        </button>
+        {content.length > MAX * 0.9 && <span>{content.length.toLocaleString()} / {MAX.toLocaleString()}</span>}
       </div>
     </div>
   )
