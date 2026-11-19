@@ -19,9 +19,8 @@ export async function POST(req: Request) {
   // Always return 200 for unknown emails — don't reveal whether an account exists.
   if (!user) return NextResponse.json({ ok: true }, { status: 200 })
 
-  if (user.emailVerified) {
-    return NextResponse.json({ error: 'Email already verified.' }, { status: 400 })
-  }
+  // Same answer as for unknown emails: don't reveal which addresses have accounts.
+  if (user.emailVerified) return NextResponse.json({ ok: true }, { status: 200 })
 
   // Tokens are keyed by the email exactly as stored on the account.
   const email = user.email
@@ -30,11 +29,9 @@ export async function POST(req: Request) {
   // The token's expiry is set to now+24h, so if expires > now+24h-60s the send was recent.
   const existing = await prisma.verificationToken.findFirst({ where: { identifier: email } })
   const ONE_MINUTE_MS = 60 * 1000
+  // Sent in the last minute: quietly skip (a 429 here would also reveal the account).
   if (existing && existing.expires.getTime() > Date.now() + 24 * 60 * 60 * 1000 - ONE_MINUTE_MS) {
-    return NextResponse.json(
-      { error: 'Please wait a moment before requesting another email.' },
-      { status: 429 }
-    )
+    return NextResponse.json({ ok: true }, { status: 200 })
   }
 
   const token = randomBytes(32).toString('hex')

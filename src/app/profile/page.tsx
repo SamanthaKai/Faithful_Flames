@@ -18,7 +18,7 @@ export default async function MySpacePage() {
   const userId = session.user.id
 
   const [user, bookmarks, notes, legacyReflections, journal, journey] = await Promise.all([
-    prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } }),
+    prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true, password: true } }),
     prisma.bookmark.findMany({ where: { userId }, orderBy: { createdAt: 'desc' } }),
     prisma.reflection.findMany({
       where: { userId, devotionId: { not: null } },
@@ -153,7 +153,7 @@ export default async function MySpacePage() {
 
       <section className="mt-16 border-t border-lm-border pt-10 dark:border-ember/10" aria-labelledby="acct">
         <h2 id="acct" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Account</h2>
-        <AccountSettings name={user?.name ?? ''} email={user?.email ?? ''} />
+        <AccountSettings name={user?.name ?? ''} email={user?.email ?? ''} hasPassword={!!user?.password} />
       </section>
     </div>
   )

@@ -14,7 +14,11 @@ type ConfirmOptions = {
   cancelLabel?: string
   danger?: boolean
 }
-type PromptOptions = ConfirmOptions & { label?: string; placeholder?: string; maxLength?: number }
+type PromptOptions = ConfirmOptions & {
+  label?: string; placeholder?: string; maxLength?: number
+  /** A one-line password field (hidden as typed, not trimmed). */
+  secret?: boolean
+}
 
 type Request =
   | { kind: 'confirm'; opts: ConfirmOptions; resolve: (v: boolean) => void }
@@ -56,7 +60,7 @@ function DialogBox({ req, onClose }: { req: Request; onClose: (v: boolean | stri
   const { opts } = req
   const [value, setValue] = useState('')
   const confirmRef = useRef<HTMLButtonElement>(null)
-  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement & HTMLInputElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
@@ -72,7 +76,7 @@ function DialogBox({ req, onClose }: { req: Request; onClose: (v: boolean | stri
       if (e.key === 'Escape') onClose(null)
       if (e.key === 'Tab' && panelRef.current) {
         // keep keyboard focus inside the dialog
-        const els = panelRef.current.querySelectorAll<HTMLElement>('button, textarea')
+        const els = panelRef.current.querySelectorAll<HTMLElement>('button, textarea, input')
         const first = els[0], last = els[els.length - 1]
         if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus() }
         else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus() }
@@ -86,7 +90,7 @@ function DialogBox({ req, onClose }: { req: Request; onClose: (v: boolean | stri
     }
   }, [req])
 
-  const submit = () => onClose(req.kind === 'prompt' ? value.trim() : true)
+  const submit = () => onClose(req.kind === 'prompt' ? (req.opts.secret ? value : value.trim()) : true)
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-fade-in" role="presentation">
@@ -111,16 +115,30 @@ function DialogBox({ req, onClose }: { req: Request; onClose: (v: boolean | stri
           {req.kind === 'prompt' && (
             <div className="mt-4">
               {req.opts.label && <label htmlFor="dlg-input" className="field-label">{req.opts.label}</label>}
-              <textarea
-                id="dlg-input"
-                ref={inputRef}
-                rows={3}
-                value={value}
-                maxLength={req.opts.maxLength ?? 300}
-                placeholder={req.opts.placeholder}
-                onChange={(e) => setValue(e.target.value)}
-                className="input resize-none"
-              />
+              {req.opts.secret ? (
+                <input
+                  id="dlg-input"
+                  ref={inputRef}
+                  type="password"
+                  autoComplete="current-password"
+                  value={value}
+                  maxLength={req.opts.maxLength ?? 300}
+                  placeholder={req.opts.placeholder}
+                  onChange={(e) => setValue(e.target.value)}
+                  className="input"
+                />
+              ) : (
+                <textarea
+                  id="dlg-input"
+                  ref={inputRef}
+                  rows={3}
+                  value={value}
+                  maxLength={req.opts.maxLength ?? 300}
+                  placeholder={req.opts.placeholder}
+                  onChange={(e) => setValue(e.target.value)}
+                  className="input resize-none"
+                />
+              )}
             </div>
           )}
           <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">

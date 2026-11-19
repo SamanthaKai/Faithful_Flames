@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import bcrypt from 'bcryptjs'
 import { randomBytes } from 'crypto'
 import { prisma } from '@/lib/prisma'
-import { sendVerificationEmail } from '@/lib/email'
+import { sendAccountExistsEmail, sendVerificationEmail } from '@/lib/email'
 import { botCheck, clientIp, rateLimited, readBody, text } from '@/lib/api'
 import { findUserByEmail, normalizeEmail } from '@/lib/email-address'
 
@@ -25,12 +25,31 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Password must be 8 to 72 characters.' }, { status: 400 })
   }
 
+  // Hash first, so both paths below take about the same time.
+  const hashed = await bcrypt.hash(password, 12)
+
+  // If the email already has an account, answer exactly as for a new sign-up,
+  // so this form can't reveal who is a member. The owner gets an email instead:
+  // a fresh verification link if they never verified, otherwise a note with
+  // sign-in and password-reset links. At most 3 such emails an hour per address.
   const existing = await findUserByEmail(email)
   if (existing) {
-    return NextResponse.json({ error: 'Email already in use.' }, { status: 409 })
+    if (!rateLimited(`register-existing:${existing.email}`, 3, 60 * 60_000)) {
+      try {
+        if (existing.emailVerified) {
+          await sendAccountExistsEmail(existing.email)
+        } else {
+          const token = randomBytes(32).toString('hex')
+          await prisma.verificationToken.deleteMany({ where: { identifier: existing.email } })
+          await prisma.verificationToken.create({ data: { identifier: existing.email, token, expires: new Date(Date.now() + 24 * 60 * 60 * 1000) } })
+          await sendVerificationEmail(existing.email, token)
+        }
+      } catch (err) {
+        console.error('Email failed (register, existing account):', err)
+      }
+    }
+    return NextResponse.json({ ok: true }, { status: 201 })
   }
-
-  const hashed = await bcrypt.hash(password, 12)
 
   // Registration never grants admin; admins are managed with `npm run admin`.
   await prisma.user.create({

@@ -23,7 +23,7 @@ function CheckEmailContent() {
     setResending(false)
     if (res.ok) {
       setSent(true)
-      toast.success('Verification email sent!')
+      toast.success('If that email still needs verifying, a new link is on its way.')
     } else {
       const body = await res.json().catch(() => ({}))
       toast.error((body as { error?: string }).error ?? 'Failed to resend. Please try again.')

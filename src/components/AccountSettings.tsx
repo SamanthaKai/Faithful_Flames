@@ -5,7 +5,7 @@ import { signOut, useSession } from 'next-auth/react'
 import toast from 'react-hot-toast'
 import { useDialog } from './Dialog'
 
-export function AccountSettings({ name, email }: { name: string; email: string }) {
+export function AccountSettings({ name, email, hasPassword = true }: { name: string; email: string; hasPassword?: boolean }) {
   const { update } = useSession()
   const dialog = useDialog()
   const [value, setValue] = useState(name)
@@ -23,15 +23,16 @@ export function AccountSettings({ name, email }: { name: string; email: string }
   }
 
   const remove = async () => {
-    const ok = await dialog.confirm({
-      title: 'Delete your account?',
-      message: 'Your notes, bookmarks and comments will be removed. This cannot be undone.',
-      confirmLabel: 'Delete my account',
-      danger: true,
-    })
-    if (!ok) return
-    const res = await fetch('/api/profile', { method: 'DELETE' })
-    if (!res.ok) return toast.error('Could not delete your account.')
+    const message = 'Your notes, bookmarks and comments will be removed. This cannot be undone.'
+    // Asking for the password means a borrowed or unattended phone can't delete the account.
+    const password = hasPassword
+      ? await dialog.prompt({ title: 'Delete your account?', message, label: 'Enter your password to confirm', secret: true, maxLength: 72, confirmLabel: 'Delete my account', danger: true })
+      : (await dialog.confirm({ title: 'Delete your account?', message, confirmLabel: 'Delete my account', danger: true })) ? '' : null
+    if (password === null) return
+    if (hasPassword && !password) return toast.error('Please enter your password.')
+    const res = await fetch('/api/profile', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) })
+    const d = await res.json().catch(() => ({}))
+    if (!res.ok) return toast.error(d.error ?? 'Could not delete your account.')
     signOut({ callbackUrl: '/' })
   }
 

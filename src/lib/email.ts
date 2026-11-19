@@ -177,3 +177,20 @@ export async function sendPasswordResetEmail(email: string, token: string) {
     }),
   )
 }
+
+/** Someone tried to create an account with an email that already has one. */
+export async function sendAccountExistsEmail(email: string) {
+  await send(
+    email,
+    'You already have a Faithful Flames account',
+    simpleEmail({
+      heading: 'You already have an account',
+      paragraphs: [
+        'Someone (hopefully you) just tried to create a Faithful Flames account with this email address. You already have one, so nothing was changed.',
+        `If you&rsquo;ve forgotten your password, you can <a href="${BASE_URL}/forgot-password" style="color:#9B2C1D;font-weight:bold;">reset it here</a>.`,
+      ],
+      button: { label: 'Sign in', url: `${BASE_URL}/login` },
+      footnote: 'If this wasn&rsquo;t you, you can ignore this email. Your account is safe.',
+    }),
+  )
+}
