@@ -94,7 +94,7 @@ export function ThemePicker({ compact = false }: { compact?: boolean }) {
   return (
     <fieldset>
       <legend className="sr-only">Colour theme</legend>
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-5">
         {THEMES.map((t) => {
           const on = palette === t.id
           return (

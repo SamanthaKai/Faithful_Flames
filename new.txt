@@ -389,4 +389,5 @@ Four colour themes, chosen per device. Light/dark mode still works on its own, a
 - ✅ Tested on a local production build: all four themes × light/dark × 10 pages, desktop and phone. The choice survives a refresh, the session stays signed in, and no old orange is left.
 - ✅ Kept as they were: the flame logo and the campfire illustration (a fire stays fire-coloured), plus the hero photo.
 - ❎ The choice is per device, not stored on the account (no database change).
-- ❎ Not pushed yet.
+- ✅ Pushed 19 November 2026 (fa98fd6).
+- ✅ Follow-up: the original orange look is kept as "Fireside · Original" and is still the default. Grace, Beloved, Abide and Stillness are options people can choose. Anyone who already picked a theme keeps it.

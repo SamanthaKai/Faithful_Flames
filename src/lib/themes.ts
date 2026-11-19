@@ -1,4 +1,4 @@
-// The four Faithful Flames colour themes — the single source of truth.
+// The Faithful Flames colour themes — the single source of truth.
 //
 // tailwind.config.ts turns these into CSS variables (one block per theme,
 // keyed by <html data-theme="…">), and every colour token the site uses
@@ -12,9 +12,10 @@
 //   night — the always-dark bands (homepage photo, devotion masthead).
 //           Accents there use the bright dark-mode versions in both modes.
 
-export type ThemeId = 'grace' | 'beloved' | 'abide' | 'stillness'
+export type ThemeId = 'fireside' | 'grace' | 'beloved' | 'abide' | 'stillness'
 
-export const DEFAULT_THEME: ThemeId = 'grace'
+// The original campfire look stays the default; the other four are optional.
+export const DEFAULT_THEME: ThemeId = 'fireside'
 export const THEME_STORAGE_KEY = 'ff-theme'
 
 type Light = {
@@ -59,6 +60,41 @@ export type Theme = {
 }
 
 export const THEMES: Theme[] = [
+  {
+    // The site's original colours, exactly as they were before themes existed.
+    id: 'fireside',
+    name: 'Fireside',
+    colour: 'Original',
+    mood: 'The warm glow of the campfire',
+    light: {
+      primary: '#F59E0B',
+      secondary: '#D97706',
+      page: '#FFF3E6',
+      card: '#FFF8F0',
+      section: '#FFF0E0',
+      highlight: '#FFE2C2',
+      text: '#2A140A',
+      muted: '#6E4A34',
+      border: '#F1D3B3',
+      accent: '#FF7A29',
+      accentDeep: '#A63B1E',
+      soft: '#F6B25E',
+      onAccent: '#FFFFFF',
+    },
+    dark: {
+      page: '#0D0A0A',
+      surface: '#161111',
+      section: '#0A0808',
+      raised: '#231E1E',
+      line: '#3A3030',
+      text: '#FFF4E8',
+      muted: '#BFAEA3',
+      accent: '#FF7A29',
+      soft: '#F6B25E',
+      onAccent: '#FFFFFF',
+    },
+    night: { top: '#07060B', middle: '#120C0C', bottom: '#1B110D' },
+  },
   {
     id: 'grace',
     name: 'Grace',
