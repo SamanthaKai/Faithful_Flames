@@ -7,6 +7,7 @@ import { GOOGLE_SIGNIN_ENABLED } from '@/lib/features'
 import { useRouter, useSearchParams } from 'next/navigation'
 import toast from 'react-hot-toast'
 import { Logo } from '@/components/Logo'
+import { safeCallbackUrl } from '@/lib/safe-redirect'
 
 const AUTH_ERRORS: Record<string, string> = {
   OAuthAccountNotLinked: 'Sign-in failed. Try a different method or contact support.',
@@ -22,6 +23,8 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const errorParam = searchParams.get('error')
   const registered = searchParams.get('registered') === 'true'
+  // Bring people back to the page they were on (only ever a page on this site).
+  const callbackUrl = safeCallbackUrl(searchParams.get('callbackUrl'))
   const errorMessage = errorParam ? (AUTH_ERRORS[errorParam] ?? AUTH_ERRORS.Default) : null
 
   const [email, setEmail] = useState('')
@@ -32,7 +35,7 @@ function LoginForm() {
 
   const handleGoogle = async () => {
     setGoogleLoading(true)
-    await signIn('google', { callbackUrl: '/', prompt: 'select_account' } as Parameters<typeof signIn>[1])
+    await signIn('google', { callbackUrl, prompt: 'select_account' } as Parameters<typeof signIn>[1])
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,7 +49,7 @@ function LoginForm() {
       toast.error(AUTH_ERRORS[res.error] ?? AUTH_ERRORS.Default)
     } else {
       toast.success('Welcome back!')
-      router.push('/')
+      router.push(callbackUrl)
       router.refresh()
     }
   }

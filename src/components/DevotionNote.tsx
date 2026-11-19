@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { loginHref } from '@/lib/safe-redirect'
 import toast from 'react-hot-toast'
 
 // A private note on one devotion. Only its owner can read it (enforced by the API).
 export function DevotionNote({ devotionId }: { devotionId: string }) {
   const { data: session, status } = useSession()
+  const pathname = usePathname()
   const [content, setContent] = useState('')
   const [saved, setSaved] = useState('')
   const [savedAt, setSavedAt] = useState<string | null>(null)
@@ -35,7 +38,7 @@ export function DevotionNote({ devotionId }: { devotionId: string }) {
       <div className="panel p-6">
         <p className="kicker mb-2">Your private notes</p>
         <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">
-          <Link href="/login" className="font-semibold text-ember underline-offset-4 hover:underline">Sign in</Link> to keep
+          <Link href={loginHref(pathname)} className="font-semibold text-ember underline-offset-4 hover:underline">Sign in</Link> to keep
           notes on this devotion. Only you will ever see them.
         </p>
       </div>

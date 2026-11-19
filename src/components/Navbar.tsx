@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSession, signOut } from 'next-auth/react'
 import { Logo } from './Logo'
+import { loginHref } from '@/lib/safe-redirect'
 import { useTheme } from './ThemeProvider'
 
 const NAV = [
@@ -113,7 +114,7 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <Link href="/login" className="hidden rounded-full px-4 py-2 text-sm font-semibold text-lm-text hover:text-ember dark:text-[#FFF4E8] md:inline-flex">
+            <Link href={loginHref(pathname)} className="hidden rounded-full px-4 py-2 text-sm font-semibold text-lm-text hover:text-ember dark:text-[#FFF4E8] md:inline-flex">
               Sign in
             </Link>
           )}
@@ -157,7 +158,7 @@ export function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" className="btn-ghost flex-1">Sign in</Link>
+                  <Link href={loginHref(pathname)} className="btn-ghost flex-1">Sign in</Link>
                   <Link href="/register" className="btn-ember flex-1">Join</Link>
                 </>
               )}

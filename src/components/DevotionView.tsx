@@ -8,6 +8,7 @@ import { BookmarkButton } from './BookmarkButton'
 import { LikeButton } from './LikeButton'
 import { DevotionNote } from './DevotionNote'
 import { Discussion } from './Discussion'
+import { loginHref } from '@/lib/safe-redirect'
 
 function paragraphs(text: string) {
   return text.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean)
@@ -70,7 +71,7 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
               <BookmarkButton contentType="DEVOTION" contentId={devotion.id} />
             </div>
             <div className="[&_.btn-ghost]:!border-white/20 [&_.btn-ghost]:!text-[#FFF4E8]">
-              <LikeButton contentType="DEVOTION" contentId={devotion.id} loginHref={`/login?callbackUrl=/devotions/${devotion.id}`} />
+              <LikeButton contentType="DEVOTION" contentId={devotion.id} loginHref={loginHref(`/devotions/${devotion.id}`)} />
             </div>
           </div>
         </div>

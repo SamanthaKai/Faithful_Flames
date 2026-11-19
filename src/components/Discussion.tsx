@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import type { Discussion as DiscussionData, PublicComment } from '@/lib/comments'
 import { LikeButton } from './LikeButton'
 import { useDialog } from './Dialog'
+import { loginHref } from '@/lib/safe-redirect'
 
 function ago(iso: string) {
   const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000)
@@ -66,7 +67,7 @@ export function Discussion({ devotionId, initial, isToday }: { devotionId: strin
 
       {!session && (
         <p className="panel mb-8 p-5 text-sm text-lm-muted dark:text-[#BFAEA3]">
-          <Link href={`/login?callbackUrl=/devotions/${devotionId}%23discussion`} className="font-semibold text-ember hover:underline">Sign in</Link>{' '}
+          <Link href={loginHref(`/devotions/${devotionId}#discussion`)} className="font-semibold text-ember hover:underline">Sign in</Link>{' '}
           to add your voice. Anyone can read along.
         </p>
       )}
@@ -159,7 +160,7 @@ function CommentItem({ c, signedIn, act, devotionId, replyTo }: {
             contentId={c.id}
             initial={{ count: c.likes, liked: c.likedByMe }}
             variant="inline"
-            loginHref={`/login?callbackUrl=/devotions/${devotionId}%23discussion`}
+            loginHref={loginHref(`/devotions/${devotionId}#discussion`)}
           />
           {signedIn && (
             <button type="button" className="hover:text-ember" onClick={() => setMode(mode === 'reply' ? 'idle' : 'reply')}>Reply</button>

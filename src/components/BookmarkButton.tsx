@@ -2,11 +2,14 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { useSession } from 'next-auth/react'
+import { loginHref } from '@/lib/safe-redirect'
 import toast from 'react-hot-toast'
 
 export function BookmarkButton({ contentType, contentId }: { contentType: 'DEVOTION' | 'ARTICLE'; contentId: string }) {
   const { data: session, status } = useSession()
+  const pathname = usePathname()
   const [saved, setSaved] = useState(false)
   const [busy, setBusy] = useState(false)
 
@@ -22,7 +25,7 @@ export function BookmarkButton({ contentType, contentId }: { contentType: 'DEVOT
 
   if (!session) {
     return (
-      <Link href="/login" className="btn-ghost !py-2 text-xs" title="Sign in to save this">
+      <Link href={loginHref(pathname)} className="btn-ghost !py-2 text-xs" title="Sign in to save this">
         <BookmarkIcon filled={false} /> Save
       </Link>
     )
