@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import type { Devotion } from '@prisma/client'
 import { getSession } from '@/lib/api'
+import { prisma } from '@/lib/prisma'
 import { devotionDay, formatDay, todayKey } from '@/lib/day'
 import { getDiscussion } from '@/lib/comments'
 import { getDevotionsInOrder, getJourney, markRead } from '@/lib/journey'
@@ -30,7 +31,16 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
   const session = await getSession()
   const viewer = session?.user?.id ? { id: session.user.id, role: session.user.role } : null
   if (viewer) await markRead(viewer.id, devotion.id)
-  const [discussion, ordered] = await Promise.all([getDiscussion(devotion, viewer), getDevotionsInOrder()])
+  // Everything the page needs comes with it, so the like count, Save button and
+  // private note don't pop in after the page appears.
+  const [discussion, ordered, likeCount, myLike, bookmark, note] = await Promise.all([
+    getDiscussion(devotion, viewer),
+    getDevotionsInOrder(),
+    prisma.like.count({ where: { contentType: 'DEVOTION', contentId: devotion.id } }),
+    viewer ? prisma.like.findUnique({ where: { userId_contentType_contentId: { userId: viewer.id, contentType: 'DEVOTION', contentId: devotion.id } }, select: { id: true } }) : null,
+    viewer ? prisma.bookmark.findUnique({ where: { userId_contentType_contentId: { userId: viewer.id, contentType: 'DEVOTION', contentId: devotion.id } }, select: { id: true } }) : null,
+    viewer ? prisma.reflection.findFirst({ where: { userId: viewer.id, devotionId: devotion.id }, select: { content: true, updatedAt: true } }) : null,
+  ])
   const journey = viewer ? await getJourney(viewer.id, ordered) : null
   const day = devotionDay(devotion)
   const isToday = day === todayKey()
@@ -68,10 +78,10 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
               {discussion.count > 0 && <span className="rounded-full bg-white/20 px-2 py-0.5">{discussion.count}</span>}
             </a>
             <div className="[&_.btn-ghost]:!border-white/20 [&_.btn-ghost]:!text-[#FFF4E8]">
-              <BookmarkButton contentType="DEVOTION" contentId={devotion.id} />
+              <BookmarkButton key={devotion.id} contentType="DEVOTION" contentId={devotion.id} initial={{ signedIn: !!viewer, saved: !!bookmark }} />
             </div>
             <div className="[&_.btn-ghost]:!border-white/20 [&_.btn-ghost]:!text-[#FFF4E8]">
-              <LikeButton contentType="DEVOTION" contentId={devotion.id} loginHref={loginHref(`/devotions/${devotion.id}`)} />
+              <LikeButton key={devotion.id} contentType="DEVOTION" contentId={devotion.id} initial={{ count: likeCount, liked: !!myLike }} signedIn={!!viewer} loginHref={loginHref(`/devotions/${devotion.id}`)} />
             </div>
           </div>
         </div>
@@ -132,13 +142,17 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
         )}
 
         <div className="md:pl-[120px]">
-          <DevotionNote devotionId={devotion.id} />
+          <DevotionNote
+            key={devotion.id}
+            devotionId={devotion.id}
+            initial={{ signedIn: !!viewer, note: note ? { content: note.content, updatedAt: note.updatedAt.toISOString() } : null }}
+          />
         </div>
 
         <div className="ember-rule" />
 
         <div className="md:pl-[120px]">
-          <Discussion devotionId={devotion.id} initial={discussion} isToday={isToday} />
+          <Discussion key={devotion.id} devotionId={devotion.id} initial={discussion} isToday={isToday} />
         </div>
 
         <nav className="grid gap-4 border-t border-lm-border pt-8 text-sm dark:border-ember/10 sm:grid-cols-2 md:ml-[120px]">

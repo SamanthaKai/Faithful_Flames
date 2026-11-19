@@ -8,17 +8,22 @@ import { loginHref } from '@/lib/safe-redirect'
 import toast from 'react-hot-toast'
 
 // A private note on one devotion. Only its owner can read it (enforced by the API).
-export function DevotionNote({ devotionId }: { devotionId: string }) {
-  const { data: session, status } = useSession()
+type Initial = { signedIn: boolean; note: { content: string; updatedAt: string } | null }
+
+export function DevotionNote({ devotionId, initial }: { devotionId: string; initial?: Initial }) {
+  const { data: sessionData, status: sessionStatus } = useSession()
   const pathname = usePathname()
-  const [content, setContent] = useState('')
-  const [saved, setSaved] = useState('')
-  const [savedAt, setSavedAt] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [content, setContent] = useState(initial?.note?.content ?? '')
+  const [saved, setSaved] = useState(initial?.note?.content ?? '')
+  const [savedAt, setSavedAt] = useState<string | null>(initial?.note?.updatedAt ?? null)
+  const [loading, setLoading] = useState(!initial)
   const [busy, setBusy] = useState(false)
+  // While the browser session loads, trust what the server already knew.
+  const session = sessionStatus === 'loading' && initial ? initial.signedIn : !!sessionData
+  const status = sessionStatus === 'loading' && initial ? 'ready' : sessionStatus
 
   useEffect(() => {
-    if (!session) return
+    if (initial || !sessionData) return
     fetch(`/api/devotions/${devotionId}/note`)
       .then((r) => (r.ok ? r.json() : null))
       .then((n) => {
@@ -29,7 +34,8 @@ export function DevotionNote({ devotionId }: { devotionId: string }) {
         }
       })
       .finally(() => setLoading(false))
-  }, [session, devotionId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionData?.user?.id, devotionId])
 
   if (status === 'loading') return null
 

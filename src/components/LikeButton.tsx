@@ -12,10 +12,13 @@ type Props = {
   initial?: { count: number; liked: boolean }
   variant?: 'button' | 'inline'
   loginHref?: string
+  /** Sign-in state known by the server, so the right button shows before the session loads. */
+  signedIn?: boolean
 }
 
-export function LikeButton({ contentType, contentId, initial, variant = 'button', loginHref = '/login' }: Props) {
-  const { data: session } = useSession()
+export function LikeButton({ contentType, contentId, initial, variant = 'button', loginHref = '/login', signedIn }: Props) {
+  const { data: sessionData, status } = useSession()
+  const session = status === 'loading' && signedIn !== undefined ? signedIn : !!sessionData
   const [state, setState] = useState(initial ?? { count: 0, liked: false })
   const [busy, setBusy] = useState(false)
 
@@ -26,7 +29,7 @@ export function LikeButton({ contentType, contentId, initial, variant = 'button'
       .then((d) => d && setState(d))
       .catch(() => {})
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contentType, contentId, session?.user?.id, initial?.count, initial?.liked])
+  }, [contentType, contentId, sessionData?.user?.id, initial?.count, initial?.liked])
 
   const toggle = async () => {
     if (busy) return

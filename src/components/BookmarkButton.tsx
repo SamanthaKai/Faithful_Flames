@@ -7,19 +7,31 @@ import { useSession } from 'next-auth/react'
 import { loginHref } from '@/lib/safe-redirect'
 import toast from 'react-hot-toast'
 
-export function BookmarkButton({ contentType, contentId }: { contentType: 'DEVOTION' | 'ARTICLE'; contentId: string }) {
-  const { data: session, status } = useSession()
+type Props = {
+  contentType: 'DEVOTION' | 'ARTICLE'
+  contentId: string
+  /** Sent by the server with the page: no loading gap and no extra request. */
+  initial?: { signedIn: boolean; saved: boolean }
+}
+
+export function BookmarkButton({ contentType, contentId, initial }: Props) {
+  const { data: sessionData, status: sessionStatus } = useSession()
   const pathname = usePathname()
-  const [saved, setSaved] = useState(false)
+  const [saved, setSaved] = useState(initial?.saved ?? false)
   const [busy, setBusy] = useState(false)
+  // While the browser session loads, trust what the server already knew.
+  const session = sessionStatus === 'loading' && initial ? initial.signedIn : !!sessionData
+  const status = sessionStatus === 'loading' && initial ? 'ready' : sessionStatus
 
   useEffect(() => {
-    if (!session) return
+    if (initial) { setSaved(initial.saved); return }
+    if (!sessionData) return
     fetch(`/api/bookmarks?contentType=${contentType}&contentId=${contentId}`)
       .then((r) => r.json())
       .then((d) => setSaved(!!d.bookmarked))
       .catch(() => {})
-  }, [session, contentType, contentId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionData?.user?.id, contentType, contentId, initial?.saved])
 
   if (status === 'loading') return <span className="inline-block h-9 w-28" />
 
