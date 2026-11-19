@@ -376,3 +376,17 @@ build with a throwaway database (never the live one).
 - ❎ The build still runs `prisma db push` against the live database on every deploy. Moving to `prisma migrate deploy` is a separate, careful job.
 - ❎ Check that Vercel's function region matches the Neon database region (Vercel → Settings → Functions; Neon → project settings).
 - ❎ Not pushed yet. Pushing deploys it, and the build adds the new table and column to the live database (additive, no data loss).
+
+# Update — 19 November 2026 (later): colour themes
+
+Four colour themes, chosen per device. Light/dark mode still works on its own, and every theme has a dark version.
+- ✅ GREEN · Grace (the default for new visitors), PINK · Beloved, PURPLE · Abide, BLUE · Stillness. Muted, mature colours.
+- ✅ Choose on the profile page ("Appearance": four preview cards) or from the palette button in the top bar. The button is there for visitors without an account too, and on phones.
+- ✅ Changes straight away with no reload. Sign-in and saved data are untouched.
+- ✅ Saved in this browser (localStorage) and applied before the page draws, so there's no flash of the wrong colours. This also fixes the old brief flash of light mode for dark-mode users.
+- ✅ All colours live in one file, src/lib/themes.ts. Every page and component reads from it: buttons, links, cards, borders, menu, active states, focus rings, dialogs, toasts, the night bands and the small decorations.
+- ✅ Text and button contrast checked against WCAG AA for all four themes, in light, dark and the night bands.
+- ✅ Tested on a local production build: all four themes × light/dark × 10 pages, desktop and phone. The choice survives a refresh, the session stays signed in, and no old orange is left.
+- ✅ Kept as they were: the flame logo and the campfire illustration (a fire stays fire-coloured), plus the hero photo.
+- ❎ The choice is per device, not stored on the account (no database change).
+- ❎ Not pushed yet.

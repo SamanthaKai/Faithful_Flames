@@ -35,8 +35,8 @@ export function PrayerForm() {
     return (
       <div className="panel p-8 text-center" role="status">
         <p className="kicker mb-3">Received</p>
-        <h3 className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">We are carrying this with you.</h3>
-        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-lm-muted dark:text-[#BFAEA3]">
+        <h3 className="font-heading text-2xl font-bold text-lm-text dark:text-warm">We are carrying this with you.</h3>
+        <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-lm-muted dark:text-warm-muted">
           {sent === 'private'
             ? 'Your request is private. Only the Faithful Flames prayer team will see it.'
             : 'Once a moderator has looked at it, your request will appear on the prayer wall so others can pray too.'}
@@ -64,7 +64,7 @@ export function PrayerForm() {
       </div>
 
       <div>
-        <label htmlFor="pr-name" className="field-label">Your first name <span className="font-normal text-lm-muted dark:text-[#BFAEA3]">(optional)</span></label>
+        <label htmlFor="pr-name" className="field-label">Your first name <span className="font-normal text-lm-muted dark:text-warm-muted">(optional)</span></label>
         <input
           id="pr-name"
           maxLength={60}
@@ -79,8 +79,8 @@ export function PrayerForm() {
       <input type="text" tabIndex={-1} autoComplete="off" aria-hidden="true" className="hidden" value={form.website} onChange={(e) => set('website', e.target.value)} />
 
       <fieldset className="space-y-3 rounded-xl border border-lm-border p-4 dark:border-ember/10">
-        <legend className="px-1 text-sm font-semibold text-lm-text dark:text-[#FFF4E8]">Who may see this?</legend>
-        <label className="flex gap-3 text-sm text-lm-text dark:text-[#FFF4E8]">
+        <legend className="px-1 text-sm font-semibold text-lm-text dark:text-warm">Who may see this?</legend>
+        <label className="flex gap-3 text-sm text-lm-text dark:text-warm">
           <input
             type="checkbox"
             className="check"
@@ -92,14 +92,14 @@ export function PrayerForm() {
             <span className="hint block">Only the prayer team will see it. It will never appear on the website.</span>
           </span>
         </label>
-        <label className={`flex gap-3 text-sm text-lm-text dark:text-[#FFF4E8] ${form.isPrivate ? 'opacity-40' : ''}`}>
+        <label className={`flex gap-3 text-sm text-lm-text dark:text-warm ${form.isPrivate ? 'opacity-40' : ''}`}>
           <input type="checkbox" className="check" disabled={form.isPrivate} checked={form.shareConsent} onChange={(e) => set('shareConsent', e.target.checked)} />
           <span>
             <strong>Yes, share it on the prayer wall</strong> so others can pray.
             <span className="hint block">A moderator reviews every request before it appears.</span>
           </span>
         </label>
-        <label className={`flex gap-3 text-sm text-lm-text dark:text-[#FFF4E8] ${form.isPrivate || !form.shareConsent ? 'opacity-40' : ''}`}>
+        <label className={`flex gap-3 text-sm text-lm-text dark:text-warm ${form.isPrivate || !form.shareConsent ? 'opacity-40' : ''}`}>
           <input type="checkbox" className="check" disabled={form.isPrivate || !form.shareConsent} checked={form.isAnonymous} onChange={(e) => set('isAnonymous', e.target.checked)} />
           <span>Post it anonymously (your name is not shown)</span>
         </label>

@@ -105,7 +105,7 @@ function LoginForm() {
             type="button"
             onClick={handleGoogle}
             disabled={googleLoading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border-2 border-gray-200 dark:border-[#3A3030] rounded-lg text-sm font-semibold text-charcoal dark:text-cream hover:border-primary transition-colors mb-6 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border-2 border-gray-200 dark:border-dark-line rounded-lg text-sm font-semibold text-charcoal dark:text-cream hover:border-primary transition-colors mb-6 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {googleLoading ? (
               <svg className="w-5 h-5 animate-spin text-primary" fill="none" viewBox="0 0 24 24">
@@ -124,8 +124,8 @@ function LoginForm() {
           </button>
 
           <div className="relative mb-6">
-            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-[#3A3030]" /></div>
-            <div className="relative flex justify-center"><span className="bg-white dark:bg-[#231E1E] px-3 text-xs text-warm-gray">or sign in with email</span></div>
+            <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200 dark:border-dark-line" /></div>
+            <div className="relative flex justify-center"><span className="bg-white dark:bg-dark-raised px-3 text-xs text-warm-gray">or sign in with email</span></div>
           </div>
           </>
           )}

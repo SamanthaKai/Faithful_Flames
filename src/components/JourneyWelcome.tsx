@@ -82,20 +82,20 @@ export function JourneyWelcome() {
 
   return (
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 animate-fade-in" role="presentation">
-      <div className="absolute inset-0 bg-[#0D0A0A]/60 backdrop-blur-sm" onClick={close} aria-hidden="true" />
+      <div className="absolute inset-0 bg-dark-bg/60 backdrop-blur-sm" onClick={close} aria-hidden="true" />
       <div
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="journey-title"
-        className="relative max-h-[90svh] w-full max-w-lg overflow-y-auto rounded-2xl border border-lm-border bg-lm-card shadow-2xl animate-slide-up dark:border-ember/15 dark:bg-[#161111]"
+        className="relative max-h-[90svh] w-full max-w-lg overflow-y-auto rounded-2xl border border-lm-border bg-lm-card shadow-2xl animate-slide-up dark:border-ember/15 dark:bg-flame-surface"
       >
         <div className="h-1 w-full bg-gradient-to-r from-ember-deep via-ember to-gold" />
         {step === 'choose' ? (
           <div className="p-6 sm:p-8">
             <p className="kicker mb-2">Welcome to the fire</p>
-            <h2 id="journey-title" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Where would you like to begin?</h2>
-            <p className="mt-2 text-sm leading-relaxed text-lm-muted dark:text-[#BFAEA3]">
+            <h2 id="journey-title" className="font-heading text-2xl font-bold text-lm-text dark:text-warm">Where would you like to begin?</h2>
+            <p className="mt-2 text-sm leading-relaxed text-lm-muted dark:text-warm-muted">
               {info.total === 1 ? 'The first devotion is already here.' : `There are already ${info.total} devotions here.`}{' '}
               You can change this choice any time from your bookmarks &amp; notes page.
             </p>
@@ -106,8 +106,8 @@ export function JourneyWelcome() {
                 onClick={() => choose('BEGINNING')}
                 className="group rounded-xl border border-lm-border p-4 text-left transition hover:border-ember dark:border-ember/15 dark:hover:border-ember"
               >
-                <span className="block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">Start from the first devotion</span>
-                <span className="mt-1 block text-sm text-lm-muted dark:text-[#BFAEA3]">Read them in order, at your own pace. We&rsquo;ll keep your place for you.</span>
+                <span className="block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-warm">Start from the first devotion</span>
+                <span className="mt-1 block text-sm text-lm-muted dark:text-warm-muted">Read them in order, at your own pace. We&rsquo;ll keep your place for you.</span>
               </button>
               <button
                 type="button"
@@ -115,19 +115,19 @@ export function JourneyWelcome() {
                 onClick={() => choose('LATEST')}
                 className="group rounded-xl border border-lm-border p-4 text-left transition hover:border-ember dark:border-ember/15 dark:hover:border-ember"
               >
-                <span className="block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">Join at the latest devotion</span>
-                <span className="mt-1 block text-sm text-lm-muted dark:text-[#BFAEA3]">Read along with everyone from today.</span>
+                <span className="block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-warm">Join at the latest devotion</span>
+                <span className="mt-1 block text-sm text-lm-muted dark:text-warm-muted">Read along with everyone from today.</span>
               </button>
             </div>
             <div className="mt-5 text-right">
-              <button type="button" onClick={close} className="text-xs font-semibold text-lm-muted hover:text-ember dark:text-[#BFAEA3]">Decide later</button>
+              <button type="button" onClick={close} className="text-xs font-semibold text-lm-muted hover:text-ember dark:text-warm-muted">Decide later</button>
             </div>
           </div>
         ) : (
           <div className="p-6 sm:p-8">
             <p className="kicker mb-2">A gentle recommendation</p>
-            <h2 id="journey-title" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Glance back at where it began</h2>
-            <p className="mt-2 text-sm leading-relaxed text-lm-muted dark:text-[#BFAEA3]">
+            <h2 id="journey-title" className="font-heading text-2xl font-bold text-lm-text dark:text-warm">Glance back at where it began</h2>
+            <p className="mt-2 text-sm leading-relaxed text-lm-muted dark:text-warm-muted">
               You don&rsquo;t need to read them all, but we&rsquo;d encourage you to skim through some of the first devotions.
               They lay the foundation for what we&rsquo;re learning together.
             </p>
@@ -137,8 +137,8 @@ export function JourneyWelcome() {
                   <Link href={`/devotions/${d.id}`} onClick={() => setStep(null)} className="group flex items-baseline gap-3 py-3">
                     <span className="w-6 shrink-0 font-heading text-sm italic text-ember">{d.number}</span>
                     <span className="min-w-0">
-                      <span className="block font-semibold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">{d.title}</span>
-                      <span className="block text-xs text-lm-muted dark:text-[#BFAEA3]">{d.scripture}</span>
+                      <span className="block font-semibold text-lm-text group-hover:text-ember dark:text-warm">{d.title}</span>
+                      <span className="block text-xs text-lm-muted dark:text-warm-muted">{d.scripture}</span>
                     </span>
                   </Link>
                 </li>

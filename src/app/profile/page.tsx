@@ -8,6 +8,7 @@ import { devotionDay, formatDay } from '@/lib/day'
 import { excerpt } from '@/lib/devotions'
 import { AccountSettings } from '@/components/AccountSettings'
 import { ReadingPathSetting } from '@/components/ReadingPathSetting'
+import { ThemePicker } from '@/components/ThemePicker'
 import { getJourney } from '@/lib/journey'
 
 export const metadata: Metadata = { title: 'My bookmarks & notes' }
@@ -42,11 +43,11 @@ export default async function MySpacePage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6 md:py-20">
       <p className="kicker mb-3">Only you can see this page</p>
-      <h1 className="font-heading text-4xl font-bold text-lm-text dark:text-[#FFF4E8] md:text-5xl">Your bookmarks &amp; notes</h1>
+      <h1 className="font-heading text-4xl font-bold text-lm-text dark:text-warm md:text-5xl">Your bookmarks &amp; notes</h1>
 
       <section className="mt-14" aria-labelledby="path">
-        <h2 id="path" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Your reading</h2>
-        <p className="mt-2 text-sm text-lm-muted dark:text-[#BFAEA3]">
+        <h2 id="path" className="font-heading text-2xl font-bold text-lm-text dark:text-warm">Your reading</h2>
+        <p className="mt-2 text-sm text-lm-muted dark:text-warm-muted">
           You&rsquo;ve opened {journey.readCount} of {journey.total} devotions.{' '}
           {journey.next && (
             <Link href={`/devotions/${journey.next.id}`} className="font-semibold text-ember hover:underline">
@@ -58,9 +59,9 @@ export default async function MySpacePage() {
       </section>
 
       <section className="mt-14" aria-labelledby="bm">
-        <h2 id="bm" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Saved</h2>
+        <h2 id="bm" className="font-heading text-2xl font-bold text-lm-text dark:text-warm">Saved</h2>
         {bookmarks.length === 0 ? (
-          <p className="mt-3 text-sm text-lm-muted dark:text-[#BFAEA3]">Nothing saved yet. Use <strong>Save</strong> on a devotion or article to keep it here.</p>
+          <p className="mt-3 text-sm text-lm-muted dark:text-warm-muted">Nothing saved yet. Use <strong>Save</strong> on a devotion or article to keep it here.</p>
         ) : (
           <ul className="mt-4 divide-y divide-lm-border border-y border-lm-border dark:divide-ember/10 dark:border-ember/10">
             {bookmarks.map((b) => {
@@ -72,9 +73,9 @@ export default async function MySpacePage() {
                     <Link href={`/devotions/${d.id}`} className="group flex items-baseline justify-between gap-4 py-4">
                       <span>
                         <span className="kicker mr-3">Devotion</span>
-                        <span className="font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">{d.title}</span>
+                        <span className="font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-warm">{d.title}</span>
                       </span>
-                      <span className="shrink-0 text-xs text-lm-muted dark:text-[#BFAEA3]">{formatDay(devotionDay(d), { weekday: undefined })}</span>
+                      <span className="shrink-0 text-xs text-lm-muted dark:text-warm-muted">{formatDay(devotionDay(d), { weekday: undefined })}</span>
                     </Link>
                   </li>
                 )
@@ -86,9 +87,9 @@ export default async function MySpacePage() {
                   <Link href={`/articles/${a.id}`} className="group flex items-baseline justify-between gap-4 py-4">
                     <span>
                       <span className="kicker mr-3">Article</span>
-                      <span className="font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">{a.title}</span>
+                      <span className="font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-warm">{a.title}</span>
                     </span>
-                    <span className="shrink-0 text-xs text-lm-muted dark:text-[#BFAEA3]">{a.category}</span>
+                    <span className="shrink-0 text-xs text-lm-muted dark:text-warm-muted">{a.category}</span>
                   </Link>
                 </li>
               )
@@ -98,26 +99,26 @@ export default async function MySpacePage() {
       </section>
 
       <section className="mt-14" aria-labelledby="notes">
-        <h2 id="notes" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Your notes</h2>
+        <h2 id="notes" className="font-heading text-2xl font-bold text-lm-text dark:text-warm">Your notes</h2>
         {notes.length === 0 ? (
-          <p className="mt-3 text-sm text-lm-muted dark:text-[#BFAEA3]">Notes you write on a devotion will be gathered here.</p>
+          <p className="mt-3 text-sm text-lm-muted dark:text-warm-muted">Notes you write on a devotion will be gathered here.</p>
         ) : (
           <ul className="mt-4 space-y-4">
             {notes.map((n) => (
               <li key={n.id} className="panel p-5">
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   {n.devotion?.isPublished ? (
-                    <Link href={`/devotions/${n.devotion.id}`} className="font-heading text-lg font-bold text-lm-text hover:text-ember dark:text-[#FFF4E8]">
+                    <Link href={`/devotions/${n.devotion.id}`} className="font-heading text-lg font-bold text-lm-text hover:text-ember dark:text-warm">
                       {n.devotion.title}
                     </Link>
                   ) : (
-                    <span className="font-heading text-lg font-bold text-lm-text dark:text-[#FFF4E8]">{n.title}</span>
+                    <span className="font-heading text-lg font-bold text-lm-text dark:text-warm">{n.title}</span>
                   )}
-                  <span className="text-xs text-lm-muted dark:text-[#BFAEA3]">
+                  <span className="text-xs text-lm-muted dark:text-warm-muted">
                     {n.devotion ? formatDay(devotionDay(n.devotion), { weekday: undefined }) : ''}
                   </span>
                 </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-lm-muted dark:text-[#BFAEA3]">{excerpt(n.content, 320)}</p>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-lm-muted dark:text-warm-muted">{excerpt(n.content, 320)}</p>
               </li>
             ))}
           </ul>
@@ -126,8 +127,8 @@ export default async function MySpacePage() {
 
       {(legacyReflections.length > 0 || journal.length > 0) && (
         <section className="mt-14" aria-labelledby="earlier">
-          <h2 id="earlier" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Earlier writing</h2>
-          <p className="mt-2 text-sm text-lm-muted dark:text-[#BFAEA3]">
+          <h2 id="earlier" className="font-heading text-2xl font-bold text-lm-text dark:text-warm">Earlier writing</h2>
+          <p className="mt-2 text-sm text-lm-muted dark:text-warm-muted">
             Reflections and prayer-journal entries you wrote before we simplified the site. They are still private and
             kept safe here.
           </p>
@@ -140,19 +141,27 @@ export default async function MySpacePage() {
                   <summary className="flex cursor-pointer list-none items-baseline justify-between gap-3">
                     <span>
                       <span className="kicker mr-3">{e.kind}</span>
-                      <span className="font-semibold text-lm-text dark:text-[#FFF4E8]">{e.title}</span>
+                      <span className="font-semibold text-lm-text dark:text-warm">{e.title}</span>
                     </span>
-                    <span className="shrink-0 text-xs text-lm-muted dark:text-[#BFAEA3]">{e.at.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                    <span className="shrink-0 text-xs text-lm-muted dark:text-warm-muted">{e.at.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                   </summary>
-                  <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-lm-muted dark:text-[#BFAEA3]">{e.content}</p>
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-lm-muted dark:text-warm-muted">{e.content}</p>
                 </details>
               ))}
           </div>
         </section>
       )}
 
+      <section id="appearance" className="mt-16 scroll-mt-24 border-t border-lm-border pt-10 dark:border-ember/10" aria-labelledby="look">
+        <h2 id="look" className="font-heading text-2xl font-bold text-lm-text dark:text-warm">Appearance</h2>
+        <p className="mb-5 mt-2 text-sm text-lm-muted dark:text-warm-muted">
+          Choose the colours that help you settle in. Your choice is saved on this device and changes straight away.
+        </p>
+        <ThemePicker />
+      </section>
+
       <section className="mt-16 border-t border-lm-border pt-10 dark:border-ember/10" aria-labelledby="acct">
-        <h2 id="acct" className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Account</h2>
+        <h2 id="acct" className="font-heading text-2xl font-bold text-lm-text dark:text-warm">Account</h2>
         <AccountSettings name={user?.name ?? ''} email={user?.email ?? ''} hasPassword={!!user?.password} />
       </section>
     </div>

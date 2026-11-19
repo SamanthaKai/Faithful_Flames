@@ -20,12 +20,12 @@ export default async function ArchivePage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-14 sm:px-6 md:py-20">
       <p className="kicker mb-3">The logbook</p>
-      <h1 className="font-heading text-4xl font-bold text-lm-text dark:text-[#FFF4E8] md:text-5xl">Past devotions</h1>
-      <p className="mt-4 max-w-xl text-lm-muted dark:text-[#BFAEA3]">
+      <h1 className="font-heading text-4xl font-bold text-lm-text dark:text-warm md:text-5xl">Past devotions</h1>
+      <p className="mt-4 max-w-xl text-lm-muted dark:text-warm-muted">
         Every fire we have gathered around, from the very first. Each conversation is still open, so you can add your voice to any of them.
       </p>
 
-      {devotions.length === 0 && <p className="mt-12 text-lm-muted dark:text-[#BFAEA3]">No devotions yet. The first fire is coming soon.</p>}
+      {devotions.length === 0 && <p className="mt-12 text-lm-muted dark:text-warm-muted">No devotions yet. The first fire is coming soon.</p>}
 
       {Array.from(groups.entries()).map(([month, list]) => (
         <section key={month} className="mt-14">
@@ -40,20 +40,20 @@ export default async function ArchivePage() {
                     className="group grid grid-cols-[56px_1fr] gap-5 border-b border-lm-border/70 py-6 dark:border-ember/[0.07] sm:grid-cols-[72px_1fr]"
                   >
                     <div className="text-center">
-                      <div className="font-heading text-3xl font-bold leading-none text-lm-text group-hover:text-ember dark:text-[#FFF4E8] sm:text-4xl">
+                      <div className="font-heading text-3xl font-bold leading-none text-lm-text group-hover:text-ember dark:text-warm sm:text-4xl">
                         {date.toLocaleDateString('en-GB', { day: 'numeric', timeZone: 'Africa/Kampala' })}
                       </div>
-                      <div className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-lm-muted dark:text-[#BFAEA3]">
+                      <div className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-lm-muted dark:text-warm-muted">
                         {date.toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'Africa/Kampala' })}
                       </div>
                     </div>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-baseline gap-x-3">
-                        <h3 className="font-heading text-xl font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">{d.title}</h3>
-                        {d.day === today && <span className="rounded-full bg-ember px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white">Today</span>}
+                        <h3 className="font-heading text-xl font-bold text-lm-text group-hover:text-ember dark:text-warm">{d.title}</h3>
+                        {d.day === today && <span className="rounded-full bg-ember px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-on-ember">Today</span>}
                       </div>
                       <p className="mt-1 text-sm font-semibold text-ember">{d.scripture}</p>
-                      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-lm-muted dark:text-[#BFAEA3]">{excerpt(d.teaching, 200)}</p>
+                      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-lm-muted dark:text-warm-muted">{excerpt(d.teaching, 200)}</p>
                     </div>
                   </Link>
                 </li>

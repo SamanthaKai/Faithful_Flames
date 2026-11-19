@@ -71,18 +71,18 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
               </>
             )}
           </div>
-          <h1 className="max-w-3xl font-heading text-4xl font-bold leading-[1.1] text-[#FFF4E8] sm:text-5xl md:text-6xl">
+          <h1 className="max-w-3xl font-heading text-4xl font-bold leading-[1.1] text-warm sm:text-5xl md:text-6xl">
             {devotion.title}
           </h1>
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <a href="#discussion" className="btn-ember !py-2.5 text-xs">
               {isToday ? 'Join today’s conversation' : 'Join the conversation'}
-              {discussion.count > 0 && <span className="rounded-full bg-white/20 px-2 py-0.5">{discussion.count}</span>}
+              {discussion.count > 0 && <span className="rounded-full bg-on-ember/15 px-2 py-0.5">{discussion.count}</span>}
             </a>
-            <div className="[&_.btn-ghost]:!border-white/20 [&_.btn-ghost]:!text-[#FFF4E8]">
+            <div className="[&_.btn-ghost]:!border-white/20 [&_.btn-ghost]:!text-warm">
               <BookmarkButton key={devotion.id} contentType="DEVOTION" contentId={devotion.id} initial={{ signedIn: !!viewer, saved: !!bookmark }} />
             </div>
-            <div className="[&_.btn-ghost]:!border-white/20 [&_.btn-ghost]:!text-[#FFF4E8]">
+            <div className="[&_.btn-ghost]:!border-white/20 [&_.btn-ghost]:!text-warm">
               <LikeButton key={devotion.id} contentType="DEVOTION" contentId={devotion.id} initial={{ count: likeCount, liked: !!myLike }} signedIn={!!viewer} loginHref={loginHref(`/devotions/${devotion.id}`)} />
             </div>
           </div>
@@ -92,7 +92,7 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
       {showNext && journey?.next && (
         <div className="border-b border-lm-border bg-lm-highlight/40 dark:border-ember/10 dark:bg-ember/[0.06]">
           <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm sm:px-6">
-            <span className="text-lm-muted dark:text-[#BFAEA3]">
+            <span className="text-lm-muted dark:text-warm-muted">
               Reading from the beginning · {journey.readCount} of {journey.total} read
             </span>
             <Link href={`/devotions/${journey.next.id}`} className="font-semibold text-ember hover:underline">
@@ -106,13 +106,13 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
         <Section numeral="I" label="Scripture">
           {devotion.scriptureText ? (
             <blockquote>
-              <p className="scripture text-[1.75rem] leading-snug text-lm-text dark:text-[#FFF4E8] md:text-[2.1rem]">
+              <p className="scripture text-[1.75rem] leading-snug text-lm-text dark:text-warm md:text-[2.1rem]">
                 &ldquo;{devotion.scriptureText}&rdquo;
               </p>
               <footer className="mt-4 text-sm font-semibold tracking-wide text-ember">{devotion.scripture}</footer>
             </blockquote>
           ) : (
-            <p className="scripture text-3xl text-lm-text dark:text-[#FFF4E8]">{devotion.scripture}</p>
+            <p className="scripture text-3xl text-lm-text dark:text-warm">{devotion.scripture}</p>
           )}
         </Section>
 
@@ -136,7 +136,7 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
           <Section numeral={application ? 'IV' : 'III'} label="Closing prayer">
             <div className="max-w-[64ch]">
               {paragraphs(devotion.prayerPoint).map((p, i) => (
-                <p key={i} className="scripture mb-3 text-xl leading-relaxed text-lm-text dark:text-[#FFF4E8]/90">{p}</p>
+                <p key={i} className="scripture mb-3 text-xl leading-relaxed text-lm-text dark:text-warm/90">{p}</p>
               ))}
               <p className="scripture text-xl text-ember">Amen.</p>
             </div>
@@ -161,15 +161,15 @@ export async function DevotionView({ devotion }: { devotion: Devotion }) {
           {earlier ? (
             <Link href={hrefOf(earlier)} className="group">
               <span className="kicker block">← Earlier · Day {position}</span>
-              <span className="mt-1 block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">{earlier.title}</span>
+              <span className="mt-1 block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-warm">{earlier.title}</span>
             </Link>
           ) : (
-            <Link href="/devotions/archive" className="self-end font-semibold text-lm-muted hover:text-ember dark:text-[#BFAEA3]">← Past devotions</Link>
+            <Link href="/devotions/archive" className="self-end font-semibold text-lm-muted hover:text-ember dark:text-warm-muted">← Past devotions</Link>
           )}
           {later ? (
             <Link href={hrefOf(later)} className="group sm:text-right">
               <span className="kicker block">Later · Day {position + 2} →</span>
-              <span className="mt-1 block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">{later.title}</span>
+              <span className="mt-1 block font-heading text-lg font-bold text-lm-text group-hover:text-ember dark:text-warm">{later.title}</span>
             </Link>
           ) : (
             !isToday && <Link href="/devotions" className="self-end font-semibold text-ember sm:text-right">Today’s devotion →</Link>

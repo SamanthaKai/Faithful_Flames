@@ -62,19 +62,17 @@ export function Campfire({ className = '', lit = true }: { className?: string; l
   )
 }
 
-/** A tiny flame mark used inline (prayer wall, labels). */
+/** A tiny flame mark used inline (prayer wall, labels). Takes the theme accent. */
 export function Wick({ lit, className = '' }: { lit: boolean; className?: string }) {
   return (
     <svg viewBox="0 0 20 28" className={className} aria-hidden="true">
       <path
-        className={`wick ${lit ? 'lit' : ''}`}
+        className={`wick ${lit ? 'lit fill-ember stroke-gold' : 'fill-none stroke-current'}`}
         d="M10 2 C 13 8, 17 11, 16 17 C 15.4 21.5, 13 24, 10 24 C 6.8 24, 4.4 21.5, 4 17.5 C 3.6 12.5, 8 10.5, 8.6 6.5 C 9.4 9, 10 9.5, 10 2 Z"
-        fill={lit ? '#FF7A29' : 'none'}
-        stroke={lit ? '#F6B25E' : 'currentColor'}
         strokeWidth="1.3"
         opacity={lit ? 1 : 0.55}
       />
-      {lit && <path d="M10 13 C 11.6 15.5, 12.6 17, 12.2 19.5 C 12 21, 11 22, 10 22 C 8.8 22, 8 21, 8 19.6 C 8 17.6, 9.6 16.5, 10 13 Z" fill="#FFF4E8" opacity="0.85" />}
+      {lit && <path className="fill-warm" d="M10 13 C 11.6 15.5, 12.6 17, 12.2 19.5 C 12 21, 11 22, 10 22 C 8.8 22, 8 21, 8 19.6 C 8 17.6, 9.6 16.5, 10 13 Z" opacity="0.85" />}
     </svg>
   )
 }

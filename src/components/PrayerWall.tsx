@@ -18,7 +18,7 @@ function ago(iso: string) {
 export function PrayerWall({ prayers, compact = false }: { prayers: PublicPrayer[]; compact?: boolean }) {
   if (prayers.length === 0) {
     return (
-      <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">
+      <p className="text-sm text-lm-muted dark:text-warm-muted">
         The prayer wall is quiet right now. Requests shared publicly will appear here after a moderator has reviewed them.
       </p>
     )
@@ -48,11 +48,11 @@ function PrayerCard({ p, compact }: { p: PublicPrayer; compact: boolean }) {
   }
 
   return (
-    <li className={`panel relative flex flex-col p-5 ${state.has ? 'shadow-[0_0_0_1px_rgba(255,122,41,0.35),0_10px_40px_-12px_rgba(255,122,41,0.35)]' : ''}`}>
-      <p className={`whitespace-pre-wrap leading-relaxed text-lm-text dark:text-[#FFF4E8]/90 ${compact ? 'line-clamp-3 text-sm' : ''}`}>{p.content}</p>
+    <li className={`panel relative flex flex-col p-5 ${state.has ? 'shadow-[0_0_0_1px_rgb(var(--ff-ember)/0.35),0_10px_40px_-12px_rgb(var(--ff-ember)/0.35)]' : ''}`}>
+      <p className={`whitespace-pre-wrap leading-relaxed text-lm-text dark:text-warm/90 ${compact ? 'line-clamp-3 text-sm' : ''}`}>{p.content}</p>
       <div className="mt-4 flex items-center justify-between gap-3 pt-1">
-        <span className="text-xs text-lm-muted dark:text-[#BFAEA3]">
-          {p.name ? <strong className="font-semibold text-lm-text dark:text-[#FFF4E8]">{p.name}</strong> : 'Anonymous'} · {ago(p.createdAt)}
+        <span className="text-xs text-lm-muted dark:text-warm-muted">
+          {p.name ? <strong className="font-semibold text-lm-text dark:text-warm">{p.name}</strong> : 'Anonymous'} · {ago(p.createdAt)}
         </span>
         <button
           type="button"
@@ -63,7 +63,7 @@ function PrayerCard({ p, compact }: { p: PublicPrayer; compact: boolean }) {
           className={`group inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold ${
             state.has
               ? 'border-ember/40 bg-ember/10 text-ember'
-              : 'border-lm-border text-lm-muted hover:border-ember hover:text-ember dark:border-ember/20 dark:text-[#BFAEA3]'
+              : 'border-lm-border text-lm-muted hover:border-ember hover:text-ember dark:border-ember/20 dark:text-warm-muted'
           }`}
         >
           <Wick lit={state.has} className="h-4 w-3" />

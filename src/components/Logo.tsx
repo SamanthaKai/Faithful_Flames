@@ -19,7 +19,7 @@ export function Logo({ size = 36, showText = true, className = '' }: LogoProps) 
         priority
       />
       {showText && (
-        <span className="font-heading font-bold text-xl text-primary group-hover:text-secondary transition-colors duration-200 dark:text-orange-400">
+        <span className="font-heading font-bold text-xl text-primary group-hover:text-secondary transition-colors duration-200 dark:text-ember">
           Faithful Flames
         </span>
       )}

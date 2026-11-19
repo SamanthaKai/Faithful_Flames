@@ -1,4 +1,26 @@
 import type { Config } from 'tailwindcss'
+import plugin from 'tailwindcss/plugin'
+import { THEMES, DEFAULT_THEME, lightVars, darkVars } from './src/lib/themes'
+
+const v = (name: string) => `rgb(var(--ff-${name}) / <alpha-value>)`
+
+// One block of CSS variables per theme. <html data-theme="…"> picks the theme;
+// the .dark class and the always-dark bands (.night, .on-dark) swap in the
+// bright accents.
+const themeVariables = plugin(({ addBase }) => {
+  for (const t of THEMES) {
+    const sel = `[data-theme="${t.id}"]`
+    const root = t.id === DEFAULT_THEME ? `:root, ${sel}` : sel
+    addBase({
+      [root]: lightVars(t),
+      [`.dark${sel}`]: darkVars(t),
+      [`${sel} .night, ${sel} .on-dark`]: darkVars(t),
+    })
+  }
+  // Without a data-theme (no JS yet), the default theme's dark accents still apply.
+  const d = THEMES.find((t) => t.id === DEFAULT_THEME)!
+  addBase({ ':root.dark:not([data-theme]), :root:not([data-theme]) :is(.night, .on-dark)': darkVars(d) })
+})
 
 const config: Config = {
   darkMode: 'class',
@@ -9,30 +31,38 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      // Every colour reads a CSS variable set by the active theme (src/lib/themes.ts).
       colors: {
         // Brand / CTA
-        primary:   '#F59E0B',
-        secondary: '#D97706',
-        // Light mode — warm, elegant, spiritual
-        cream:        '#FFF3E6',
-        'lm-card':    '#FFF8F0',
-        'lm-section': '#FFF0E0',
-        'lm-highlight':'#FFE2C2',
-        'lm-text':    '#2A140A',
-        'lm-muted':   '#6E4A34',
-        'lm-border':  '#F1D3B3',
-        'lm-accent':  '#FF7A29',
-        charcoal:     '#2A140A',
-        'warm-gray':  '#6E4A34',
-        // Dark mode (campfire)
-        'dark-bg': '#0D0A0A',
-        ember:     '#FF7A29',
-        gold:      '#F6B25E',
-        'ember-deep':'#A63B1E',
-        'flame-base':   '#0D0A0A',
-        'flame-surface':'#161111',
-        'text-warm':    '#FFF4E8',
-        'text-muted':   '#BFAEA3',
+        primary:   v('primary'),
+        secondary: v('secondary'),
+        'on-ember': v('on-ember'),
+        // Light page
+        cream:         v('cream'),
+        'lm-card':     v('card'),
+        'lm-section':  v('section'),
+        'lm-highlight':v('highlight'),
+        'lm-text':     v('text'),
+        'lm-muted':    v('muted'),
+        'lm-border':   v('border'),
+        'lm-accent':   v('ember'),
+        charcoal:      v('text'),
+        'warm-gray':   v('muted'),
+        // Accents (bright in dark mode and on night bands)
+        ember:        v('ember'),
+        gold:         v('gold'),
+        'ember-deep': v('ember-deep'),
+        // Dark page
+        'dark-bg':       v('dark-bg'),
+        'dark-section':  v('dark-section'),
+        'dark-raised':   v('dark-raised'),
+        'dark-line':     v('dark-line'),
+        'flame-base':    v('dark-bg'),
+        'flame-surface': v('dark-surface'),
+        warm:            v('warm'),
+        'warm-muted':    v('warm-muted'),
+        'text-warm':     v('warm'),
+        'text-muted':    v('warm-muted'),
       },
       fontFamily: {
         heading: ['var(--font-playfair)', 'Georgia', 'serif'],
@@ -65,7 +95,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [themeVariables],
 }
 
 export default config

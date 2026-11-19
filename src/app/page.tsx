@@ -33,7 +33,7 @@ export default async function HomePage() {
   return (
     <div>
       {/* ── I. The fire ─────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-[#0D0A0A] text-[#FFF4E8]" aria-labelledby="hero-title">
+      <section className="on-dark relative flex min-h-[calc(100svh-4rem)] items-center overflow-hidden bg-dark-bg text-warm" aria-labelledby="hero-title">
         <Image
           src="/faithful.png"
           alt="Young believers gathered around a campfire at sunset"
@@ -43,8 +43,8 @@ export default async function HomePage() {
           className="object-cover object-[60%_center]"
         />
         {/* Darken the left for legible text, and fade the bottom into the page */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/20" aria-hidden="true" />
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-cream to-transparent dark:from-[#0D0A0A]" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-r from-dark-bg/90 via-dark-bg/60 to-dark-bg/20" aria-hidden="true" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-cream to-transparent dark:from-dark-bg" aria-hidden="true" />
         <EmberParticles />
         <div className="relative mx-auto w-full max-w-6xl px-4 py-16 sm:px-6 md:py-24">
           <div className="max-w-2xl">
@@ -53,18 +53,18 @@ export default async function HomePage() {
               <span className="h-px w-8 bg-gold/40" />
               <time dateTime={today}>{formatDay(today)}</time>
             </p>
-            <h1 id="hero-title" className="font-heading text-[2.6rem] font-bold leading-[1.05] text-[#FFF4E8] sm:text-6xl md:text-7xl">
+            <h1 id="hero-title" className="font-heading text-[2.6rem] font-bold leading-[1.05] text-warm sm:text-6xl md:text-7xl">
               Pull up a seat<br />
               <span className="italic text-gold">by the Throne of grace.</span>
             </h1>
-            <p className="mt-6 max-w-lg text-base leading-relaxed text-[#BFAEA3] md:text-lg">
+            <p className="mt-6 max-w-lg text-base leading-relaxed text-warm-muted md:text-lg">
               A digital campfire for young believers. Every day we share about the Lord from the Scriptures, talk about it
               together, pray for one another, and tell of what God has done.
             </p>
 
             {devotion && (
               <figure className="mt-10 max-w-xl border-l-2 border-ember/70 pl-6">
-                <blockquote className="scripture text-2xl leading-snug text-[#FFF4E8] md:text-[1.9rem]">
+                <blockquote className="scripture text-2xl leading-snug text-warm md:text-[1.9rem]">
                   &ldquo;{excerpt(devotion.scriptureText ?? devotion.scripture, 190)}&rdquo;
                 </blockquote>
                 {devotion.scriptureText && (
@@ -77,10 +77,10 @@ export default async function HomePage() {
               {continueTo && (
                 <Link href={`/devotions/${continueTo.id}`} className="btn-ember">Continue: Day {continueTo.number}</Link>
               )}
-              <Link href={devotionHref} className={continueTo ? 'btn-ghost !border-white/20 !text-[#FFF4E8] hover:!border-ember' : 'btn-ember'}>
+              <Link href={devotionHref} className={continueTo ? 'btn-ghost !border-white/20 !text-warm hover:!border-ember' : 'btn-ember'}>
                 {isToday ? 'Read today’s devotion' : 'Read the latest devotion'}
               </Link>
-              <Link href="/prayer" className="btn-ghost !border-white/20 !text-[#FFF4E8] hover:!border-ember">Ask for prayer</Link>
+              <Link href="/prayer" className="btn-ghost !border-white/20 !text-warm hover:!border-ember">Ask for prayer</Link>
             </div>
           </div>
         </div>
@@ -92,20 +92,20 @@ export default async function HomePage() {
           <div className="grid gap-10 md:grid-cols-[0.9fr_1.1fr] md:gap-16">
             <div>
               <p className="kicker mb-4">{isToday ? 'Today’s devotion' : 'The most recent devotion'}</p>
-              <h2 id="today-title" className="font-heading text-4xl font-bold leading-tight text-lm-text dark:text-[#FFF4E8] md:text-5xl">
+              <h2 id="today-title" className="font-heading text-4xl font-bold leading-tight text-lm-text dark:text-warm md:text-5xl">
                 <Link href={devotionHref} className="hover:text-ember">{devotion.title}</Link>
               </h2>
               <p className="mt-4 font-semibold text-ember">{devotion.scripture}</p>
               {!isToday && (
-                <p className="mt-4 text-sm text-lm-muted dark:text-[#BFAEA3]">Today&rsquo;s devotion is on its way. Here is the latest one.</p>
+                <p className="mt-4 text-sm text-lm-muted dark:text-warm-muted">Today&rsquo;s devotion is on its way. Here is the latest one.</p>
               )}
             </div>
             <div>
-              <p className="first-letter:float-left first-letter:mr-2.5 first-letter:mt-1 first-letter:font-heading first-letter:text-[3.6rem] first-letter:font-bold first-letter:leading-[0.85] first-letter:text-ember text-lg leading-[1.85] text-lm-text dark:text-[#FFF4E8]/85">
+              <p className="first-letter:float-left first-letter:mr-2.5 first-letter:mt-1 first-letter:font-heading first-letter:text-[3.6rem] first-letter:font-bold first-letter:leading-[0.85] first-letter:text-ember text-lg leading-[1.85] text-lm-text dark:text-warm/85">
                 {excerpt(devotion.teaching, 420)}
               </p>
               <div className="mt-8 flex flex-col gap-5 border-t border-lm-border pt-6 dark:border-ember/10 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">Comment and like whenever you read. Every devotion&rsquo;s conversation stays open.</p>
+                <p className="text-sm text-lm-muted dark:text-warm-muted">Comment and like whenever you read. Every devotion&rsquo;s conversation stays open.</p>
                 <Link href={`${devotionHref}#discussion`} className="btn-ghost shrink-0">
                   Read &amp; discuss{commentCount > 0 && ` · ${commentCount}`}
                 </Link>
@@ -115,20 +115,20 @@ export default async function HomePage() {
         ) : (
           <div className="text-center">
             <p className="kicker mb-3">Today&rsquo;s devotion</p>
-            <h2 id="today-title" className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">The first fire is being laid.</h2>
-            <p className="mt-3 text-lm-muted dark:text-[#BFAEA3]">Devotions will appear here soon.</p>
+            <h2 id="today-title" className="font-heading text-3xl font-bold text-lm-text dark:text-warm">The first fire is being laid.</h2>
+            <p className="mt-3 text-lm-muted dark:text-warm-muted">Devotions will appear here soon.</p>
           </div>
         )}
       </section>
 
       {/* ── III. Prayer & testimonies ───────────────────────────────────── */}
-      <section className="border-y border-lm-border bg-lm-section dark:border-ember/10 dark:bg-[#0A0808]">
+      <section className="border-y border-lm-border bg-lm-section dark:border-ember/10 dark:bg-dark-section">
         <div className="mx-auto grid max-w-6xl gap-16 px-4 py-20 sm:px-6 md:grid-cols-2 md:py-24">
           <div>
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
                 <p className="kicker mb-3">Pray with us</p>
-                <h2 className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">On the prayer wall</h2>
+                <h2 className="font-heading text-3xl font-bold text-lm-text dark:text-warm">On the prayer wall</h2>
               </div>
               <Link href="/prayer" className="shrink-0 text-sm font-semibold text-ember hover:underline">All requests →</Link>
             </div>
@@ -140,20 +140,20 @@ export default async function HomePage() {
             <div className="mb-8 flex items-end justify-between gap-4">
               <div>
                 <p className="kicker mb-3">See what the Lord has done</p>
-                <h2 className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">Recent testimonies</h2>
+                <h2 className="font-heading text-3xl font-bold text-lm-text dark:text-warm">Recent testimonies</h2>
               </div>
               <Link href="/testimonies" className="shrink-0 text-sm font-semibold text-ember hover:underline">All stories →</Link>
             </div>
             {testimonies.length === 0 ? (
-              <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">No testimonies yet. Yours could be the first.</p>
+              <p className="text-sm text-lm-muted dark:text-warm-muted">No testimonies yet. Yours could be the first.</p>
             ) : (
               <ul className="divide-y divide-lm-border dark:divide-ember/10">
                 {testimonies.map((t) => (
                   <li key={t.id}>
                     <Link href={`/testimonies/${t.id}`} className="group block py-5 first:pt-0">
-                      <h3 className="font-heading text-xl font-bold text-lm-text group-hover:text-ember dark:text-[#FFF4E8]">{t.title}</h3>
-                      <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-lm-muted dark:text-[#BFAEA3]">{excerpt(t.content, 150)}</p>
-                      <p className="mt-2 text-xs font-semibold text-lm-muted dark:text-[#BFAEA3]">{t.author ?? 'Anonymous'}</p>
+                      <h3 className="font-heading text-xl font-bold text-lm-text group-hover:text-ember dark:text-warm">{t.title}</h3>
+                      <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-lm-muted dark:text-warm-muted">{excerpt(t.content, 150)}</p>
+                      <p className="mt-2 text-xs font-semibold text-lm-muted dark:text-warm-muted">{t.author ?? 'Anonymous'}</p>
                     </Link>
                   </li>
                 ))}
@@ -167,8 +167,8 @@ export default async function HomePage() {
       {/* ── IV. Invitation ──────────────────────────────────────────────── */}
       <section className="mx-auto max-w-3xl px-4 py-20 text-center sm:px-6 md:py-28">
         <Campfire className="mx-auto mb-6 h-20 w-auto" />
-        <h2 className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8] md:text-4xl">There&rsquo;s room by the fire.</h2>
-        <p className="mx-auto mt-4 max-w-lg leading-relaxed text-lm-muted dark:text-[#BFAEA3]">
+        <h2 className="font-heading text-3xl font-bold text-lm-text dark:text-warm md:text-4xl">There&rsquo;s room by the fire.</h2>
+        <p className="mx-auto mt-4 max-w-lg leading-relaxed text-lm-muted dark:text-warm-muted">
           Anyone can read, pray and share. Members can also save devotions, keep private notes, and comment on and like
           any devotion, new or old.
         </p>

@@ -41,8 +41,8 @@ export function ReadingPathSetting({ path }: { path: 'BEGINNING' | 'LATEST' | nu
           onClick={() => save(o.value)}
           className={`rounded-xl border p-4 text-left transition ${current === o.value ? 'border-ember bg-lm-highlight/40 dark:bg-ember/[0.06]' : 'border-lm-border hover:border-ember dark:border-ember/15'}`}
         >
-          <span className="block font-semibold text-lm-text dark:text-[#FFF4E8]">{o.label}</span>
-          <span className="mt-0.5 block text-xs text-lm-muted dark:text-[#BFAEA3]">{o.hint}</span>
+          <span className="block font-semibold text-lm-text dark:text-warm">{o.label}</span>
+          <span className="mt-0.5 block text-xs text-lm-muted dark:text-warm-muted">{o.hint}</span>
         </button>
       ))}
     </div>

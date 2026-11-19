@@ -34,8 +34,8 @@ export function TestimonyForm() {
     return (
       <div className="panel p-8 text-center" role="status">
         <p className="kicker mb-3">Thank you</p>
-        <h3 className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">Your story has reached the fire.</h3>
-        <p className="mx-auto mt-3 max-w-md text-sm text-lm-muted dark:text-[#BFAEA3]">
+        <h3 className="font-heading text-2xl font-bold text-lm-text dark:text-warm">Your story has reached the fire.</h3>
+        <p className="mx-auto mt-3 max-w-md text-sm text-lm-muted dark:text-warm-muted">
           A moderator will read it. Once it is approved, it will appear here to encourage others.
         </p>
         <button type="button" onClick={() => setSent(false)} className="btn-ghost mt-6">Share another</button>
@@ -59,12 +59,12 @@ export function TestimonyForm() {
         <p className="hint mt-1.5">{form.content.length.toLocaleString()} / 6,000</p>
       </div>
       <div>
-        <label htmlFor="t-name" className="field-label">Name to show <span className="font-normal text-lm-muted dark:text-[#BFAEA3]">(optional)</span></label>
+        <label htmlFor="t-name" className="field-label">Name to show <span className="font-normal text-lm-muted dark:text-warm-muted">(optional)</span></label>
         <input id="t-name" maxLength={60} value={form.displayName} disabled={form.isAnonymous}
           onChange={(e) => setForm({ ...form, displayName: e.target.value })}
           className="input disabled:opacity-50" placeholder={session?.user?.name ?? 'e.g. Daniel, 19'} />
       </div>
-      <label className="flex gap-3 text-sm text-lm-text dark:text-[#FFF4E8]">
+      <label className="flex gap-3 text-sm text-lm-text dark:text-warm">
         <input type="checkbox" className="check" checked={form.isAnonymous} onChange={(e) => setForm({ ...form, isAnonymous: e.target.checked })} />
         <span>Share anonymously <span className="hint block">No name will be shown with your testimony.</span></span>
       </label>

@@ -117,7 +117,7 @@ export function DevotionNote({ devotionId, initial }: { devotionId: string; init
     return (
       <div className="panel p-6">
         <p className="kicker mb-2">Your private notes</p>
-        <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">
+        <p className="text-sm text-lm-muted dark:text-warm-muted">
           <Link href={loginHref(pathname)} className="font-semibold text-ember underline-offset-4 hover:underline">Sign in</Link> to keep
           notes on this devotion. Only you will ever see them.
         </p>
@@ -136,7 +136,7 @@ export function DevotionNote({ devotionId, initial }: { devotionId: string; init
     <div className="panel p-6">
       <div className="mb-3 flex items-baseline justify-between gap-3">
         <p className="kicker">Your private notes</p>
-        <span className="flex items-center gap-1.5 text-xs text-lm-muted dark:text-[#BFAEA3]">
+        <span className="flex items-center gap-1.5 text-xs text-lm-muted dark:text-warm-muted">
           <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
           Only you can see this
         </span>
@@ -153,7 +153,7 @@ export function DevotionNote({ devotionId, initial }: { devotionId: string; init
         placeholder={loading ? 'Loading…' : 'What is God saying to you through this? What will you carry into today?'}
         className="input resize-y font-body leading-relaxed"
       />
-      <div className="mt-2 flex min-h-[1.5rem] items-center justify-between gap-3 text-xs text-lm-muted dark:text-[#BFAEA3]">
+      <div className="mt-2 flex min-h-[1.5rem] items-center justify-between gap-3 text-xs text-lm-muted dark:text-warm-muted">
         <span id={`note-status-${devotionId}`} role="status" aria-live="polite">
           {saveState === 'error' ? (
             <span className="text-red-600 dark:text-red-400">

@@ -45,7 +45,7 @@ function Badge({ tone, children }: { tone: 'ember' | 'green' | 'gray' | 'red'; c
   const c = {
     ember: 'bg-ember/15 text-ember',
     green: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
-    gray: 'bg-lm-border/60 text-lm-muted dark:bg-white/10 dark:text-[#BFAEA3]',
+    gray: 'bg-lm-border/60 text-lm-muted dark:bg-white/10 dark:text-warm-muted',
     red: 'bg-red-500/15 text-red-700 dark:text-red-400',
   }[tone]
   return <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${c}`}>{children}</span>
@@ -56,7 +56,7 @@ export function AdminDashboard({ today }: { today: string }) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <p className="kicker mb-2">Faithful Flames</p>
-      <h1 className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">Admin</h1>
+      <h1 className="font-heading text-3xl font-bold text-lm-text dark:text-warm">Admin</h1>
       <div className="mt-6 flex gap-1 overflow-x-auto border-b border-lm-border dark:border-ember/10" role="tablist">
         {TABS.map((t) => (
           <button
@@ -65,7 +65,7 @@ export function AdminDashboard({ today }: { today: string }) {
             aria-selected={tab === t.id}
             onClick={() => setTab(t.id)}
             className={`whitespace-nowrap border-b-2 px-4 py-3 text-sm font-semibold ${
-              tab === t.id ? 'border-ember text-lm-text dark:text-[#FFF4E8]' : 'border-transparent text-lm-muted hover:text-lm-text dark:text-[#BFAEA3]'
+              tab === t.id ? 'border-ember text-lm-text dark:text-warm' : 'border-transparent text-lm-muted hover:text-lm-text dark:text-warm-muted'
             }`}
           >
             {t.label}
@@ -117,7 +117,7 @@ function Overview({ go }: { go: (t: Tab) => void }) {
           <div>
             <p className="kicker mb-1">Today ({fmtDay(data.today)})</p>
             {data.todaysDevotion ? (
-              <p className="font-semibold text-lm-text dark:text-[#FFF4E8]">
+              <p className="font-semibold text-lm-text dark:text-warm">
                 {data.todaysDevotion.title}{' '}
                 {data.todaysDevotion.isPublished ? <Badge tone="green">Published</Badge> : <Badge tone="gray">Draft</Badge>}
               </p>
@@ -134,9 +134,9 @@ function Overview({ go }: { go: (t: Tab) => void }) {
         <div className="flex h-40 items-end gap-1.5" role="img" aria-label="Bar chart of daily visitors over the last 14 days">
           {data.days.map((d) => (
             <div key={d.day} className="group flex flex-1 flex-col items-center justify-end gap-1">
-              <span className="text-[10px] tabular-nums text-lm-muted opacity-0 group-hover:opacity-100 dark:text-[#BFAEA3]">{d.visitors}</span>
+              <span className="text-[10px] tabular-nums text-lm-muted opacity-0 group-hover:opacity-100 dark:text-warm-muted">{d.visitors}</span>
               <div className="w-full rounded-t bg-ember/80" style={{ height: `${Math.max(2, (d.visitors / max) * 120)}px` }} title={`${fmtDay(d.day)}: ${d.visitors} visitors, ${d.views} views`} />
-              <span className="text-[9px] text-lm-muted dark:text-[#BFAEA3]">{d.day.slice(8)}</span>
+              <span className="text-[9px] text-lm-muted dark:text-warm-muted">{d.day.slice(8)}</span>
             </div>
           ))}
         </div>
@@ -149,9 +149,9 @@ function Stat({ label, value, sub, onClick, alert }: { label: string; value: num
   const Comp = onClick ? 'button' : 'div'
   return (
     <Comp type={onClick ? 'button' : undefined} onClick={onClick} className={`panel p-5 text-left ${onClick ? 'hover:border-ember' : ''}`}>
-      <p className="text-xs font-semibold text-lm-muted dark:text-[#BFAEA3]">{label}</p>
-      <p className={`mt-1 font-heading text-4xl font-bold tabular-nums ${alert ? 'text-red-600' : 'text-lm-text dark:text-[#FFF4E8]'}`}>{value}</p>
-      <p className="mt-1 text-xs text-lm-muted dark:text-[#BFAEA3]">{sub}</p>
+      <p className="text-xs font-semibold text-lm-muted dark:text-warm-muted">{label}</p>
+      <p className={`mt-1 font-heading text-4xl font-bold tabular-nums ${alert ? 'text-red-600' : 'text-lm-text dark:text-warm'}`}>{value}</p>
+      <p className="mt-1 text-xs text-lm-muted dark:text-warm-muted">{sub}</p>
     </Comp>
   )
 }
@@ -189,7 +189,7 @@ function Members() {
 
   return (
     <div className="space-y-8">
-      <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">
+      <p className="text-sm text-lm-muted dark:text-warm-muted">
         Only admins can see this page. Private notes are never shown here.{' '}
         <button type="button" onClick={reload} className="font-semibold text-ember hover:underline">Refresh</button>
       </p>
@@ -208,7 +208,7 @@ function Members() {
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[860px] text-sm">
-            <thead className="text-left text-xs uppercase tracking-wider text-lm-muted dark:text-[#BFAEA3]">
+            <thead className="text-left text-xs uppercase tracking-wider text-lm-muted dark:text-warm-muted">
               <tr>
                 <th className="py-2 pr-4">Member</th><th className="py-2 pr-4">Last active</th><th className="py-2 pr-4">Joined</th>
                 <th className="py-2 pr-3 text-right" title="Devotions opened">Read</th>
@@ -222,20 +222,20 @@ function Members() {
               {rows.map((m) => (
                 <tr key={m.id} className="align-top">
                   <td className="py-3 pr-4">
-                    <p className="font-semibold text-lm-text dark:text-[#FFF4E8]">
+                    <p className="font-semibold text-lm-text dark:text-warm">
                       {m.name || '(no name)'}{' '}
                       {m.role === 'ADMIN' && <Badge tone="ember">Admin</Badge>}{' '}
                       {!m.verified && <Badge tone="gray">Unverified</Badge>}
                     </p>
-                    <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{m.email}</p>
-                    {m.readingPath && <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">Reading {m.readingPath === 'BEGINNING' ? 'from the first devotion' : 'from the latest'}</p>}
+                    <p className="text-xs text-lm-muted dark:text-warm-muted">{m.email}</p>
+                    {m.readingPath && <p className="text-xs text-lm-muted dark:text-warm-muted">Reading {m.readingPath === 'BEGINNING' ? 'from the first devotion' : 'from the latest'}</p>}
                   </td>
                   <td className="whitespace-nowrap py-3 pr-4">
-                    {m.activeNow ? <Badge tone="green">Active now</Badge> : <span className="text-lm-muted dark:text-[#BFAEA3]">{lastSeen(m.lastSeenAt)}</span>}
+                    {m.activeNow ? <Badge tone="green">Active now</Badge> : <span className="text-lm-muted dark:text-warm-muted">{lastSeen(m.lastSeenAt)}</span>}
                   </td>
-                  <td className="whitespace-nowrap py-3 pr-4 text-lm-muted dark:text-[#BFAEA3]">{new Date(m.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                  <td className="whitespace-nowrap py-3 pr-4 text-lm-muted dark:text-warm-muted">{new Date(m.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
                   {[m.counts.devotionReads, m.counts.comments, m.counts.likes, m.counts.prayedFor, m.counts.prayerRequests, m.counts.testimonies, m.counts.bookmarks].map((n, i) => (
-                    <td key={i} className={`py-3 pr-3 text-right tabular-nums ${n ? 'text-lm-text dark:text-[#FFF4E8]' : 'text-lm-muted/60 dark:text-[#BFAEA3]/50'}`}>{n}</td>
+                    <td key={i} className={`py-3 pr-3 text-right tabular-nums ${n ? 'text-lm-text dark:text-warm' : 'text-lm-muted/60 dark:text-warm-muted/50'}`}>{n}</td>
                   ))}
                 </tr>
               ))}
@@ -243,21 +243,21 @@ function Members() {
           </table>
           {rows.length === 0 && <p className="py-6 text-sm text-lm-muted">No members match.</p>}
         </div>
-        <p className="mt-3 text-xs text-lm-muted dark:text-[#BFAEA3]">&ldquo;Last active&rdquo; is recorded from 10 Nov 2026 onward, so members who haven&rsquo;t visited since show &ldquo;Not yet&rdquo;.</p>
+        <p className="mt-3 text-xs text-lm-muted dark:text-warm-muted">&ldquo;Last active&rdquo; is recorded from 10 Nov 2026 onward, so members who haven&rsquo;t visited since show &ldquo;Not yet&rdquo;.</p>
       </div>
 
       <div className="panel p-5">
         <p className="kicker mb-4">Engagement by devotion</p>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[560px] text-sm">
-            <thead className="text-left text-xs uppercase tracking-wider text-lm-muted dark:text-[#BFAEA3]">
+            <thead className="text-left text-xs uppercase tracking-wider text-lm-muted dark:text-warm-muted">
               <tr><th className="py-2 pr-4">Date</th><th className="py-2 pr-4">Devotion</th><th className="py-2 pr-3 text-right">Readers</th><th className="py-2 pr-3 text-right">Likes</th><th className="py-2 text-right">Comments</th></tr>
             </thead>
             <tbody className="divide-y divide-lm-border dark:divide-ember/10">
               {data.devotions.map((d) => (
                 <tr key={d.id}>
-                  <td className="whitespace-nowrap py-3 pr-4 text-lm-muted dark:text-[#BFAEA3]">{fmtDay(d.day)}</td>
-                  <td className="py-3 pr-4 font-semibold text-lm-text dark:text-[#FFF4E8]">{d.title}</td>
+                  <td className="whitespace-nowrap py-3 pr-4 text-lm-muted dark:text-warm-muted">{fmtDay(d.day)}</td>
+                  <td className="py-3 pr-4 font-semibold text-lm-text dark:text-warm">{d.title}</td>
                   <td className="py-3 pr-3 text-right tabular-nums">{d.readers}</td>
                   <td className="py-3 pr-3 text-right tabular-nums">{d.likes}</td>
                   <td className="py-3 text-right tabular-nums">{d.comments}</td>
@@ -266,7 +266,7 @@ function Members() {
             </tbody>
           </table>
           {data.devotions.length === 0 && <p className="py-6 text-sm text-lm-muted">No published devotions yet.</p>}
-          <p className="mt-3 text-xs text-lm-muted dark:text-[#BFAEA3]">Readers are signed-in members who opened the devotion (counted from 10 Nov 2026 onward).</p>
+          <p className="mt-3 text-xs text-lm-muted dark:text-warm-muted">Readers are signed-in members who opened the devotion (counted from 10 Nov 2026 onward).</p>
         </div>
       </div>
     </div>
@@ -337,7 +337,7 @@ function Devotions({ today }: { today: string }) {
     const set = (k: keyof typeof f, v: string | boolean) => setEditing({ ...editing, form: { ...f, [k]: v } })
     return (
       <form onSubmit={save} className="panel max-w-3xl space-y-5 p-6">
-        <h2 className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">{editing.id ? 'Edit devotion' : 'New devotion'}</h2>
+        <h2 className="font-heading text-2xl font-bold text-lm-text dark:text-warm">{editing.id ? 'Edit devotion' : 'New devotion'}</h2>
         <div className="grid gap-4 sm:grid-cols-[200px_1fr]">
           <div>
             <label className="field-label" htmlFor="dv-day">Date (Kampala)</label>
@@ -362,14 +362,14 @@ function Devotions({ today }: { today: string }) {
           <textarea id="dv-teach" required rows={10} maxLength={15000} value={f.teaching} onChange={(e) => set('teaching', e.target.value)} className="input leading-relaxed" />
         </div>
         <div>
-          <label className="field-label" htmlFor="dv-app">Practical application <span className="font-normal text-lm-muted dark:text-[#BFAEA3]">(optional)</span></label>
+          <label className="field-label" htmlFor="dv-app">Practical application <span className="font-normal text-lm-muted dark:text-warm-muted">(optional)</span></label>
           <textarea id="dv-app" rows={3} maxLength={5000} value={f.application} onChange={(e) => set('application', e.target.value)} className="input" />
         </div>
         <div>
-          <label className="field-label" htmlFor="dv-pr">Closing prayer <span className="font-normal text-lm-muted dark:text-[#BFAEA3]">(optional)</span></label>
+          <label className="field-label" htmlFor="dv-pr">Closing prayer <span className="font-normal text-lm-muted dark:text-warm-muted">(optional)</span></label>
           <textarea id="dv-pr" rows={3} maxLength={5000} value={f.prayerPoint} onChange={(e) => set('prayerPoint', e.target.value)} className="input" />
         </div>
-        <label className="flex items-center gap-3 text-sm font-semibold text-lm-text dark:text-[#FFF4E8]">
+        <label className="flex items-center gap-3 text-sm font-semibold text-lm-text dark:text-warm">
           <input type="checkbox" className="check" checked={f.isPublished} onChange={(e) => set('isPublished', e.target.checked)} />
           Published (appears on its date; future dates stay hidden until that day)
         </label>
@@ -384,13 +384,13 @@ function Devotions({ today }: { today: string }) {
   return (
     <div>
       <div className="mb-5 flex items-center justify-between">
-        <p className="text-sm text-lm-muted dark:text-[#BFAEA3]">One devotion per day. Discussions stay open for comments and likes.</p>
+        <p className="text-sm text-lm-muted dark:text-warm-muted">One devotion per day. Discussions stay open for comments and likes.</p>
         <button type="button" onClick={startNew} className="btn-ember !py-2.5 text-xs">+ New devotion</button>
       </div>
       {!data ? <p className="text-sm text-lm-muted">Loading…</p> : (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] text-sm">
-            <thead className="text-left text-xs uppercase tracking-wider text-lm-muted dark:text-[#BFAEA3]">
+            <thead className="text-left text-xs uppercase tracking-wider text-lm-muted dark:text-warm-muted">
               <tr><th className="py-2 pr-4">Date</th><th className="py-2 pr-4">Devotion</th><th className="py-2 pr-4">Status</th><th className="py-2 pr-4">Comments</th><th /></tr>
             </thead>
             <tbody className="divide-y divide-lm-border dark:divide-ember/10">
@@ -398,9 +398,9 @@ function Devotions({ today }: { today: string }) {
                 const day = d.dayKey ?? new Date(d.publishedAt).toLocaleDateString('en-CA', { timeZone: 'Africa/Kampala' })
                 return (
                   <tr key={d.id} className="align-top">
-                    <td className="whitespace-nowrap py-3 pr-4 text-lm-muted dark:text-[#BFAEA3]">{fmtDay(day)}</td>
+                    <td className="whitespace-nowrap py-3 pr-4 text-lm-muted dark:text-warm-muted">{fmtDay(day)}</td>
                     <td className="py-3 pr-4">
-                      <p className="font-semibold text-lm-text dark:text-[#FFF4E8]">{d.title}</p>
+                      <p className="font-semibold text-lm-text dark:text-warm">{d.title}</p>
                       <p className="text-xs text-ember">{d.scripture}</p>
                     </td>
                     <td className="py-3 pr-4 space-x-1">
@@ -411,8 +411,8 @@ function Devotions({ today }: { today: string }) {
                     <td className="py-3 pr-4 tabular-nums">{d.commentCount}</td>
                     <td className="whitespace-nowrap py-3 text-right text-xs font-semibold">
                       <button type="button" onClick={() => startEdit(d)} className="mr-3 text-ember hover:underline">Edit</button>
-                      <button type="button" onClick={() => togglePublish(d)} className="mr-3 text-lm-muted hover:underline dark:text-[#BFAEA3]">{d.isPublished ? 'Unpublish' : 'Publish'}</button>
-                      {d.isPublished && day <= today && <Link href={`/devotions/${d.id}`} className="mr-3 text-lm-muted hover:underline dark:text-[#BFAEA3]">View</Link>}
+                      <button type="button" onClick={() => togglePublish(d)} className="mr-3 text-lm-muted hover:underline dark:text-warm-muted">{d.isPublished ? 'Unpublish' : 'Publish'}</button>
+                      {d.isPublished && day <= today && <Link href={`/devotions/${d.id}`} className="mr-3 text-lm-muted hover:underline dark:text-warm-muted">View</Link>}
                       {d.commentCount === 0 && <button type="button" onClick={() => remove(d)} className="text-red-600 hover:underline">Delete</button>}
                     </td>
                   </tr>
@@ -451,7 +451,7 @@ function Prayer() {
       <Filter value={filter} onChange={setFilter} options={['PENDING', 'APPROVED', 'ARCHIVED', 'ALL']} counts={data ? {
         PENDING: data.filter((r) => r.status === 'PENDING').length,
       } : {}} />
-      <p className="mb-5 text-xs text-lm-muted dark:text-[#BFAEA3]">
+      <p className="mb-5 text-xs text-lm-muted dark:text-warm-muted">
         &ldquo;Approve&rdquo; marks a request as reviewed. It appears on the public wall <strong>only</strong> if the person consented
         to sharing and did not mark it private. Private requests are never shown publicly.
       </p>
@@ -465,16 +465,16 @@ function Prayer() {
                   {r.isPrivate ? <Badge tone="red">Private</Badge> : r.shareConsent ? <Badge tone="ember">May be shared</Badge> : <Badge tone="gray">No consent to share</Badge>}
                   {r.isAnonymous && <Badge tone="gray">Anonymous</Badge>}
                   {isPublic && <Badge tone="green">On public wall</Badge>}
-                  <span className="ml-auto text-xs text-lm-muted dark:text-[#BFAEA3]">{fmtDate(r.createdAt)}</span>
+                  <span className="ml-auto text-xs text-lm-muted dark:text-warm-muted">{fmtDate(r.createdAt)}</span>
                 </div>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-lm-text dark:text-[#FFF4E8]">{r.content}</p>
-                <p className="mt-2 text-xs text-lm-muted dark:text-[#BFAEA3]">
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-lm-text dark:text-warm">{r.content}</p>
+                <p className="mt-2 text-xs text-lm-muted dark:text-warm-muted">
                   From {r.name ?? 'no name given'}{r.user ? ` (${r.user.email})` : ' (visitor)'} · prayed for {r._count.prayers}×
                 </p>
                 <div className="mt-3 flex flex-wrap gap-3 text-xs font-semibold">
                   {r.status !== 'APPROVED' && <button type="button" onClick={() => setStatus(r.id, 'APPROVED')} className="text-emerald-700 hover:underline dark:text-emerald-400">Approve</button>}
-                  {r.status !== 'ARCHIVED' && <button type="button" onClick={() => setStatus(r.id, 'ARCHIVED')} className="text-lm-muted hover:underline dark:text-[#BFAEA3]">Archive{isPublic ? ' (remove from wall)' : ''}</button>}
-                  {r.status !== 'PENDING' && <button type="button" onClick={() => setStatus(r.id, 'PENDING')} className="text-lm-muted hover:underline dark:text-[#BFAEA3]">Back to pending</button>}
+                  {r.status !== 'ARCHIVED' && <button type="button" onClick={() => setStatus(r.id, 'ARCHIVED')} className="text-lm-muted hover:underline dark:text-warm-muted">Archive{isPublic ? ' (remove from wall)' : ''}</button>}
+                  {r.status !== 'PENDING' && <button type="button" onClick={() => setStatus(r.id, 'PENDING')} className="text-lm-muted hover:underline dark:text-warm-muted">Back to pending</button>}
                   <button type="button" onClick={() => remove(r.id)} className="text-red-600 hover:underline">Delete</button>
                 </div>
               </li>
@@ -516,20 +516,20 @@ function Testimonies() {
               <div className="mb-2 flex flex-wrap items-center gap-1.5">
                 {state(t) === 'PUBLISHED' ? <Badge tone="green">Published</Badge> : state(t) === 'REJECTED' ? <Badge tone="red">Rejected</Badge> : <Badge tone="ember">Pending</Badge>}
                 {t.isAnonymous && <Badge tone="gray">Anonymous</Badge>}
-                <span className="ml-auto text-xs text-lm-muted dark:text-[#BFAEA3]">{fmtDate(t.createdAt)}</span>
+                <span className="ml-auto text-xs text-lm-muted dark:text-warm-muted">{fmtDate(t.createdAt)}</span>
               </div>
-              <p className="font-heading text-lg font-bold text-lm-text dark:text-[#FFF4E8]">{t.title ?? <em className="font-normal text-lm-muted dark:text-[#BFAEA3]">Untitled (older testimony)</em>}</p>
+              <p className="font-heading text-lg font-bold text-lm-text dark:text-warm">{t.title ?? <em className="font-normal text-lm-muted dark:text-warm-muted">Untitled (older testimony)</em>}</p>
               <details className="mt-1">
-                <summary className="cursor-pointer text-sm text-lm-muted dark:text-[#BFAEA3]">{t.content.slice(0, 160)}{t.content.length > 160 ? '… (read all)' : ''}</summary>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-lm-text dark:text-[#FFF4E8]">{t.content}</p>
+                <summary className="cursor-pointer text-sm text-lm-muted dark:text-warm-muted">{t.content.slice(0, 160)}{t.content.length > 160 ? '… (read all)' : ''}</summary>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-lm-text dark:text-warm">{t.content}</p>
               </details>
-              <p className="mt-2 text-xs text-lm-muted dark:text-[#BFAEA3]">
+              <p className="mt-2 text-xs text-lm-muted dark:text-warm-muted">
                 Shown as: {t.isAnonymous ? 'Anonymous' : t.displayName || t.user?.name || 'Anonymous'}{t.user ? ` · ${t.user.email}` : ' · visitor'}
               </p>
               <div className="mt-3 flex flex-wrap gap-3 text-xs font-semibold">
                 {!t.isApproved && <button type="button" onClick={() => act(t.id, 'approve')} className="text-emerald-700 hover:underline dark:text-emerald-400">Approve &amp; publish</button>}
-                {state(t) !== 'REJECTED' && <button type="button" onClick={() => act(t.id, 'reject')} className="text-lm-muted hover:underline dark:text-[#BFAEA3]">{t.isApproved ? 'Unpublish' : 'Reject'}</button>}
-                {state(t) === 'PUBLISHED' && <Link href={`/testimonies/${t.id}`} className="text-lm-muted hover:underline dark:text-[#BFAEA3]">View</Link>}
+                {state(t) !== 'REJECTED' && <button type="button" onClick={() => act(t.id, 'reject')} className="text-lm-muted hover:underline dark:text-warm-muted">{t.isApproved ? 'Unpublish' : 'Reject'}</button>}
+                {state(t) === 'PUBLISHED' && <Link href={`/testimonies/${t.id}`} className="text-lm-muted hover:underline dark:text-warm-muted">View</Link>}
                 <button type="button" onClick={() => remove(t.id)} className="text-red-600 hover:underline">Delete</button>
               </div>
             </li>
@@ -556,7 +556,7 @@ function Comments() {
     <div>
       <div className="mb-5 flex gap-2">
         {(['reported', 'recent'] as const).map((f) => (
-          <button key={f} type="button" onClick={() => setFilter(f)} className={`rounded-full px-4 py-1.5 text-xs font-semibold ${filter === f ? 'bg-ember text-white' : 'border border-lm-border text-lm-muted dark:border-ember/20 dark:text-[#BFAEA3]'}`}>
+          <button key={f} type="button" onClick={() => setFilter(f)} className={`rounded-full px-4 py-1.5 text-xs font-semibold ${filter === f ? 'bg-ember text-on-ember' : 'border border-lm-border text-lm-muted dark:border-ember/20 dark:text-warm-muted'}`}>
             {f === 'reported' ? 'Reported' : 'All recent'}
           </button>
         ))}
@@ -569,18 +569,18 @@ function Comments() {
                 {c.isHidden && <Badge tone="red">Hidden</Badge>}
                 {c.reports.length > 0 && <Badge tone="ember">{c.reports.length} report{c.reports.length > 1 ? 's' : ''}</Badge>}
                 <Link href={`/devotions/${c.contentId}#discussion`} className="text-xs font-semibold text-ember hover:underline">{c.devotionTitle}</Link>
-                <span className="ml-auto text-xs text-lm-muted dark:text-[#BFAEA3]">{fmtDate(c.createdAt)}</span>
+                <span className="ml-auto text-xs text-lm-muted dark:text-warm-muted">{fmtDate(c.createdAt)}</span>
               </div>
-              <p className="whitespace-pre-wrap text-sm text-lm-text dark:text-[#FFF4E8]">{c.content}</p>
-              <p className="mt-2 text-xs text-lm-muted dark:text-[#BFAEA3]">{c.user.name ?? 'No name'} · {c.user.email}</p>
+              <p className="whitespace-pre-wrap text-sm text-lm-text dark:text-warm">{c.content}</p>
+              <p className="mt-2 text-xs text-lm-muted dark:text-warm-muted">{c.user.name ?? 'No name'} · {c.user.email}</p>
               {c.reports.some((r) => r.reason) && (
-                <ul className="mt-2 list-inside list-disc text-xs text-lm-muted dark:text-[#BFAEA3]">
+                <ul className="mt-2 list-inside list-disc text-xs text-lm-muted dark:text-warm-muted">
                   {c.reports.filter((r) => r.reason).map((r, i) => <li key={i}>&ldquo;{r.reason}&rdquo;</li>)}
                 </ul>
               )}
               <div className="mt-3 flex gap-3 text-xs font-semibold">
                 <button type="button" onClick={() => moderate(c.id, { hidden: !c.isHidden })} className="text-red-600 hover:underline">{c.isHidden ? 'Unhide' : 'Hide comment'}</button>
-                {c.reports.length > 0 && <button type="button" onClick={() => moderate(c.id, { resolve: true })} className="text-lm-muted hover:underline dark:text-[#BFAEA3]">Dismiss reports (keep visible)</button>}
+                {c.reports.length > 0 && <button type="button" onClick={() => moderate(c.id, { resolve: true })} className="text-lm-muted hover:underline dark:text-warm-muted">Dismiss reports (keep visible)</button>}
               </div>
             </li>
           ))}
@@ -622,7 +622,7 @@ function Articles() {
     const f = editing.form
     return (
       <form onSubmit={save} className="panel max-w-3xl space-y-4 p-6">
-        <h2 className="font-heading text-2xl font-bold text-lm-text dark:text-[#FFF4E8]">{editing.id ? 'Edit article' : 'New article'}</h2>
+        <h2 className="font-heading text-2xl font-bold text-lm-text dark:text-warm">{editing.id ? 'Edit article' : 'New article'}</h2>
         <div className="grid gap-4 sm:grid-cols-[1fr_200px]">
           <div><label className="field-label" htmlFor="ar-t">Title</label><input id="ar-t" required className="input" value={f.title} onChange={(e) => setEditing({ ...editing, form: { ...f, title: e.target.value } })} /></div>
           <div><label className="field-label" htmlFor="ar-c">Category</label><input id="ar-c" required className="input" value={f.category} onChange={(e) => setEditing({ ...editing, form: { ...f, category: e.target.value } })} /></div>
@@ -632,7 +632,7 @@ function Articles() {
           <p className="hint mb-1.5">Use ## for headings and a blank line between paragraphs.</p>
           <textarea id="ar-b" required rows={14} className="input font-mono text-sm" value={f.content} onChange={(e) => setEditing({ ...editing, form: { ...f, content: e.target.value } })} />
         </div>
-        <label className="flex items-center gap-3 text-sm font-semibold text-lm-text dark:text-[#FFF4E8]">
+        <label className="flex items-center gap-3 text-sm font-semibold text-lm-text dark:text-warm">
           <input type="checkbox" className="check" checked={f.isPublished} onChange={(e) => setEditing({ ...editing, form: { ...f, isPublished: e.target.checked } })} /> Published
         </label>
         <div className="flex gap-3"><button type="submit" className="btn-ember">Save</button><button type="button" onClick={() => setEditing(null)} className="btn-ghost">Cancel</button></div>
@@ -648,12 +648,12 @@ function Articles() {
           {data.map((a) => (
             <li key={a.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
               <div>
-                <p className="font-semibold text-lm-text dark:text-[#FFF4E8]">{a.title} {a.isPublished ? <Badge tone="green">Published</Badge> : <Badge tone="gray">Draft</Badge>}</p>
-                <p className="text-xs text-lm-muted dark:text-[#BFAEA3]">{a.category}</p>
+                <p className="font-semibold text-lm-text dark:text-warm">{a.title} {a.isPublished ? <Badge tone="green">Published</Badge> : <Badge tone="gray">Draft</Badge>}</p>
+                <p className="text-xs text-lm-muted dark:text-warm-muted">{a.category}</p>
               </div>
               <div className="flex gap-3 text-xs font-semibold">
                 <button type="button" onClick={() => setEditing({ id: a.id, form: { title: a.title, category: a.category, content: a.content, isPublished: a.isPublished } })} className="text-ember hover:underline">Edit</button>
-                <button type="button" onClick={() => togglePublish(a)} className="text-lm-muted hover:underline dark:text-[#BFAEA3]">{a.isPublished ? 'Unpublish' : 'Publish'}</button>
+                <button type="button" onClick={() => togglePublish(a)} className="text-lm-muted hover:underline dark:text-warm-muted">{a.isPublished ? 'Unpublish' : 'Publish'}</button>
                 <button type="button" onClick={() => remove(a)} className="text-red-600 hover:underline">Delete</button>
               </div>
             </li>
@@ -669,7 +669,7 @@ function Filter<T extends string>({ value, onChange, options, counts }: { value:
     <div className="mb-4 flex flex-wrap gap-2">
       {options.map((o) => (
         <button key={o} type="button" onClick={() => onChange(o)}
-          className={`rounded-full px-4 py-1.5 text-xs font-semibold capitalize ${value === o ? 'bg-ember text-white' : 'border border-lm-border text-lm-muted dark:border-ember/20 dark:text-[#BFAEA3]'}`}>
+          className={`rounded-full px-4 py-1.5 text-xs font-semibold capitalize ${value === o ? 'bg-ember text-on-ember' : 'border border-lm-border text-lm-muted dark:border-ember/20 dark:text-warm-muted'}`}>
           {o.toLowerCase()}{counts[o] ? ` · ${counts[o]}` : ''}
         </button>
       ))}

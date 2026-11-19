@@ -7,6 +7,7 @@ import { useSession, signOut } from 'next-auth/react'
 import { Logo } from './Logo'
 import { loginHref } from '@/lib/safe-redirect'
 import { useTheme } from './ThemeProvider'
+import { ThemeMenu } from './ThemePicker'
 
 const NAV = [
   { href: '/', label: 'Home' },
@@ -43,7 +44,7 @@ export function Navbar() {
   const initial = (session?.user?.name?.[0] ?? session?.user?.email?.[0] ?? '·').toUpperCase()
 
   return (
-    <header className="sticky top-0 z-50 border-b border-lm-border/80 bg-cream/90 backdrop-blur-md dark:border-ember/10 dark:bg-[#0D0A0A]/90">
+    <header className="sticky top-0 z-50 border-b border-lm-border/80 bg-cream/90 backdrop-blur-md dark:border-ember/10 dark:bg-dark-bg/90">
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6" aria-label="Main">
         <Logo size={30} />
 
@@ -55,13 +56,13 @@ export function Navbar() {
                 aria-current={isActive(l.href) ? 'page' : undefined}
                 className={`relative rounded-full px-4 py-2 text-sm font-medium ${
                   isActive(l.href)
-                    ? 'text-lm-text dark:text-[#FFF4E8]'
-                    : 'text-lm-muted hover:text-lm-text dark:text-[#BFAEA3] dark:hover:text-[#FFF4E8]'
+                    ? 'text-lm-text dark:text-warm'
+                    : 'text-lm-muted hover:text-lm-text dark:text-warm-muted dark:hover:text-warm'
                 }`}
               >
                 {l.label}
                 {isActive(l.href) && (
-                  <span className="absolute inset-x-4 -bottom-[1px] h-[2px] rounded-full bg-ember shadow-[0_0_10px_rgba(255,122,41,0.8)]" />
+                  <span className="absolute inset-x-4 -bottom-[1px] h-[2px] rounded-full bg-ember shadow-[0_0_10px_rgb(var(--ff-ember)/0.8)]" />
                 )}
               </Link>
             </li>
@@ -69,11 +70,12 @@ export function Navbar() {
         </ul>
 
         <div className="flex items-center gap-1.5">
+          <ThemeMenu />
           <button
             type="button"
             onClick={toggle}
             aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="rounded-full p-2 text-lm-muted hover:bg-lm-highlight/60 hover:text-lm-text dark:text-[#BFAEA3] dark:hover:bg-white/5 dark:hover:text-[#FFF4E8]"
+            className="rounded-full p-2 text-lm-muted hover:bg-lm-highlight/60 hover:text-lm-text dark:text-warm-muted dark:hover:bg-white/5 dark:hover:text-warm"
           >
             <ThemeIcon dark={theme === 'dark'} />
           </button>
@@ -85,17 +87,17 @@ export function Navbar() {
                 onClick={() => setMenu((v) => !v)}
                 aria-expanded={menu}
                 aria-label="Your account"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-ember text-sm font-bold text-white ring-2 ring-ember/20 focus:outline-none focus-visible:ring-ember"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-ember text-sm font-bold text-on-ember ring-2 ring-ember/20 focus:outline-none focus-visible:ring-ember"
               >
                 {initial}
               </button>
               {menu && (
-                <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-2xl border border-lm-border bg-lm-card shadow-xl animate-fade-in dark:border-ember/15 dark:bg-[#161111]">
+                <div className="absolute right-0 mt-2 w-56 overflow-hidden rounded-2xl border border-lm-border bg-lm-card shadow-xl animate-fade-in dark:border-ember/15 dark:bg-flame-surface">
                   <div className="border-b border-lm-border px-4 py-3 dark:border-ember/10">
-                    <p className="truncate text-sm font-semibold text-lm-text dark:text-[#FFF4E8]">{session.user.name ?? 'Friend'}</p>
-                    <p className="truncate text-xs text-lm-muted dark:text-[#BFAEA3]">{session.user.email}</p>
+                    <p className="truncate text-sm font-semibold text-lm-text dark:text-warm">{session.user.name ?? 'Friend'}</p>
+                    <p className="truncate text-xs text-lm-muted dark:text-warm-muted">{session.user.email}</p>
                   </div>
-                  <Link href="/profile" className="block px-4 py-2.5 text-sm text-lm-text hover:bg-lm-highlight/60 dark:text-[#FFF4E8] dark:hover:bg-white/5">
+                  <Link href="/profile" className="block px-4 py-2.5 text-sm text-lm-text hover:bg-lm-highlight/60 dark:text-warm dark:hover:bg-white/5">
                     My bookmarks &amp; notes
                   </Link>
                   {session.user.role === 'ADMIN' && (
@@ -114,14 +116,14 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <Link href={loginHref(pathname)} className="hidden rounded-full px-4 py-2 text-sm font-semibold text-lm-text hover:text-ember dark:text-[#FFF4E8] md:inline-flex">
+            <Link href={loginHref(pathname)} className="hidden rounded-full px-4 py-2 text-sm font-semibold text-lm-text hover:text-ember dark:text-warm md:inline-flex">
               Sign in
             </Link>
           )}
 
           <button
             type="button"
-            className="rounded-full p-2 text-lm-text dark:text-[#FFF4E8] md:hidden"
+            className="rounded-full p-2 text-lm-text dark:text-warm md:hidden"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-label="Menu"
@@ -134,14 +136,14 @@ export function Navbar() {
       </nav>
 
       {open && (
-        <div className="border-t border-lm-border bg-cream animate-fade-in dark:border-ember/10 dark:bg-[#0D0A0A] md:hidden">
+        <div className="border-t border-lm-border bg-cream animate-fade-in dark:border-ember/10 dark:bg-dark-bg md:hidden">
           <ul className="mx-auto max-w-6xl space-y-1 px-4 py-4">
             {NAV.map((l) => (
               <li key={l.href}>
                 <Link
                   href={l.href}
                   className={`flex items-center gap-3 rounded-xl px-3 py-3 font-heading text-lg ${
-                    isActive(l.href) ? 'bg-lm-highlight/60 text-lm-text dark:bg-white/5 dark:text-[#FFF4E8]' : 'text-lm-muted dark:text-[#BFAEA3]'
+                    isActive(l.href) ? 'bg-lm-highlight/60 text-lm-text dark:bg-white/5 dark:text-warm' : 'text-lm-muted dark:text-warm-muted'
                   }`}
                 >
                   <span className={`h-1.5 w-1.5 rounded-full ${isActive(l.href) ? 'bg-ember' : 'bg-transparent'}`} />

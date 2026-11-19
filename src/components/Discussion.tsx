@@ -58,15 +58,15 @@ export function Discussion({ devotionId, initial, isToday }: { devotionId: strin
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="kicker mb-2">Around the fire</p>
-          <h2 id="discussion-title" className="font-heading text-3xl font-bold text-lm-text dark:text-[#FFF4E8]">
+          <h2 id="discussion-title" className="font-heading text-3xl font-bold text-lm-text dark:text-warm">
             {isToday ? <>Today&rsquo;s conversation</> : 'The conversation'}
-            {data.count > 0 && <span className="ml-3 align-middle font-body text-base font-normal text-lm-muted dark:text-[#BFAEA3]">{data.count}</span>}
+            {data.count > 0 && <span className="ml-3 align-middle font-body text-base font-normal text-lm-muted dark:text-warm-muted">{data.count}</span>}
           </h2>
         </div>
       </div>
 
       {!session && (
-        <p className="panel mb-8 p-5 text-sm text-lm-muted dark:text-[#BFAEA3]">
+        <p className="panel mb-8 p-5 text-sm text-lm-muted dark:text-warm-muted">
           <Link href={loginHref(`/devotions/${devotionId}#discussion`)} className="font-semibold text-ember hover:underline">Sign in</Link>{' '}
           to add your voice. Anyone can read along.
         </p>
@@ -81,7 +81,7 @@ export function Discussion({ devotionId, initial, isToday }: { devotionId: strin
       )}
 
       {data.comments.length === 0 ? (
-        <p className="py-6 text-sm text-lm-muted dark:text-[#BFAEA3]">
+        <p className="py-6 text-sm text-lm-muted dark:text-warm-muted">
           No one has spoken yet. Be the first to share what God showed you.
         </p>
       ) : (
@@ -115,7 +115,7 @@ function CommentItem({ c, signedIn, act, devotionId, replyTo }: {
   const dialog = useDialog()
 
   if (c.removed) {
-    return <p className="text-sm italic text-lm-muted dark:text-[#BFAEA3]">This comment was removed.</p>
+    return <p className="text-sm italic text-lm-muted dark:text-warm-muted">This comment was removed.</p>
   }
 
   const report = async () => {
@@ -133,8 +133,8 @@ function CommentItem({ c, signedIn, act, devotionId, replyTo }: {
   return (
     <article>
       <header className="mb-1.5 flex flex-wrap items-baseline gap-x-2.5">
-        <span className="font-semibold text-lm-text dark:text-[#FFF4E8]">{c.author.name}</span>
-        <time className="text-xs text-lm-muted dark:text-[#BFAEA3]" dateTime={c.createdAt}>{ago(c.createdAt)}{c.edited && ' · edited'}</time>
+        <span className="font-semibold text-lm-text dark:text-warm">{c.author.name}</span>
+        <time className="text-xs text-lm-muted dark:text-warm-muted" dateTime={c.createdAt}>{ago(c.createdAt)}{c.edited && ' · edited'}</time>
         {c.hidden && <span className="rounded-full bg-red-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-red-700">Hidden</span>}
       </header>
 
@@ -150,11 +150,11 @@ function CommentItem({ c, signedIn, act, devotionId, replyTo }: {
           }}
         />
       ) : (
-        <p className="whitespace-pre-wrap leading-relaxed text-lm-text dark:text-[#FFF4E8]/90">{c.content}</p>
+        <p className="whitespace-pre-wrap leading-relaxed text-lm-text dark:text-warm/90">{c.content}</p>
       )}
 
       {mode !== 'edit' && (
-        <div className="mt-2 flex flex-wrap gap-4 text-xs font-semibold text-lm-muted dark:text-[#BFAEA3]">
+        <div className="mt-2 flex flex-wrap gap-4 text-xs font-semibold text-lm-muted dark:text-warm-muted">
           <LikeButton
             contentType="COMMENT"
             contentId={c.id}
@@ -235,7 +235,7 @@ function Composer({ initial = '', placeholder, submitLabel, onSubmit, onCancel, 
       />
       <div className="flex items-center justify-end gap-2">
         {text.length > 1800 && (
-          <span className={`mr-auto text-xs ${text.length >= 2000 ? 'font-semibold text-red-600 dark:text-red-400' : 'text-lm-muted dark:text-[#BFAEA3]'}`} aria-live="polite">
+          <span className={`mr-auto text-xs ${text.length >= 2000 ? 'font-semibold text-red-600 dark:text-red-400' : 'text-lm-muted dark:text-warm-muted'}`} aria-live="polite">
             {text.length.toLocaleString()} / 2,000
           </span>
         )}
