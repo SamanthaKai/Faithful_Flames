@@ -331,3 +331,48 @@ Everything above marked ✅ is built **and tested**: 132 end-to-end API/page che
 - ✅ Database: User + lastSeenAt (additive). It's set at sign-in and on page visits (at most every 5 minutes).
 - ✅ Tested: 12 checks plus screenshots (desktop, and 375px dark with no page overflow).
 - ❎ "Last active" and "devotions read" only start counting from this release, so older members show "Not yet" until they next visit.
+
+
+---
+
+# Update — 19 November 2026: speed, security and ease-of-use review
+
+Done in 6 phases, one commit each. Everything was tested on a local production
+build with a throwaway database (never the live one).
+
+## Phase 1: sign-in, language filter, security headers
+- ✅ After signing in, people return to the page they were on (e.g. the devotion's conversation), not the homepage. Only pages on this site are allowed as the return address.
+- ✅ The language filter no longer blocks "hell", "damn" and "ass" (Scripture words: "saved from hell", Balaam's ass).
+- ✅ Security headers on every page: blocks the site being shown inside other sites (clickjacking), a Content-Security-Policy, and stricter referrer/permissions settings.
+- ✅ The image optimiser only accepts Google profile photos (before: any image on the internet, using our quota).
+
+## Phase 2: no more waiting with nothing on screen
+- ✅ Loading placeholders appear the moment a link is tapped.
+- ✅ The devotion page arrives with its like count, Saved state and your private note already filled in (3 fewer requests; no 0 → 5 like jump or "Loading…" note).
+- ✅ Friendly "page not found" and "this page didn't load, try again" pages.
+- ❎ Because of the loading placeholders, a missing or not-yet-published devotion shows the "not found" page with status 200 instead of 404. The page is marked noindex so search engines skip it; nothing of a future devotion is shown.
+
+## Phase 3: private notes save themselves
+- ✅ Notes autosave about a second after you stop typing, and when you click away. Status: Typing… / Saving… / Saved <time>, or "Couldn't save … Try again".
+- ✅ Moving to another page saves the last words, and closing or reloading asks first if anything is unsaved.
+- ✅ The comment box shows "1,900 / 2,000" near the limit.
+
+## Phase 4: password reset
+- ✅ "Forgot password?" on the sign-in page sends a reset link by email (works once, lasts 1 hour).
+- ✅ Resetting signs the account out on every device (within a minute). It also verifies an unverified email.
+- ✅ The same once-a-minute check now also signs out deleted accounts.
+- ✅ Database (additive only): new PasswordResetToken table, User + passwordChangedAt. Only a hash of each link is stored.
+
+## Phase 5: faster pages as devotions grow
+- ✅ Pages no longer load every devotion's full text just to show "Day N of M" and the Earlier/Later links.
+- ✅ Home and devotion pages run their database queries side by side, not one after another.
+
+## Phase 6: privacy of who is a member
+- ✅ Sign-up and "resend verification" give the same answer whether or not an email has an account. The real owner is emailed instead ("you already have an account", or a fresh verification link).
+- ✅ Deleting an account asks for the password.
+
+## Still to decide / not done
+- ❎ Shared rate limiter and Cloudflare Turnstile are still deferred (unchanged).
+- ❎ The build still runs `prisma db push` against the live database on every deploy. Moving to `prisma migrate deploy` is a separate, careful job.
+- ❎ Check that Vercel's function region matches the Neon database region (Vercel → Settings → Functions; Neon → project settings).
+- ❎ Not pushed yet. Pushing deploys it, and the build adds the new table and column to the live database (additive, no data loss).
