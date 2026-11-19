@@ -1,7 +1,6 @@
 export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { prisma } from '@/lib/prisma'
 import { getFeaturedDevotion } from '@/lib/devotions'
 import { formatDay } from '@/lib/day'
 import { DevotionView } from '@/components/DevotionView'
@@ -14,10 +13,7 @@ export const metadata: Metadata = { title: 'Daily Devotion' }
 export default async function TodayPage() {
   const { devotion, isToday, today } = await getFeaturedDevotion()
 
-  if (devotion && isToday) {
-    const full = await prisma.devotion.findUnique({ where: { id: devotion.id } })
-    if (full) return <DevotionView devotion={full} />
-  }
+  if (devotion && isToday) return <DevotionView devotion={devotion} />
 
   return (
     <div className="night relative overflow-hidden">

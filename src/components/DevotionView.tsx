@@ -30,18 +30,20 @@ function Section({ numeral, label, children }: { numeral: string; label: string;
 export async function DevotionView({ devotion }: { devotion: Devotion }) {
   const session = await getSession()
   const viewer = session?.user?.id ? { id: session.user.id, role: session.user.role } : null
-  if (viewer) await markRead(viewer.id, devotion.id)
+  const marked = viewer ? markRead(viewer.id, devotion.id) : null
+  const orderedP = getDevotionsInOrder()
   // Everything the page needs comes with it, so the like count, Save button and
   // private note don't pop in after the page appears.
-  const [discussion, ordered, likeCount, myLike, bookmark, note] = await Promise.all([
+  const [discussion, ordered, likeCount, myLike, bookmark, note, journey] = await Promise.all([
     getDiscussion(devotion, viewer),
-    getDevotionsInOrder(),
+    orderedP,
     prisma.like.count({ where: { contentType: 'DEVOTION', contentId: devotion.id } }),
     viewer ? prisma.like.findUnique({ where: { userId_contentType_contentId: { userId: viewer.id, contentType: 'DEVOTION', contentId: devotion.id } }, select: { id: true } }) : null,
     viewer ? prisma.bookmark.findUnique({ where: { userId_contentType_contentId: { userId: viewer.id, contentType: 'DEVOTION', contentId: devotion.id } }, select: { id: true } }) : null,
     viewer ? prisma.reflection.findFirst({ where: { userId: viewer.id, devotionId: devotion.id }, select: { content: true, updatedAt: true } }) : null,
+    // Progress is read after this visit is recorded, so it counts this devotion.
+    viewer ? Promise.all([marked, orderedP]).then(([, o]) => getJourney(viewer.id, o)) : null,
   ])
-  const journey = viewer ? await getJourney(viewer.id, ordered) : null
   const day = devotionDay(devotion)
   const isToday = day === todayKey()
   const position = ordered.findIndex((d) => d.id === devotion.id)

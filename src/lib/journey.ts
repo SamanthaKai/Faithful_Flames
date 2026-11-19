@@ -1,5 +1,5 @@
 import { prisma } from './prisma'
-import { getVisibleDevotions } from './devotions'
+import { getDevotionIndex } from './devotions'
 
 // A member's reading path, chosen when they join:
 //   BEGINNING: read from the very first devotion, at their own pace
@@ -11,9 +11,9 @@ export const isReadingPath = (v: unknown): v is ReadingPath => READING_PATHS.inc
 /** How many early devotions the "join at the latest" pop-up recommends. */
 export const RECOMMENDED_COUNT = 5
 
-/** Visible devotions, oldest first (Day 1 = the first devotion ever published). */
-export async function getDevotionsInOrder(now = new Date()) {
-  return (await getVisibleDevotions(now)).reverse()
+/** Visible devotions (light list), oldest first (Day 1 = the first devotion ever published). */
+export async function getDevotionsInOrder() {
+  return [...(await getDevotionIndex())].reverse()
 }
 
 export type Journey = {
@@ -25,15 +25,14 @@ export type Journey = {
 }
 
 export async function getJourney(userId: string, ordered?: Awaited<ReturnType<typeof getDevotionsInOrder>>): Promise<Journey> {
-  const [user, list] = await Promise.all([
+  // All three at once; reads of devotions that are no longer visible are ignored below.
+  const [user, list, reads] = await Promise.all([
     prisma.user.findUnique({ where: { id: userId }, select: { readingPath: true } }),
     ordered ?? getDevotionsInOrder(),
+    prisma.devotionRead.findMany({ where: { userId }, select: { devotionId: true } }),
   ])
-  const reads = await prisma.devotionRead.findMany({
-    where: { userId, devotionId: { in: list.map((d) => d.id) } },
-    select: { devotionId: true },
-  })
-  const read = new Set(reads.map((r) => r.devotionId))
+  const visible = new Set(list.map((d) => d.id))
+  const read = new Set(reads.map((r) => r.devotionId).filter((id) => visible.has(id)))
   const idx = list.findIndex((d) => !read.has(d.id))
   return {
     path: isReadingPath(user?.readingPath) ? user.readingPath : null,

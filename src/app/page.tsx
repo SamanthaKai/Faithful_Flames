@@ -14,16 +14,20 @@ import { PrayerWall } from '@/components/PrayerWall'
 
 export default async function HomePage() {
   const session = await getSession()
-  const [{ devotion, isToday, today }, prayers, testimonies] = await Promise.all([
-    getFeaturedDevotion(),
-    getPublicPrayers(session?.user?.id ?? null, 3),
+  const userId = session?.user?.id ?? null
+  // Everything at once. The devotion list is shared (cached) between the
+  // featured devotion and the member's reading progress.
+  const featuredP = getFeaturedDevotion()
+  const [{ devotion, isToday, today }, prayers, testimonies, journey, commentCount] = await Promise.all([
+    featuredP,
+    getPublicPrayers(userId, 3),
     getPublishedTestimonies(3),
+    userId ? getJourney(userId) : null,
+    featuredP.then(({ devotion: d }) =>
+      d ? prisma.comment.count({ where: { contentType: 'DEVOTION', contentId: d.id, deletedAt: null, isHidden: false } }) : 0,
+    ),
   ])
-  const journey = session?.user?.id ? await getJourney(session.user.id) : null
   const continueTo = journey?.path === 'BEGINNING' ? journey.next : null
-  const commentCount = devotion
-    ? await prisma.comment.count({ where: { contentType: 'DEVOTION', contentId: devotion.id, deletedAt: null, isHidden: false } })
-    : 0
   const devotionHref = devotion ? (isToday ? '/devotions' : `/devotions/${devotion.id}`) : '/devotions'
 
   return (
